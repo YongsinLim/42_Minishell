@@ -25,53 +25,53 @@ RoadMap - 01.11.2025:
 | 🔵 **Heredoc** | `init_signals_heredoc()` | During heredoc (`<<`) input           | Aborts heredoc cleanly                         | Ignored                                 | —                                   | Cancels heredoc without killing shell                  |
 
 
-Example usage are as follows
-'''
-#include "minishell.h"
-int	main(void)
-{
-	char	*input;
+Example usage is as follows
 
-	// Setup signals for prompt mode
-	init_signals_prompt();
 
-	while (1)
+	#include "minishell.h"
+	int	main(void)
 	{
-		input = readline("minishell$ ");
-		if (!input) // CTRL-D pressed (EOF)
+		char	*input;
+	
+		// Setup signals for prompt mode
+		init_signals_prompt();
+	
+		while (1)
 		{
-			printf("exit\n");
-			break;
-		}
-
-		// If user entered something, handle it
-		if (*input)
-			add_history(input);
-
-		// Example: handle heredoc separately
-		if (is_heredoc(input))
-		{
-			init_signals_heredoc();
-			handle_heredoc(input);
-			init_signals_prompt(); // restore prompt behavior
-		}
-		else
-		{
-			pid_t pid = fork();
-			if (pid == 0)
+			input = readline("minishell$ ");
+			if (!input) // CTRL-D pressed (EOF)
 			{
-				// Child process → restore default signals
-				init_signals_child();
-				exec_cmd(input); // replace process image
-				exit(EXIT_FAILURE);
+				printf("exit\n");
+				break;
 			}
-			else if (pid > 0)
-				waitpid(pid, NULL, 0);
+	
+			// If user entered something, handle it
+			if (*input)
+				add_history(input);
+	
+			// Example: handle heredoc separately
+			if (is_heredoc(input))
+			{
+				init_signals_heredoc();
+				handle_heredoc(input);
+				init_signals_prompt(); // restore prompt behavior
+			}
+			else
+			{
+				pid_t pid = fork();
+				if (pid == 0)
+				{
+					// Child process → restore default signals
+					init_signals_child();
+					exec_cmd(input); // replace process image
+					exit(EXIT_FAILURE);
+				}
+				else if (pid > 0)
+					waitpid(pid, NULL, 0);
+			}
+	
+			free(input);
 		}
-
-		free(input);
+		return (0);
 	}
-	return (0);
-	}
-'''
 
