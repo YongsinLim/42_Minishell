@@ -16,3 +16,11 @@ RoadMap - 31.10.2025:
 
 RoadMap - 01.11.2025:
 1. includes folder created, added minishell.h
+2. Added signal handling, with specific cases as follows
+
+| Mode           | Function                 | Used When                             | `CTRL-C` (`SIGINT`)                            | `CTRL-\` (`SIGQUIT`)                    | `CTRL-D`                            | Purpose                                                |
+| -------------- | ------------------------ | ------------------------------------- | ---------------------------------------------- | --------------------------------------- | ----------------------------------- | ------------------------------------------------------ |
+| 🟢 **Prompt**  | `init_signals_prompt()`  | Waiting for user input (`readline()`) | Prints newline, clears line, redisplays prompt | Ignored                                 | Handled manually (EOF → exit shell) | Keeps shell interactive; doesn’t quit on interrupt     |
+| 🟡 **Child**   | `init_signals_child()`   | After `fork()`, before `execve()`     | Terminates running command                     | Terminates command and prints `Quit: 3` | —                                   | Restores default signal behavior for external programs |
+| 🔵 **Heredoc** | `init_signals_heredoc()` | During heredoc (`<<`) input           | Aborts heredoc cleanly                         | Ignored                                 | —                                   | Cancels heredoc without killing shell                  |
+
