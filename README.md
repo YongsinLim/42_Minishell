@@ -75,3 +75,7 @@ Example usage is as follows
 		return (0);
 	}
 
+
+RoadMap - 15.12.2025:
+1. Add Makefile
+2. Fix Header File's Norm Isue
