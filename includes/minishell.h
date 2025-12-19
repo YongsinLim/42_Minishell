@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2025/12/15 12:46:29 by yolim            ###   ########.fr       */
+/*   Updated: 2025/12/19 13:59:43 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 # include "../Libft/libft.h"
 # include <readline/readline.h> // for readline
 # include <readline/history.h> // for readline
+# include <stdlib.h> // for malloc & free
+# include <stdio.h> 
 
 
-# include <stdio.h>
-# include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
 # include <sys/wait.h>
@@ -30,6 +30,12 @@
 # include <sys/ioctl.h>
 # include <termios.h>
 # include <term.h>
+
+typedef struct s_history
+{
+	char				*command;
+	struct s_history	*next;
+}				t_history;
 
 typedef enum e_token_type
 {
@@ -53,9 +59,13 @@ typedef struct s_vars
 	t_token			token;
 }				t_vars;
 
+// ----- History Functions -----
+void	add_to_history(char *command, t_history **history_list);
+void	display_history(t_history *history_list);
+void	free_history(t_history **history_list);
 
 
-//Token Functions
+// ----- Token Functions -----
 void	handle_word(char *line, int *i, t_token **tokens);
 void	handle_redirection(char *line, int *i, t_token **tokens);
 t_token	*tokenize(char *line);
