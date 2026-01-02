@@ -6,24 +6,30 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/19 13:59:39 by yolim            ###   ########.fr       */
+/*   Updated: 2025/12/30 18:32:14 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char		*input;
 	t_history	*history_list;
+	t_token		*tokens;
+	t_command	*pipeline;
+	int			status;
 
 	history_list = NULL;
-
-
-	input = readline("Minishell > ");
-	while (input != NULL)
+	status = 0;
+	while (1)
 	{
-		printf("You entered: %s\n", input);
+		input = readline("Minishell > ");
+		if (input == NULL)
+		{
+			ft_putstr_fd("exit\n", 1);
+			break ;
+		}
 		if (input[0] != '\0')
 		{
 			add_history(input);
@@ -32,12 +38,23 @@ int	main(void)
 		if (ft_strncmp(input, "history", 8) == 0)
 			display_history(history_list);
 		else if (ft_strncmp(input, "exit", 5) == 0)
+		{
+			free(input);
 			break ;
+		}
+		tokens = tokenize(input);
+		pipeline = parse(tokens);
+		if (pipeline != NULL)
+		{
+			handle_heredocs(pipeline);
+			status = execute_pipeline(pipeline, envp);
+		}
 		free(input);
-		input = readline("Minishell > ");
+		free_tokens(&tokens);
+		free_pipeline(&pipeline);
 	}
 	free_history(&history_list);
-	return (0);
+	return (status);
 }
 
 /*
