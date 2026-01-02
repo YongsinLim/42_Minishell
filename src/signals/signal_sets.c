@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_sets.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.fr>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 22:09:35 by jenlee            #+#    #+#             */
-/*   Updated: 2025/11/01 22:19:21 by jenlee           ###   ########.fr       */
+/*   Updated: 2025/12/31 11:48:17 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,6 @@ void	init_signals_child(void)
 void	sigint_handler_heredoc(int sig)
 {
 	(void)sig;
-	write(1, "\n", 1));
+	write(1, "\n", 1);
 	exit(1);
 }
