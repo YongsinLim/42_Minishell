@@ -6,7 +6,7 @@
 #    By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/14 16:21:19 by yolim             #+#    #+#              #
-#    Updated: 2025/12/15 12:43:00 by yolim            ###   ########.fr        #
+#    Updated: 2026/01/02 18:58:14 by yolim            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,15 +16,18 @@ BONUS_NAME = minishell_bonus
 
 # ----- Compiler and flags ----- 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror
+CCFLAGS = -Wall -Wextra -Werror 
+LDFLAGS = -lreadline -lhistory -L/opt/homebrew/opt/readline/lib
+CPPFLAGS = -I/opt/homebrew/opt/readline/include
 RM = rm -f
 
 # ----- Header file ----- 
-HEADER_DIR = ./Includes
+HEADER_DIR = ./includes
 HEADER_LIB = $(HEADER_DIR)/minishell.h
 
 # ----- Source Files ----- 
-SRC = 
+SRC = $(wildcard src/**/*.c)
+## change to wildcard to real src file name!!!!!src/main.c src/history/history.c
 OBJS := $(SRC:%.c=%.o)
 
 BONUS_SRC = 
@@ -42,11 +45,11 @@ LIBFT_FLAGS = -L$(LIBFT_DIR) -lft
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT_LIB)
-	$(CC) $(CCFLAGS) $(OBJS) $(LIBFT_FLAGS) -o $(NAME)
+	$(CC) $(CCFLAGS) $(OBJS) $(LIBFT_FLAGS) $(LDFLAGS) -o $(NAME)
 	@echo "Done. Executable is '$(NAME)'"
 
 bonus: $(BONUS_OBJS) $(LIBFT_LIB)
-	$(CC) $(CCFLAGS) $(BONUS_OBJS) $(LIBFT_FLAGS) -o $(BONUS_NAME)
+	$(CC) $(CCFLAGS) $(BONUS_OBJS) $(LIBFT_FLAGS) $(LDFLAGS) -o $(BONUS_NAME)
 	@echo "Done. Bonus executable is '$(BONUS_NAME)'"
 
 # Rule to build libft library
@@ -58,7 +61,7 @@ $(LIBFT_LIB):
 # $< is the first prerequisite of the rule (main.c)
 # $@ is the target of the rule (main.o)
 %.o: %.c $(HEADER_LIB)
-	@$(CC) $(CCFLAGS) -I$(HEADER_DIR) -I$(LIBFT_DIR) -c $< -o $@
+	@$(CC) $(CCFLAGS) $(CPPFLAGS) -I$(HEADER_DIR) -I$(LIBFT_DIR) -c $< -o $@
 
 # ----- Clean Rules ----- 
 clean:
