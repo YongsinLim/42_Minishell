@@ -89,8 +89,10 @@ RoadMap - 18.1.26
 2. "Builtin" commands working, but no native to program, using the local shell's commands instead
 
 
-Issue Lists (discovered and unfixed)
-   	1. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
-   	2. running history displays history, but also has error message - minishell command not found, should be an easy fix.
-   	3. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
-   	4. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+	Issue Lists (discovered and unfixed)
+```
+	   	1. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
+	   	2. running history displays history, but also has error message - minishell command not found, should be an easy fix.
+	   	3. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
+	   	4. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+```
