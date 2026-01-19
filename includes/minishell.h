@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/01/02 19:00:14 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/16 15:14:15 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "../Libft/libft.h"
 # include <readline/readline.h> // for readline
 # include <readline/history.h> // for readline
-# include <stdlib.h> // for malloc, free, exit
+# include <stdlib.h> // for malloc, free, exit, getenv
 # include <stdio.h> // for printf, perror
 # include <unistd.h> // for access, write, execve, open, close, fork
 # include <fcntl.h> // for O_RDONLY & O_WRONLY & O_TRUNC
@@ -46,8 +46,24 @@ typedef struct s_command
 	int					is_append;
 	char				*heredoc_delimiter;
 	int					heredoc_fd;
-	struct s_command	*next;
 }			t_command;
+
+typedef enum e_ast_node_type
+{
+	NODE_COMMAND,
+	NODE_PIPE,
+	NODE_AND,
+	NODE_OR,
+	NODE_SUBSHELL
+}			t_ast_node_type;
+
+typedef struct s_ast_node
+{
+	t_ast_node_type		type;
+	struct s_ast_node	*left;
+	struct s_ast_node	*right;
+	t_command			*command;
+}						t_ast_node;
 
 typedef enum e_token_type
 {
@@ -56,7 +72,8 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_APPEND,
-	TOKEN_HEREDOC
+	TOKEN_HEREDOC,
+	TOKEN_QUOTED_STRING,
 }			t_token_type;
 
 typedef struct s_token
@@ -112,11 +129,21 @@ void		free_tokens(t_token **tokens);
 void		free_pipeline(t_command **pipeline);
 void		free_array_str(char **array);
 
+// ----- Expansion Functions -----
+char		*expand_variable(char *str, char **envp);
+char		*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
+				char **envp);
+char		*append_char(char *s1, char c);
+int			get_var_name_len(char *str, char **var_name_ptr);
+char		*get_var_value(char *var_name, char **envp);
+
 // ----- Token Functions -----
 void		handle_word(char *line, int *i, t_token **tokens);
 void		handle_redirection(char *line, int *i, t_token **tokens);
-t_token		*tokenize(char *line);
+t_token		*tokenize(char *line, char **envp);
 t_token		*new_token(char *value, t_token_type type);
 void		add_token(t_token **head, t_token *new_token);
+int			handle_quoted_string(char *line, int *i, t_token **tokens,
+				char **envp);
 
 #endif
