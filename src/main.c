@@ -6,19 +6,23 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/30 18:32:14 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/13 15:06:18 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	main(int argc, char **argv, char **envp)
+int     main(int argc, char **argv, char **envp)
+
 {
 	char		*input;
 	t_history	*history_list;
 	t_token		*tokens;
 	t_command	*pipeline;
 	int			status;
+
+	(void)argc;
+	(void)argv;
 
 	history_list = NULL;
 	status = 0;
@@ -42,7 +46,11 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			break ;
 		}
-		tokens = tokenize(input);
+		tokens = tokenize(input, envp);
+
+
+
+
 		pipeline = parse(tokens);
 		if (pipeline != NULL)
 		{
@@ -54,6 +62,7 @@ int	main(int argc, char **argv, char **envp)
 		free_pipeline(&pipeline);
 	}
 	free_history(&history_list);
+	
 	return (status);
 }
 
