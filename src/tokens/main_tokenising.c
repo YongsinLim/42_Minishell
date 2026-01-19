@@ -3,21 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   main_tokenising.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.fr>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2025/11/05 00:03:43 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/01/19 16:36:31 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static int	is_special_char(char c)
-{
-	if (c == '|' || c == '<' || c == '>')
-		return (1);
-	return (0);
-}
 
 static void	skip_spaces(char *line, int *i)
 {
@@ -49,7 +42,7 @@ void	handle_redirection(char *line, int *i, t_token **tokens)
 	}
 }
 
-t_token	*tokenize(char *line)
+t_token	*tokenize(char *line, char **envp)
 {
 	t_token	*tokens;
 	int		i;
@@ -65,6 +58,11 @@ t_token	*tokenize(char *line)
 			add_token(&tokens, new_token("|", TOKEN_PIPE));
 		else if (line[i] == '<' || line[i] == '>')
 			handle_redirection(line, &i, &tokens);
+		else if (line[i] == '"' || line[i] == '\'')
+		{
+			if (handle_quoted_string(line, &i, &tokens, envp) == 1)
+				return (free_tokens(&tokens), NULL);
+		}
 		else
 			handle_word(line, &i, &tokens);
 		i++;

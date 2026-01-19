@@ -82,7 +82,21 @@ RoadMap - 15.12.2025:
 
 RoadMap - 19.12.2025:
 1. Display a prompt
-2. Create working history
+2. Create working history (History folder)
+
+RoadMap - 02.01.2026:
+1. Implement Pipes & Redirection (Execute folder and free_memory folder)
+2. Revise Makefile & Header file
+3. Fix Norm
+4. main.c : still havent fix function too long issue
+
+RoadMap - 19.01.2026:
+1. implement ’ (single quote) and " (double quote)
+2. implement environment variables
+** Not done: avoid case of \ (backslash) or ; (semicolon) ;
+			$? which should expand to the exit status of the most recently executed
+			foreground pipeline.
+
 
 RoadMap - 18.1.26
 1. Changed pipeline to ats
