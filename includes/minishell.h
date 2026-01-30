@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/01/16 15:14:15 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/30 17:19:50 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ typedef struct s_ast_node
 	t_ast_node_type		type;
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
-	t_command			*command;
+	t_command			*command; // Only not NULL when type == NODE_CMD
 }						t_ast_node;
 
 typedef enum e_token_type
@@ -74,6 +74,10 @@ typedef enum e_token_type
 	TOKEN_APPEND,
 	TOKEN_HEREDOC,
 	TOKEN_QUOTED_STRING,
+	TOKEN_AND,
+	TOKEN_OR,
+	TOKEN_L_PAREN,
+	TOKEN_R_PAREN
 }			t_token_type;
 
 typedef struct s_token
@@ -83,35 +87,46 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
-typedef struct s_vars
-{
-	t_token			token;
-}				t_vars;
+// ----- Ast Functions -----
+t_ast_node	*create_new_ast_node(t_ast_node_type type);
+t_ast_node	*parse_command_or_subshell(t_token **tokens);
+int			parse_redirection(t_token **tokens, t_command *cmd);
+
+t_ast_node	*parse_pipeline(t_token **tokens);
+void		handle_heredocs_ast(t_ast_node *ast);
+int			execute_simple_command(t_ast_node *node, char **envp);
+void		execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
+void		execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
+int			execute_ast(t_ast_node *ast, char **envp);
+
+
+
+
+
+
+
+// ----- Heredoc Functions -----
+// void		handle_heredocs(t_command *pipeline);
+void		process_heredoc(t_command *cmd);
+int			count_words(t_token *tokens);
+
+
+
+
+
+
+
+
+
 
 // ----- History Functions -----
 void		add_to_history(char *command, t_history **history_list);
 void		display_history(t_history *history_list);
 void		free_history(t_history **history_list);
 
-// ----- Parse Functions -----
-t_command	*parse(t_token *tokens);
-t_command	*assign_next_cmd(t_command *current, t_command *new_cmd);
-t_command	*parse_one_command(t_token **tokens_ptr);
-t_command	*initialise_command_list(int words_count);
-t_token		*token_redirection(t_token *token, t_command *command_list);
-
-// ----- Heredoc Functions -----
-void		handle_heredocs(t_command *pipeline);
-void		process_heredoc(t_command *cmd);
-int			count_words(t_token *tokens);
-
-// ----- Executor Functions -----
-int			execute_pipeline(t_command *pipeline, char *envp[]);
+// ----- Redirection Functions -----
 void		redirect_input(int prev_pipe_read_end, t_command *cmd);
 void		redirect_output(t_command *cmd, int *pipe_fd);
-void		parent_pipe_handler(int *previous_pipe_read_end,
-				t_command *pipeline, int pipe_fd[2]);
-int			cleanup_and_wait(int previous_pipe_read_end, pid_t fork_pid_result);
 
 // ----- Execute Path Functions -----
 void		execute(char **cmd_array, char **envp);
@@ -120,14 +135,20 @@ char		**get_path(char *envp[]);
 char		*search_path(char **path_dir, char *command);
 void		report_error(char *msg, char *param, char **free_me, int exit_code);
 
+// ----- Parse Functions -----
+t_command	*parse_one_command(t_token **tokens_ptr);
+t_command	*initialise_command_list(int words_count);
+t_token		*token_redirection(t_token *token, t_command *command_list);
+
 // ----- Wait Child Functions -----
 int			wait_for_children(pid_t last_pid);
 void		error_exit(char *error_msg);
 
 // ----- Free Functions -----
 void		free_tokens(t_token **tokens);
-void		free_pipeline(t_command **pipeline);
 void		free_array_str(char **array);
+void		free_command(t_command *cmd);
+void		free_ast(t_ast_node **ast_ptr);
 
 // ----- Expansion Functions -----
 char		*expand_variable(char *str, char **envp);
@@ -138,12 +159,14 @@ int			get_var_name_len(char *str, char **var_name_ptr);
 char		*get_var_value(char *var_name, char **envp);
 
 // ----- Token Functions -----
-void		handle_word(char *line, int *i, t_token **tokens);
+void		skip_spaces(char *line, int *i);
 void		handle_redirection(char *line, int *i, t_token **tokens);
 t_token		*tokenize(char *line, char **envp);
 t_token		*new_token(char *value, t_token_type type);
+t_token		*make_token(char *value, int *i);
 void		add_token(t_token **head, t_token *new_token);
 int			handle_quoted_string(char *line, int *i, t_token **tokens,
 				char **envp);
+void		handle_word(char *line, int *i, t_token **tokens);
 
 #endif

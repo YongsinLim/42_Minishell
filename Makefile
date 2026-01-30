@@ -6,7 +6,7 @@
 #    By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/14 16:21:19 by yolim             #+#    #+#              #
-#    Updated: 2026/01/10 12:10:22 by yolim            ###   ########.fr        #
+#    Updated: 2026/01/27 16:29:32 by yolim            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -26,7 +26,7 @@ HEADER_DIR = ./includes
 HEADER_LIB = $(HEADER_DIR)/minishell.h
 
 # ----- Source Files ----- 
-SRC = $(wildcard src/*.c) $(wildcard src/**/*.c)
+SRC = $(wildcard src/*.c src/**/*.c)
 ## change to wildcard to real src file name!!!!!src/main.c src/history/history.c
 OBJS := $(SRC:%.c=%.o)
 
