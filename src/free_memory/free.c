@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/30 12:31:16 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/30 18:29:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/20 16:39:53 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,29 +30,6 @@ void	free_tokens(t_token **tokens)
 	*tokens = NULL;
 }
 
-void	free_pipeline(t_command **pipeline)
-{
-	t_command	*current;
-	t_command	*next_node;
-
-	if (!pipeline || !*pipeline)
-		return ;
-	current = *pipeline;
-	while (current)
-	{
-		next_node = current->next;
-		free_array_str(current->argv);
-		free(current->input_file);
-		free(current->output_file);
-		free(current->heredoc_delimiter);
-		if (current->heredoc_fd != -1)
-			close(current->heredoc_fd);
-		free(current);
-		current = next_node;
-	}
-	*pipeline = NULL;
-}
-
 void	free_array_str(char **array)
 {
 	int	i;
@@ -66,4 +43,32 @@ void	free_array_str(char **array)
 		i++;
 	}
 	free(array);
+}
+
+void	free_command(t_command *cmd)
+{
+	if (!cmd)
+		return ;
+	free_array_str(cmd->argv);
+	free(cmd->input_file);
+	free(cmd->output_file);
+	free(cmd->heredoc_delimiter);
+	if (cmd->heredoc_fd != -1)
+		close(cmd->heredoc_fd);
+	free(cmd);
+}
+
+void	free_ast(t_ast_node **ast_ptr)
+{
+	t_ast_node	*ast;
+
+	if (!ast_ptr || !*ast_ptr)
+		return ;
+	ast = *ast_ptr;
+	free_ast(&(ast->left));
+	free_ast(&(ast->right));
+	if (ast->type == NODE_COMMAND && ast->command)
+		free_command(ast->command);
+	free(ast);
+	*ast_ptr = NULL;
 }

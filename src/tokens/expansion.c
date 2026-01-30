@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/19 16:26:48 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/29 17:15:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str, char **envp)
 
 	var_name = NULL;
 	var_name_len = get_var_name_len(&str[*i_ptr + 1], &var_name);
-	if (var_name_len > 0)
+	if (var_name_len > 0) // Valid Variable is Found
 	{
 		var_value = get_var_value(var_name, envp);
 		old_final_str = final_str;
@@ -94,28 +94,29 @@ int	get_var_name_len(char *str, char **var_name_ptr)
 
 char	*get_var_value(char *var_name, char **envp)
 {
-	char	*var_value;
+	int		i;
+	int		name_len;
+	char	*entry;
+	int		value_start_index;
+	int		value_len;
 
-	(void)envp;
 	if (!var_name)
 		return (ft_strdup(""));
 	if (ft_strncmp(var_name, "?", 2) == 0)
-		return (ft_strdup("0"));
-	var_value = getenv(var_name);
-	if (!var_value)
-		return (ft_strdup(""));
-	return (ft_strdup(var_value));
+		return (ft_strdup("0")); // Replace with actual exit status later
+	name_len = ft_strlen(var_name);
+	i = 0;
+	while (envp && envp[i])
+	{
+		entry = envp[i];
+		if (ft_strncmp(entry, var_name, name_len) == 0
+			&& entry[name_len] == '=')
+		{
+			value_start_index = name_len + 1;
+			value_len = ft_strlen(entry) - value_start_index;
+			return (ft_substr(entry, value_start_index, value_len));
+		}
+		i++;
+	}
+	return (ft_strdup(""));
 }
-//ft_strdup("0")-temporary placeholder, will return real exit status once ready.
-
-/*
-if dont add envp as parameter:
-   * getenv() reads from the environment that your minishell process started
-   		with. It cannot see changes made "internally" by a command like export.
-   * When your export command runs, it will modify an internal list of
-   		variables, but it cannot modify the `getenv` database.
-   * So, when echo $MY_VAR is processed, your expand_variable function will call
-     getenv("MY_VAR"), which will return NULL (not found), because the original
-	 environment doesn't have MY_VAR in it. Your shell will incorrectly print an
-	 empty line.
-*/

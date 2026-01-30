@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/13 15:06:18 by yolim            ###   ########.fr       */
+/*   Updated: 2026/01/30 17:22:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int     main(int argc, char **argv, char **envp)
 	char		*input;
 	t_history	*history_list;
 	t_token		*tokens;
-	t_command	*pipeline;
+	t_ast_node	*ast;
 	int			status;
 
 	(void)argc;
@@ -46,23 +46,22 @@ int     main(int argc, char **argv, char **envp)
 			free(input);
 			break ;
 		}
+
+		
 		tokens = tokenize(input, envp);
-
-
-
-
-		pipeline = parse(tokens);
-		if (pipeline != NULL)
+		if (!tokens)
+			error_exit("minishell : Unclosed quote found\n");
+		ast = parse_pipeline(&tokens);
+		if (ast != NULL)
 		{
-			handle_heredocs(pipeline);
-			status = execute_pipeline(pipeline, envp);
+			handle_heredocs_ast(ast);
+			status = execute_ast(ast, envp);
 		}
 		free(input);
 		free_tokens(&tokens);
-		free_pipeline(&pipeline);
+		free_ast(&ast);
 	}
 	free_history(&history_list);
-	
 	return (status);
 }
 
