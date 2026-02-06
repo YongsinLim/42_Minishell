@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/01/30 17:19:50 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/06 17:39:18 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,17 @@
 # include <sys/ioctl.h>
 # include <termios.h>
 # include <term.h>
+
+# define SHELL_SUCCESS 0
+# define SHELL_FAILURE 1
+# define SYNTAX_ERROR 2
+# define COMMAND_NOT_FOUND 127
+
+
+
+
+
+
 
 typedef struct s_history
 {
@@ -88,41 +99,24 @@ typedef struct s_token
 }				t_token;
 
 // ----- Ast Functions -----
-t_ast_node	*create_new_ast_node(t_ast_node_type type);
-t_ast_node	*parse_command_or_subshell(t_token **tokens);
-int			parse_redirection(t_token **tokens, t_command *cmd);
 
-t_ast_node	*parse_pipeline(t_token **tokens);
 void		handle_heredocs_ast(t_ast_node *ast);
-int			execute_simple_command(t_ast_node *node, char **envp);
 void		execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
 void		execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
 int			execute_ast(t_ast_node *ast, char **envp);
-
-
-
-
-
-
 
 // ----- Heredoc Functions -----
 // void		handle_heredocs(t_command *pipeline);
 void		process_heredoc(t_command *cmd);
 int			count_words(t_token *tokens);
 
+// ----- Debug Functions -----
+void		print_indent(int level);
+void		print_ast(t_ast_node *node, int level);
 
-
-
-
-
-
-
-
-
-// ----- History Functions -----
-void		add_to_history(char *command, t_history **history_list);
-void		display_history(t_history *history_list);
-void		free_history(t_history **history_list);
+// ----- Wait Child Functions -----
+int			wait_for_children(pid_t last_pid);
+void		error_exit(char *error_msg);
 
 // ----- Redirection Functions -----
 void		redirect_input(int prev_pipe_read_end, t_command *cmd);
@@ -136,19 +130,36 @@ char		*search_path(char **path_dir, char *command);
 void		report_error(char *msg, char *param, char **free_me, int exit_code);
 
 // ----- Parse Functions -----
-t_command	*parse_one_command(t_token **tokens_ptr);
-t_command	*initialise_command_list(int words_count);
-t_token		*token_redirection(t_token *token, t_command *command_list);
+t_ast_node	*parse(t_token **tokens);
+t_ast_node	*parse_pipeline(t_token **tokens);
+t_ast_node	*create_new_ast_node(t_ast_node_type type);
+t_ast_node_type	set_operator_type(t_token **tokens);
 
-// ----- Wait Child Functions -----
-int			wait_for_children(pid_t last_pid);
-void		error_exit(char *error_msg);
+t_ast_node	*parse_command_or_subshell(t_token **tokens);
+t_ast_node	*parse_subshell(t_token **tokens);
+t_ast_node	*parse_simple_command(t_token **tokens);
+
+t_command	*parse_one_command(t_token **tokens_ptr);
+int			tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list);
+int			parse_redirection(t_token **tokens, t_command *cmd);
+t_token		*token_redirection(t_token *token, t_command *command);
+char		**to_str_array(t_list *argv_list);
+
+// ----- Parse_Helper Functions -----
+t_command	*init_cmd(void);
+void		*parse_error_cleanup(t_list **argv_list, t_command *cmd, char *msg);
 
 // ----- Free Functions -----
 void		free_tokens(t_token **tokens);
 void		free_array_str(char **array);
 void		free_command(t_command *cmd);
 void		free_ast(t_ast_node **ast_ptr);
+
+// ----- History Functions -----
+void		add_to_history(char *command, t_history **history_list);
+void		display_history(t_history *history_list);
+void		free_history(t_history **history_list);
+
 
 // ----- Expansion Functions -----
 char		*expand_variable(char *str, char **envp);
@@ -160,13 +171,14 @@ char		*get_var_value(char *var_name, char **envp);
 
 // ----- Token Functions -----
 void		skip_spaces(char *line, int *i);
-void		handle_redirection(char *line, int *i, t_token **tokens);
+void		add_redirection_token(char *line, int *i, t_token **tokens);
 t_token		*tokenize(char *line, char **envp);
 t_token		*new_token(char *value, t_token_type type);
 t_token		*make_token(char *value, int *i);
 void		add_token(t_token **head, t_token *new_token);
 int			handle_quoted_string(char *line, int *i, t_token **tokens,
 				char **envp);
+int			is_separator(char c);
 void		handle_word(char *line, int *i, t_token **tokens);
 
 #endif

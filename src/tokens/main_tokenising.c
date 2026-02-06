@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/01/30 17:39:02 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/06 12:24:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	skip_spaces(char *line, int *i)
 		(*i)++;
 }
 
-void	handle_redirection(char *line, int *i, t_token **tokens)
+void	add_redirection_token(char *line, int *i, t_token **tokens)
 {
 	if (line[*i] == '>')
 	{
@@ -58,7 +58,7 @@ t_token	*tokenize(char *line, char **envp)
 			|| line[i] == '(' || line[i] == ')')
 			add_token(&tokens, make_token(&line[i], &i));
 		else if (line[i] == '<' || line[i] == '>')
-			handle_redirection(line, &i, &tokens);
+			add_redirection_token(line, &i, &tokens);
 		else if (line[i] == '"' || line[i] == '\'')
 		{
 			if (handle_quoted_string(line, &i, &tokens, envp) == 1)
