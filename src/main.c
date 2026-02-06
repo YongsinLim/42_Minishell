@@ -6,13 +6,13 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/30 17:22:27 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/06 16:37:47 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int     main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 
 {
 	char		*input;
@@ -47,11 +47,13 @@ int     main(int argc, char **argv, char **envp)
 			break ;
 		}
 
-		
 		tokens = tokenize(input, envp);
 		if (!tokens)
 			error_exit("minishell : Unclosed quote found\n");
-		ast = parse_pipeline(&tokens);
+
+		ast = parse(&tokens);
+					print_ast(ast, 0);
+
 		if (ast != NULL)
 		{
 			handle_heredocs_ast(ast);

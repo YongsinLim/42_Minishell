@@ -97,6 +97,16 @@ RoadMap - 19.01.2026:
 			$? which should expand to the exit status of the most recently executed
 			foreground pipeline.
 
+RoadMap - 30.01.2026:
+1. add tokenize "(" ")" "&&" "||" logic
+
+RoadMap - 06.02.2025
+1. apply ast to commands
+2. add macros for exit status
+
+
+
+
 
 RoadMap - 18.1.26
 1. Changed pipeline to ats
@@ -110,3 +120,14 @@ RoadMap - 18.1.26
 	   	3. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
 	   	4. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
 ```
+
+
+
+
+
+
+
+Pending to do:
+1. Makefile : change wildcard, add individual file (mandatory and bonus)
+2. Tokenize : handle unclosed " or ' issue
+3. Exit code : return actual exit code 
