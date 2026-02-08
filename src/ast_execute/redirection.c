@@ -6,22 +6,17 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/27 16:37:55 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 13:20:07 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	redirect_input(int prev_pipe_read_end, t_command *cmd)
+void	redirect_input(t_command *cmd)
 {
 	int	infile_fd;
 
-	if (prev_pipe_read_end != -1)
-	{
-		dup2(prev_pipe_read_end, STDIN_FILENO);
-		close(prev_pipe_read_end);
-	}
-	else if (cmd->heredoc_fd != -1)
+	if (cmd->heredoc_fd != -1)
 	{
 		dup2(cmd->heredoc_fd, STDIN_FILENO);
 		close(cmd->heredoc_fd);
@@ -36,11 +31,10 @@ void	redirect_input(int prev_pipe_read_end, t_command *cmd)
 	}
 }
 
-void	redirect_output(t_command *cmd, int *pipe_fd)
+void	redirect_output(t_command *cmd)
 {
 	int	outfile_fd;
 
-	(void)pipe_fd;
 	if (cmd->output_file)
 	{
 		if (cmd->is_append)
@@ -54,4 +48,20 @@ void	redirect_output(t_command *cmd, int *pipe_fd)
 		dup2(outfile_fd, STDOUT_FILENO);
 		close(outfile_fd);
 	}
+}
+
+void	execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd)
+{
+	close(pipe_fd[0]);
+	dup2(pipe_fd[1], STDOUT_FILENO);
+	close(pipe_fd[1]);
+	exit(execute_ast(ast->left, envp));
+}
+
+void	execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd)
+{
+	close(pipe_fd[1]);
+	dup2(pipe_fd[0], STDIN_FILENO);
+	close(pipe_fd[0]);
+	exit(execute_ast(ast->right, envp));
 }

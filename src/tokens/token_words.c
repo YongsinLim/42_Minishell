@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/01/31 12:24:51 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 15:20:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	handle_word(char *line, int *i, t_token **tokens)
 	char	*word;
 
 	start = *i;
-	while (line[*i] && is_separator(line[*i]))
+	while (line[*i] && !is_separator(line[*i]))
 		(*i)++;
 	word = ft_substr(line, start, *i - start);
 	if (word && word[0] != '\0')

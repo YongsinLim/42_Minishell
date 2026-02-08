@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/06 17:39:18 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 18:33:56 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,9 @@
 # define SHELL_SUCCESS 0
 # define SHELL_FAILURE 1
 # define SYNTAX_ERROR 2
-# define COMMAND_NOT_FOUND 127
-
-
-
-
-
-
+# define CMD_NOT_FOUND 127
+# define ACCESS_PERMITTED 0
+# define ERROR (-1)
 
 typedef struct s_history
 {
@@ -56,6 +52,7 @@ typedef struct s_command
 	char				*output_file;
 	int					is_append;
 	char				*heredoc_delimiter;
+	int					heredoc_is_quoted;
 	int					heredoc_fd;
 }			t_command;
 
@@ -98,29 +95,25 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
-// ----- Ast Functions -----
-
-void		handle_heredocs_ast(t_ast_node *ast);
-void		execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
-void		execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
-int			execute_ast(t_ast_node *ast, char **envp);
-
 // ----- Heredoc Functions -----
-// void		handle_heredocs(t_command *pipeline);
-void		process_heredoc(t_command *cmd);
-int			count_words(t_token *tokens);
+void		handle_heredocs(t_ast_node *ast, char **envp);
+void		process_heredoc(t_command *cmd, char **envp);
 
 // ----- Debug Functions -----
 void		print_indent(int level);
 void		print_ast(t_ast_node *node, int level);
 
-// ----- Wait Child Functions -----
-int			wait_for_children(pid_t last_pid);
-void		error_exit(char *error_msg);
 
-// ----- Redirection Functions -----
-void		redirect_input(int prev_pipe_read_end, t_command *cmd);
-void		redirect_output(t_command *cmd, int *pipe_fd);
+
+
+
+
+
+// ----- Execute Functions -----
+int			execute_ast(t_ast_node *ast, char **envp);
+int			execute_simple_command(t_ast_node *ast, char **envp);
+int			exec_pipe(t_ast_node *ast, char **envp);
+int			exec_subshell(t_ast_node *ast, char **envp);
 
 // ----- Execute Path Functions -----
 void		execute(char **cmd_array, char **envp);
@@ -128,6 +121,16 @@ char		*construct_full_path(char *envp[], char *command);
 char		**get_path(char *envp[]);
 char		*search_path(char **path_dir, char *command);
 void		report_error(char *msg, char *param, char **free_me, int exit_code);
+
+// ----- Wait Child Functions -----
+int			wait_for_children(pid_t last_pid);
+void		error_exit(char *error_msg);
+
+// ----- Redirection Functions -----
+void		redirect_input(t_command *cmd);
+void		redirect_output(t_command *cmd);
+void		execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
+void		execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
 
 // ----- Parse Functions -----
 t_ast_node	*parse(t_token **tokens);
@@ -159,7 +162,6 @@ void		free_ast(t_ast_node **ast_ptr);
 void		add_to_history(char *command, t_history **history_list);
 void		display_history(t_history *history_list);
 void		free_history(t_history **history_list);
-
 
 // ----- Expansion Functions -----
 char		*expand_variable(char *str, char **envp);
