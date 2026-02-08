@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:02:43 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 16:48:09 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/06 21:52:01 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ t_ast_node	*parse(t_token **tokens)
 	left_node = parse_pipeline(tokens);
 	if (!left_node)
 		return (NULL);
-
 	while (*tokens && ((*tokens)->type == TOKEN_AND
 			|| (*tokens)->type == TOKEN_OR))
 	{
@@ -98,4 +97,3 @@ t_ast_node_type	set_operator_type(t_token **tokens)
 	free(operation_token);
 	return (operation_type);
 }
-

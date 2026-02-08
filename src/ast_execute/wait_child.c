@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/27 12:08:59 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 13:51:00 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,27 @@ int	wait_for_children(pid_t last_pid)
 	return (last_child_status);
 }
 
+/*
+waitpid(-1, &status, 0)
+-1 : tells the shell to pause and wait for ANY child process to terminate.
+		It returns the PID of the child that just finished.
+status: A pointer to an integer where the child's status information is stored.
+		Passing NULL discards this information.
+0 : Option
+
+`waitpid` returns -1 when there are no more child processes to wait for.
+
+WIFEXITED checks if the child terminated normally (e.g., with exit() return).
+
+WEXITSTATUS extracts the actual exit code (e.g., 0, 1, 127)
+
+WIFSIGNALED checks if the child was terminated by a signal (e.g., segmentation fault or Ctrl+C)
+
+WTERMSIG gets the signal number (start from 128 onwards)
+*/
+
 void	error_exit(char *error_msg)
 {
 	perror(error_msg);
-	exit (1);
+	exit (SHELL_FAILURE);
 }

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/31 11:40:30 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 17:12:04 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,16 @@ void	execute(char **cmd_array, char **envp)
 	path = cmd_array[0];
 	if (ft_strchr(path, '/') != NULL)
 	{
-		if (access(path, F_OK) != 0)
+		if (access(path, F_OK) != ACCESS_PERMITTED)
 			report_error("no such file or directory", NULL, cmd_array, 127);
-		if (access(path, X_OK) != 0)
+		if (access(path, X_OK) != ACCESS_PERMITTED)
 			report_error("permission denied", NULL, cmd_array, 126);
 	}
 	else
 		path = construct_full_path(envp, path);
 	if (!path)
 		report_error("command not found", cmd_array[0], cmd_array, 127);
-	if (execve(path, cmd_array, envp) == -1)
+	if (execve(path, cmd_array, envp) == ERROR)
 	{
 		perror(path);
 		free_array_str(cmd_array);
@@ -41,7 +41,7 @@ void	execute(char **cmd_array, char **envp)
 }
 
 /*
-envp stands for environment pointer and it provides the program with access to
+envp stands for environment pointer, and it provides the program with access to
 the system's environment variables, which tells the shell which directories to
 search for executable commands.
 e.g.
@@ -89,7 +89,7 @@ char	*search_path(char **path_dir, char *command)
 		temp_path = ft_strjoin(path_dir[i], "/");
 		full_path = ft_strjoin(temp_path, command);
 		free(temp_path);
-		if (access(full_path, X_OK) == 0)
+		if (access(full_path, X_OK) == ACCESS_PERMITTED)
 			return (full_path);
 		free(full_path);
 		i++;

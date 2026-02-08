@@ -100,10 +100,13 @@ RoadMap - 19.01.2026:
 RoadMap - 30.01.2026:
 1. add tokenize "(" ")" "&&" "||" logic
 
-RoadMap - 06.02.2025
+RoadMap - 06.02.2026
 1. apply ast to commands
 2. add macros for exit status
 
+RoadMap - 08.02.2026
+1. implement execution for ast command
+2. fix system hang issue
 
 
 
@@ -131,3 +134,6 @@ Pending to do:
 1. Makefile : change wildcard, add individual file (mandatory and bonus)
 2. Tokenize : handle unclosed " or ' issue
 3. Exit code : return actual exit code 
+4. ReadMe for Minishell
+5. $? havent do
+6. ctrl + C direct exit, should be prompt new line
