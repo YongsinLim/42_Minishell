@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/08 18:33:56 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:28:15 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@
 # define SYNTAX_ERROR 2
 # define CMD_NOT_FOUND 127
 # define ACCESS_PERMITTED 0
-# define ERROR (-1)
+# define ERROR -1
 
 typedef struct s_history
 {
@@ -70,7 +70,7 @@ typedef struct s_ast_node
 	t_ast_node_type		type;
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
-	t_command			*command; // Only not NULL when type == NODE_CMD
+	t_command			*command;
 }						t_ast_node;
 
 typedef enum e_token_type
@@ -95,92 +95,100 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
-// ----- Heredoc Functions -----
-void		handle_heredocs(t_ast_node *ast, char **envp);
-void		process_heredoc(t_command *cmd, char **envp);
-
 // ----- Debug Functions -----
-void		print_indent(int level);
-void		print_ast(t_ast_node *node, int level);
+void			print_indent(int level);
+void			print_ast(t_ast_node *node, int level);
 
 
 
 
 
 
+
+
+
+
+// ----- Heredoc Functions -----
+void			heredocs(t_ast_node *ast, char **envp);
+void			process_heredoc(t_command *cmd, char **envp);
+char			*verify_expand_heredoc(t_command *cmd, char **envp, char *line,
+					char *limiter);
 
 // ----- Execute Functions -----
-int			execute_ast(t_ast_node *ast, char **envp);
-int			execute_simple_command(t_ast_node *ast, char **envp);
-int			exec_pipe(t_ast_node *ast, char **envp);
-int			exec_subshell(t_ast_node *ast, char **envp);
+int				execute_ast(t_ast_node *ast, char **envp);
+int				execute_simple_command(t_ast_node *ast, char **envp);
+int				exec_pipe(t_ast_node *ast, char **envp);
+int				exec_subshell(t_ast_node *ast, char **envp);
 
 // ----- Execute Path Functions -----
-void		execute(char **cmd_array, char **envp);
-char		*construct_full_path(char *envp[], char *command);
-char		**get_path(char *envp[]);
-char		*search_path(char **path_dir, char *command);
-void		report_error(char *msg, char *param, char **free_me, int exit_code);
+void			execute(char **cmd_array, char **envp);
+char			*construct_full_path(char *envp[], char *command);
+char			**get_path(char *envp[]);
+char			*search_path(char **path_dir, char *command);
+void			report_error(char *msg, char *param, char **free_me,
+					int exit_code);
 
 // ----- Wait Child Functions -----
-int			wait_for_children(pid_t last_pid);
-void		error_exit(char *error_msg);
+int				wait_for_children(pid_t last_pid);
+void			error_exit(char *error_msg);
 
 // ----- Redirection Functions -----
-void		redirect_input(t_command *cmd);
-void		redirect_output(t_command *cmd);
-void		execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
-void		execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
+void			redirect_input(t_command *cmd);
+void			redirect_output(t_command *cmd);
+void			execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
+void			execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
 
 // ----- Parse Functions -----
-t_ast_node	*parse(t_token **tokens);
-t_ast_node	*parse_pipeline(t_token **tokens);
-t_ast_node	*create_new_ast_node(t_ast_node_type type);
+t_ast_node		*parse(t_token **tokens);
+t_ast_node		*parse_pipeline(t_token **tokens);
+t_ast_node		*create_new_ast_node(t_ast_node_type type);
 t_ast_node_type	set_operator_type(t_token **tokens);
 
-t_ast_node	*parse_command_or_subshell(t_token **tokens);
-t_ast_node	*parse_subshell(t_token **tokens);
-t_ast_node	*parse_simple_command(t_token **tokens);
+t_ast_node		*parse_command_or_subshell(t_token **tokens);
+t_ast_node		*parse_subshell(t_token **tokens);
+t_ast_node		*parse_simple_command(t_token **tokens);
 
-t_command	*parse_one_command(t_token **tokens_ptr);
-int			tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list);
-int			parse_redirection(t_token **tokens, t_command *cmd);
-t_token		*token_redirection(t_token *token, t_command *command);
-char		**to_str_array(t_list *argv_list);
+t_command		*parse_one_command(t_token **tokens_ptr);
+int				tokens_to_cmd(t_token **token_ptr, t_command *cmd,
+					t_list **argv_list);
+int				parse_redirection(t_token **tokens, t_command *cmd);
+t_token			*token_redirection(t_token *token, t_command *command);
+char			**to_str_array(t_list *argv_list);
 
 // ----- Parse_Helper Functions -----
-t_command	*init_cmd(void);
-void		*parse_error_cleanup(t_list **argv_list, t_command *cmd, char *msg);
+t_command		*init_cmd(void);
+void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
+					char *msg);
 
 // ----- Free Functions -----
-void		free_tokens(t_token **tokens);
-void		free_array_str(char **array);
-void		free_command(t_command *cmd);
-void		free_ast(t_ast_node **ast_ptr);
+void			free_tokens(t_token **tokens);
+void			free_array_str(char **array);
+void			free_command(t_command *cmd);
+void			free_ast(t_ast_node **ast_ptr);
 
 // ----- History Functions -----
-void		add_to_history(char *command, t_history **history_list);
-void		display_history(t_history *history_list);
-void		free_history(t_history **history_list);
+void			add_to_history(char *command, t_history **history_list);
+void			display_history(t_history *history_list);
+void			free_history(t_history **history_list);
 
 // ----- Expansion Functions -----
-char		*expand_variable(char *str, char **envp);
-char		*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
-				char **envp);
-char		*append_char(char *s1, char c);
-int			get_var_name_len(char *str, char **var_name_ptr);
-char		*get_var_value(char *var_name, char **envp);
+char			*expand_variable(char *str, char **envp);
+char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
+					char **envp);
+char			*append_char(char *s1, char c);
+int				get_var_name_len(char *str, char **var_name_ptr);
+char			*get_var_value(char *var_name, char **envp);
 
 // ----- Token Functions -----
-void		skip_spaces(char *line, int *i);
-void		add_redirection_token(char *line, int *i, t_token **tokens);
-t_token		*tokenize(char *line, char **envp);
-t_token		*new_token(char *value, t_token_type type);
-t_token		*make_token(char *value, int *i);
-void		add_token(t_token **head, t_token *new_token);
-int			handle_quoted_string(char *line, int *i, t_token **tokens,
-				char **envp);
-int			is_separator(char c);
-void		handle_word(char *line, int *i, t_token **tokens);
+void			skip_spaces(char *line, int *i);
+void			add_redirection_token(char *line, int *i, t_token **tokens);
+t_token			*tokenize(char *line, char **envp);
+t_token			*new_token(char *value, t_token_type type);
+t_token			*make_token(char *value, int *i);
+void			add_token(t_token **head, t_token *new_token);
+int				handle_quoted_string(char *line, int *i, t_token **tokens,
+					char **envp);
+int				is_separator(char c);
+void			handle_word(char *line, int *i, t_token **tokens);
 
 #endif

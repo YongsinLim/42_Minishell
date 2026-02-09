@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/08 13:51:00 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:23:55 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ WIFEXITED checks if the child terminated normally (e.g., with exit() return).
 
 WEXITSTATUS extracts the actual exit code (e.g., 0, 1, 127)
 
-WIFSIGNALED checks if the child was terminated by a signal (e.g., segmentation fault or Ctrl+C)
+WIFSIGNALED checks if the child was terminated by a signal
+	(e.g., segmentation fault or Ctrl+C)
 
 WTERMSIG gets the signal number (start from 128 onwards)
 */

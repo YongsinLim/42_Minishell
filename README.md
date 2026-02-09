@@ -90,6 +90,10 @@ RoadMap - 02.01.2026:
 3. Fix Norm
 4. main.c : still havent fix function too long issue
 
+RoadMap - 18.1.26
+1. Changed pipeline to ats
+2. "Builtin" commands working, but no native to program, using the local shell's commands instead
+
 RoadMap - 19.01.2026:
 1. implement ’ (single quote) and " (double quote)
 2. implement environment variables
@@ -108,12 +112,15 @@ RoadMap - 08.02.2026
 1. implement execution for ast command
 2. fix system hang issue
 
+RoadMap - 09.02.2026
+1. include heredoc handling
+2. fix norm
 
 
 
-RoadMap - 18.1.26
-1. Changed pipeline to ats
-2. "Builtin" commands working, but no native to program, using the local shell's commands instead
+
+
+
 
 
 	Issue Lists (discovered and unfixed)
@@ -131,7 +138,7 @@ RoadMap - 18.1.26
 
 
 Pending to do:
-1. Makefile : change wildcard, add individual file (mandatory and bonus)
+1. Makefile : change wildcard, add individual file (mandatory)
 2. Tokenize : handle unclosed " or ' issue
 3. Exit code : return actual exit code 
 4. ReadMe for Minishell

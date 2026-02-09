@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 12:47:48 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:11:34 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,20 +108,21 @@ t_token	*token_redirection(t_token *token, t_command *command)
 		ft_putstr_fd("minishell : invalid file name", 2);
 		return (NULL);
 	}
-	if (type == TOKEN_REDIRECT_OUT)
+	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND)
 	{
 		command->output_file = ft_strdup(token->value);
-		command->is_append = 0;
-	}
-	else if (type == TOKEN_APPEND)
-	{
-		command->output_file = ft_strdup(token->value);
-		command->is_append = 1;
+		command->is_append = type == TOKEN_APPEND;
 	}
 	else if (type == TOKEN_REDIRECT_IN)
 		command->input_file = ft_strdup(token->value);
 	else if (type == TOKEN_HEREDOC)
+	{
 		command->heredoc_delimiter = ft_strdup(token->value);
+		if (token->type == TOKEN_QUOTED_STRING)
+			command->heredoc_is_quoted = 1;
+		else
+			command->heredoc_is_quoted = 0;
+	}
 	return (token);
 }
 

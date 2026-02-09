@@ -6,17 +6,16 @@
 #    By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/14 16:21:19 by yolim             #+#    #+#              #
-#    Updated: 2026/01/27 16:29:32 by yolim            ###   ########.fr        #
+#    Updated: 2026/01/31 11:30:04 by yolim            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # ----- Executable name ----- 
 NAME = minishell
-BONUS_NAME = minishell_bonus
 
 # ----- Compiler and flags ----- 
 CC = cc
-CCFLAGS = -Wall -Wextra -Werror 
+CCFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -lreadline -lhistory -L/opt/homebrew/opt/readline/lib
 CPPFLAGS = -I/opt/homebrew/opt/readline/include
 RM = rm -f
@@ -29,10 +28,6 @@ HEADER_LIB = $(HEADER_DIR)/minishell.h
 SRC = $(wildcard src/*.c src/**/*.c)
 ## change to wildcard to real src file name!!!!!src/main.c src/history/history.c
 OBJS := $(SRC:%.c=%.o)
-
-BONUS_SRC = 
-BONUS_OBJS := $(BONUS_SRC:%.c=%.o)
-## if got do bonus
 
 # ----- Libft ----- 
 LIBFT_DIR = ./Libft
@@ -48,10 +43,6 @@ $(NAME): $(OBJS) $(LIBFT_LIB)
 	$(CC) $(CCFLAGS) $(OBJS) $(LIBFT_FLAGS) $(LDFLAGS) -o $(NAME)
 	@echo "Done. Executable is '$(NAME)'"
 
-bonus: $(BONUS_OBJS) $(LIBFT_LIB)
-	$(CC) $(CCFLAGS) $(BONUS_OBJS) $(LIBFT_FLAGS) $(LDFLAGS) -o $(BONUS_NAME)
-	@echo "Done. Bonus executable is '$(BONUS_NAME)'"
-
 # Rule to build libft library
 $(LIBFT_LIB):
 	@make -s -C $(LIBFT_DIR)
@@ -65,18 +56,17 @@ $(LIBFT_LIB):
 
 # ----- Clean Rules ----- 
 clean:
-	@$(RM) $(OBJS) $(BONUS_OBJS)
+	@$(RM) $(OBJS)
 	@echo "Object files cleaned."
 	@make -sC $(LIBFT_DIR) clean
 	@echo "Object files in Libft cleaned."
 
 fclean: clean
 	@$(RM) $(NAME)
-	@$(RM) $(BONUS_NAME)
 	@make -sC $(LIBFT_DIR) fclean
 	@echo "Full clean complete."
 
 # ----- Rebuild Rules ----- 
 re: fclean all
 
-.PHONY: all clean fclean re bonus
+.PHONY: all clean fclean re
