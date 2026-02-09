@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 12:43:13 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 12:59:21 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/08 18:27:04 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ t_command	*init_cmd(void)
 	command->output_file = NULL;
 	command->is_append = 0;
 	command->heredoc_delimiter = NULL;
+	command->heredoc_is_quoted = 0;
 	command->heredoc_fd = -1;
 	return (command);
 }

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 16:39:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 16:46:01 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 17:22:17 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ t_ast_node	*parse_subshell(t_token **tokens)
 	t_ast_node	*inner_ast;
 	t_token		*current_token;
 
-	current_token = *tokens; 	// Consume '('
+	current_token = *tokens;
 	*tokens = (*tokens)->next;
 	free(current_token->value);
 	free(current_token);
@@ -41,7 +41,7 @@ t_ast_node	*parse_subshell(t_token **tokens)
 		ft_putstr_fd("minishell : syntax error unclosed parenthesis\n", 2);
 		return (free_ast(&inner_ast), NULL);
 	}
-	*tokens = (*tokens)->next;		// Consume')'
+	*tokens = (*tokens)->next;
 	free(current_token->value);
 	free(current_token);
 	node = create_new_ast_node(NODE_SUBSHELL);

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 16:37:47 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 11:55:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,18 +47,24 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 
+
+
+
 		tokens = tokenize(input, envp);
 		if (!tokens)
 			error_exit("minishell : Unclosed quote found\n");
-
 		ast = parse(&tokens);
-					print_ast(ast, 0);
-
 		if (ast != NULL)
 		{
-			handle_heredocs_ast(ast);
+			heredocs(ast, envp);
 			status = execute_ast(ast, envp);
 		}
+
+
+				print_ast(ast, 0);
+
+
+
 		free(input);
 		free_tokens(&tokens);
 		free_ast(&ast);
@@ -71,6 +77,5 @@ int	main(int argc, char **argv, char **envp)
 add_history :
 Purpose : adds the user's input to GNU Readline's internal history list.
 Functionality : allows user to press UP and DOWN arrow keys to cycle through
-previous commands. Without this, your shell would lose its interactive 
-command recall feature.
+previous commands.
 */

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/08 14:36:30 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/09 13:19:37 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,12 @@ int	execute_simple_command(t_ast_node *ast, char **envp)
 		execute(ast->command->argv, envp);
 		exit(CMD_NOT_FOUND);
 	}
-	status = wait_for_children(pid); // parent process
+	if (ast->command->heredoc_fd != -1)
+	{
+		close(ast->command->heredoc_fd);
+		ast->command->heredoc_fd = -1;
+	}
+	status = wait_for_children(pid);
 	return (status);
 }
 
@@ -99,6 +104,11 @@ int	exec_subshell(t_ast_node *ast, char **envp)
 	{
 		status = execute_ast(ast->left, envp);
 		exit (status);
+	}
+	if (ast->command && ast->command->heredoc_fd != -1)
+	{
+		close(ast->command->heredoc_fd);
+		ast->command->heredoc_fd = -1;
 	}
 	status = wait_for_children(pid);
 	return (status);
