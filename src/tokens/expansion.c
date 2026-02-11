@@ -3,26 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/29 17:15:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:20:04 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*expand_variable(char *str, char **envp)
+char	*expand_variable(char *str, t_env *env)
 {
 	char	*final_str;
 	int		i;
+	int		in_sq;
+	int		in_dq;
 
 	final_str = ft_strdup("");
 	i = 0;
+	in_sq = 0;
+	in_dq = 0;
 	while (str[i])
 	{
-		if (str[i] == '$')
-			final_str = handle_dollar_sign(str, &i, final_str, envp);
+		// 1. Track Quotes
+		if (str[i] == '\'' && !in_dq)
+			in_sq = !in_sq;
+		else if (str[i] == '\"' && !in_sq)
+			in_dq = !in_dq;
+		if (str[i] == '$' && !in_sq)
+			final_str = handle_dollar_sign(str, &i, final_str, env);
 		else
 		{
 			final_str = append_char(final_str, str[i]);
@@ -92,31 +101,17 @@ int	get_var_name_len(char *str, char **var_name_ptr)
 	return (i);
 }
 
-char	*get_var_value(char *var_name, char **envp)
+char	*get_var_value(char *var_name, t_env *env) // <--- Takes t_env* now
 {
-	int		i;
-	int		name_len;
-	char	*entry;
-	int		value_start_index;
-	int		value_len;
+	char	*value;
 
 	if (!var_name)
 		return (ft_strdup(""));
+	// Handle Exit Status
 	if (ft_strncmp(var_name, "?", 2) == 0)
-		return (ft_strdup("0")); // Replace with actual exit status later
-	name_len = ft_strlen(var_name);
-	i = 0;
-	while (envp && envp[i])
-	{
-		entry = envp[i];
-		if (ft_strncmp(entry, var_name, name_len) == 0
-			&& entry[name_len] == '=')
-		{
-			value_start_index = name_len + 1;
-			value_len = ft_strlen(entry) - value_start_index;
-			return (ft_substr(entry, value_start_index, value_len));
-		}
-		i++;
-	}
+		return (ft_itoa(exit_status)); // You need access to the global status
+	value = get_env_val(env, var_name);
+	if (value)
+		return (ft_strdup(value));
 	return (ft_strdup(""));
 }

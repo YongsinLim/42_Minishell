@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/09 17:28:15 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:28:56 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,21 +95,19 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
+typedef struct s_env
+{
+    char            *key;   // e.g., "USER"
+    char            *value; // e.g., "me"
+    struct s_env    *next;
+}   t_env;
+
 // ----- Debug Functions -----
 void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
-
-
-
-
-
-
-
-
-
 // ----- Heredoc Functions -----
-void			heredocs(t_ast_node *ast, char **envp);
+void			heredocs(t_ast_node *ast, t_env *env);
 void			process_heredoc(t_command *cmd, char **envp);
 char			*verify_expand_heredoc(t_command *cmd, char **envp, char *line,
 					char *limiter);
@@ -121,7 +119,7 @@ int				exec_pipe(t_ast_node *ast, char **envp);
 int				exec_subshell(t_ast_node *ast, char **envp);
 
 // ----- Execute Path Functions -----
-void			execute(char **cmd_array, char **envp);
+void			execute(char **cmd_array, t_env *env);
 char			*construct_full_path(char *envp[], char *command);
 char			**get_path(char *envp[]);
 char			*search_path(char **path_dir, char *command);
@@ -182,7 +180,7 @@ char			*get_var_value(char *var_name, char **envp);
 // ----- Token Functions -----
 void			skip_spaces(char *line, int *i);
 void			add_redirection_token(char *line, int *i, t_token **tokens);
-t_token			*tokenize(char *line, char **envp);
+t_token			*tokenize(char *line, t_env *env);
 t_token			*new_token(char *value, t_token_type type);
 t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
@@ -190,5 +188,13 @@ int				handle_quoted_string(char *line, int *i, t_token **tokens,
 					char **envp);
 int				is_separator(char c);
 void			handle_word(char *line, int *i, t_token **tokens);
+
+
+// -------ENV FUNCTIONS -------------//
+t_env	*init_env(char **envp);
+char	*get_env_val(t_env *env, char *key);
+void	update_env(t_env **env, char *key, char *value);
+void	free_env_list(t_env *env);
+char	**env_list_to_array(t_env *env);
 
 #endif

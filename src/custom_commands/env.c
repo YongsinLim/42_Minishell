@@ -1,38 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/11 17:40:55 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/11 17:40:55 by jenlee           ###   ########.fr       */
+/*   Created: 2026/02/11 18:06:59 by jenlee            #+#    #+#             */
+/*   Updated: 2026/02/11 18:06:59 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	ft_echo(char **argv)
+int ft_env(t_env *env)
 {
-	int	i;
-	int	newline;
-
-	i = 1;
-	newline = 1;
-	//check for n
-	while (argv[i] && ft_strncmp(argv[i], "-n", 3) == 0)
-	{
-		newline = 0;
-		i++;
-	}
-	while (argv[i])
-	{
-		ft_putstr_fd(argv[i], 1);
-		if (argv[i + 1])
-			ft_putstr_fd(" ", 1);
-		i++;
-	}
-	if (newline)
-		ft_putstr_fd("\n", 1);
-	return (0);
+    while (env)
+    {
+        // Only print if value exists (export VAR vs export VAR=value)
+        if (env->value) 
+        {
+            ft_putstr_fd(env->key, 1);
+            ft_putstr_fd("=", 1);
+            ft_putendl_fd(env->value, 1);
+        }
+        env = env->next;
+    }
+    return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 11:55:54 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/11 18:02:45 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int	main(int argc, char **argv, char **envp)
 
 {
+	t_env		*env_list;
 	char		*input;
 	t_history	*history_list;
 	t_token		*tokens;
@@ -26,6 +27,7 @@ int	main(int argc, char **argv, char **envp)
 
 	history_list = NULL;
 	status = 0;
+	env_list = init_env(envp);
 	while (1)
 	{
 		input = readline("Minishell > ");
@@ -47,28 +49,21 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 		}
 
-
-
-
-		tokens = tokenize(input, envp);
+		tokens = tokenize(input, env_list);
 		if (!tokens)
 			error_exit("minishell : Unclosed quote found\n");
 		ast = parse(&tokens);
 		if (ast != NULL)
 		{
-			heredocs(ast, envp);
-			status = execute_ast(ast, envp);
+			heredocs(ast, env_list);
+			status = execute_ast(ast, &env_list);
 		}
-
-
-				print_ast(ast, 0);
-
-
-
+		print_ast(ast, 0);
 		free(input);
 		free_tokens(&tokens);
 		free_ast(&ast);
 	}
+	free_env_list(env_list);
 	free_history(&history_list);
 	return (status);
 }
