@@ -6,13 +6,13 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/29 17:15:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/12 14:01:57 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*expand_variable(char *str, char **envp)
+char	*expand_variable(char *str, t_minishell *minishell)
 {
 	char	*final_str;
 	int		i;
@@ -22,7 +22,7 @@ char	*expand_variable(char *str, char **envp)
 	while (str[i])
 	{
 		if (str[i] == '$')
-			final_str = handle_dollar_sign(str, &i, final_str, envp);
+			final_str = handle_dollar_sign(str, &i, final_str, minishell);
 		else
 		{
 			final_str = append_char(final_str, str[i]);
@@ -32,7 +32,8 @@ char	*expand_variable(char *str, char **envp)
 	return (final_str);
 }
 
-char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str, char **envp)
+char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
+	t_minishell *minishell)
 {
 	char	*var_name;
 	char	*var_value;
@@ -41,9 +42,9 @@ char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str, char **envp)
 
 	var_name = NULL;
 	var_name_len = get_var_name_len(&str[*i_ptr + 1], &var_name);
-	if (var_name_len > 0) // Valid Variable is Found
+	if (var_name_len > 0)
 	{
-		var_value = get_var_value(var_name, envp);
+		var_value = get_var_value(var_name, minishell);
 		old_final_str = final_str;
 		final_str = ft_strjoin(final_str, var_value);
 		free(old_final_str);
@@ -92,7 +93,7 @@ int	get_var_name_len(char *str, char **var_name_ptr)
 	return (i);
 }
 
-char	*get_var_value(char *var_name, char **envp)
+char	*get_var_value(char *var_name, t_minishell *minishell)
 {
 	int		i;
 	int		name_len;
@@ -103,12 +104,12 @@ char	*get_var_value(char *var_name, char **envp)
 	if (!var_name)
 		return (ft_strdup(""));
 	if (ft_strncmp(var_name, "?", 2) == 0)
-		return (ft_strdup("0")); // Replace with actual exit status later
+		return (ft_itoa(minishell->last_exit_status));
 	name_len = ft_strlen(var_name);
 	i = 0;
-	while (envp && envp[i])
+	while (minishell->envp && minishell->envp[i])
 	{
-		entry = envp[i];
+		entry = minishell->envp[i];
 		if (ft_strncmp(entry, var_name, name_len) == 0
 			&& entry[name_len] == '=')
 		{

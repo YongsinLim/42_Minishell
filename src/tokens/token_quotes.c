@@ -6,13 +6,14 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 10:45:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/31 10:51:15 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/12 14:02:53 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	handle_quoted_string(char *line, int *i, t_token **tokens, char **envp)
+int	handle_quoted_string(char *line, int *i, t_token **tokens,
+		t_minishell *minishell)
 {
 	int		start_idx;
 	char	quote_char;
@@ -32,7 +33,7 @@ int	handle_quoted_string(char *line, int *i, t_token **tokens, char **envp)
 	quoted_str = ft_substr(line, start_idx, *i - start_idx);
 	if (quote_char == '"')
 	{
-		expanded_str = expand_variable(quoted_str, envp);
+		expanded_str = expand_variable(quoted_str, minishell);
 		add_token(tokens, new_token(expanded_str, TOKEN_QUOTED_STRING));
 		free(expanded_str);
 	}

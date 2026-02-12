@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 17:23:55 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/12 13:48:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 int	wait_for_children(pid_t last_pid)
 {
 	int		status;
-	int		last_child_status;
+	int		last_child_exit_status;
 	pid_t	terminated_pid;
 
-	last_child_status = 0;
+	last_child_exit_status = 0;
 	while (1)
 	{
 		terminated_pid = waitpid(-1, &status, 0);
@@ -27,12 +27,12 @@ int	wait_for_children(pid_t last_pid)
 		if (terminated_pid == last_pid)
 		{
 			if (WIFEXITED(status))
-				last_child_status = WEXITSTATUS(status);
+				last_child_exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
-				last_child_status = 128 + WTERMSIG(status);
+				last_child_exit_status = 128 + WTERMSIG(status);
 		}
 	}
-	return (last_child_status);
+	return (last_child_exit_status);
 }
 
 /*
