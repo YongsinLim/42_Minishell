@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/09 17:28:15 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/12 13:32:28 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,13 @@ typedef struct s_history
 	char				*command;
 	struct s_history	*next;
 }				t_history;
+
+typedef struct s_minishell
+{
+	t_history	*history_list;
+	char		**envp;
+	int			last_exit_status;
+}				t_minishell;
 
 typedef struct s_command
 {
@@ -102,23 +109,21 @@ void			print_ast(t_ast_node *node, int level);
 
 
 
-
-
-
-
+// ----- Main Functions -----
+void			execution(char *input, t_token *tokens, t_minishell *minishell);
 
 
 // ----- Heredoc Functions -----
-void			heredocs(t_ast_node *ast, char **envp);
-void			process_heredoc(t_command *cmd, char **envp);
-char			*verify_expand_heredoc(t_command *cmd, char **envp, char *line,
+void			heredocs(t_ast_node *ast, t_minishell *minishell);
+void			process_heredoc(t_command *cmd, t_minishell *minishell);
+char			*verify_expand_heredoc(t_command *cmd, t_minishell *minishell, char *line,
 					char *limiter);
 
 // ----- Execute Functions -----
-int				execute_ast(t_ast_node *ast, char **envp);
-int				execute_simple_command(t_ast_node *ast, char **envp);
-int				exec_pipe(t_ast_node *ast, char **envp);
-int				exec_subshell(t_ast_node *ast, char **envp);
+int				execute_ast(t_ast_node *ast, t_minishell *minishell);
+int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
+int				exec_pipe(t_ast_node *ast, t_minishell *minishell);
+int				exec_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Execute Path Functions -----
 void			execute(char **cmd_array, char **envp);
@@ -135,8 +140,8 @@ void			error_exit(char *error_msg);
 // ----- Redirection Functions -----
 void			redirect_input(t_command *cmd);
 void			redirect_output(t_command *cmd);
-void			execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd);
-void			execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd);
+void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd);
+void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell, int *pipe_fd);
 
 // ----- Parse Functions -----
 t_ast_node		*parse(t_token **tokens);
@@ -172,23 +177,23 @@ void			display_history(t_history *history_list);
 void			free_history(t_history **history_list);
 
 // ----- Expansion Functions -----
-char			*expand_variable(char *str, char **envp);
+char			*expand_variable(char *str, t_minishell *minishell);
 char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
-					char **envp);
+					t_minishell *minishell);
 char			*append_char(char *s1, char c);
 int				get_var_name_len(char *str, char **var_name_ptr);
-char			*get_var_value(char *var_name, char **envp);
+char			*get_var_value(char *var_name, t_minishell *minishell);
 
 // ----- Token Functions -----
 void			skip_spaces(char *line, int *i);
 void			add_redirection_token(char *line, int *i, t_token **tokens);
-t_token			*tokenize(char *line, char **envp);
+t_token			*tokenize(char *line, t_minishell *minishell);
 t_token			*new_token(char *value, t_token_type type);
 t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
 int				handle_quoted_string(char *line, int *i, t_token **tokens,
-					char **envp);
+					t_minishell *minishell);
 int				is_separator(char c);
-void			handle_word(char *line, int *i, t_token **tokens);
+void			handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell);
 
 #endif
