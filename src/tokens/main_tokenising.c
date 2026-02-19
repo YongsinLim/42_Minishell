@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_tokenising.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/06 12:24:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/19 23:37:03 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,31 +42,31 @@ void	add_redirection_token(char *line, int *i, t_token **tokens)
 	}
 }
 
-t_token	*tokenize(char *line, char **envp)
+t_token *tokenize(char *line, t_env *env)
 {
-	t_token	*tokens;
-	int		i;
+    t_token *tokens;
+    int     i;
 
-	tokens = NULL;
-	i = 0;
-	while (line[i])
-	{
-		skip_spaces(line, &i);
-		if (!line[i])
-			break ;
-		else if ((line[i] == '&' && line[i + 1] == '&') || line[i] == '|'
-			|| line[i] == '(' || line[i] == ')')
-			add_token(&tokens, make_token(&line[i], &i));
-		else if (line[i] == '<' || line[i] == '>')
-			add_redirection_token(line, &i, &tokens);
-		else if (line[i] == '"' || line[i] == '\'')
-		{
-			if (handle_quoted_string(line, &i, &tokens, envp) == 1)
-				return (free_tokens(&tokens), NULL); // TODO: handle unclosed quotes
-		}
-		else
-			handle_word(line, &i, &tokens);
+    tokens = NULL;
+    i = 0;
+    while (line[i])
+    {
+        skip_spaces(line, &i);
+        if (!line[i])
+            break ;
+        else if ((line[i] == '&' && line[i + 1] == '&') || line[i] == '|'
+            || line[i] == '(' || line[i] == ')')
+            add_token(&tokens, make_token(&line[i], &i));
+        else if (line[i] == '<' || line[i] == '>')
+            add_redirection_token(line, &i, &tokens);
+        else if (line[i] == '"' || line[i] == '\'')
+        {
+            if (handle_quoted_string(line, &i, &tokens, env) == 1)
+                return (free_tokens(&tokens), NULL); // TODO: handle unclosed quotes
+        }
+        else
+            handle_word(line, &i, &tokens);
 		i++;
 	}
-	return (tokens);
+    return (tokens);
 }

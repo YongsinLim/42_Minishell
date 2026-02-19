@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/08 13:20:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/19 23:04:00 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,18 @@ void	redirect_output(t_command *cmd)
 	}
 }
 
-void	execute_pipe_left(t_ast_node *ast, char **envp, int *pipe_fd)
+void	execute_pipe_left(t_ast_node *ast, t_env **env_list, int *pipe_fd)
 {
 	close(pipe_fd[0]);
 	dup2(pipe_fd[1], STDOUT_FILENO);
 	close(pipe_fd[1]);
-	exit(execute_ast(ast->left, envp));
+	exit(execute_ast(ast->left, env_list));
 }
 
-void	execute_pipe_right(t_ast_node *ast, char **envp, int *pipe_fd)
+void	execute_pipe_right(t_ast_node *ast, t_env **env_list, int *pipe_fd)
 {
 	close(pipe_fd[1]);
 	dup2(pipe_fd[0], STDIN_FILENO);
 	close(pipe_fd[0]);
-	exit(execute_ast(ast->right, envp));
+	exit(execute_ast(ast->right, env_list));
 }

@@ -3,38 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 17:29:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/19 23:26:01 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	heredocs(t_ast_node *ast, char **envp)
+void	heredocs(t_ast_node *ast, t_env **env_lists)
 {
 	if (!ast)
 		return ;
 	if (ast->type == NODE_PIPE || ast->type == NODE_AND || ast->type == NODE_OR)
 	{
-		heredocs(ast->left, envp);
-		heredocs(ast->right, envp);
+		heredocs(ast->left, env_lists);
+		heredocs(ast->right, env_lists);
 	}
 	else if (ast->type == NODE_SUBSHELL)
 	{
-		heredocs(ast->left, envp);
+		heredocs(ast->left, env_lists);
 		if (ast->command && ast->command->heredoc_delimiter != NULL)
-			process_heredoc(ast->command, envp);
+			process_heredoc(ast->command, env_lists);
 	}
 	else if (ast->type == NODE_COMMAND)
 	{
 		if (ast->command && ast->command->heredoc_delimiter != NULL)
-			process_heredoc(ast->command, envp);
+			process_heredoc(ast->command, env_lists);
 	}
 }
 
-void	process_heredoc(t_command *cmd, char **envp)
+void	process_heredoc(t_command *cmd, t_env **env_lists)
 {
 	int		pipe_fd[2];
 	char	*input_line;
@@ -48,7 +48,7 @@ void	process_heredoc(t_command *cmd, char **envp)
 		input_line = readline("heredoc> ");
 		if (!input_line)
 			break ;
-		input_line = verify_expand_heredoc(cmd, envp, input_line, limiter);
+		input_line = verify_expand_heredoc(cmd, env_lists, input_line, limiter);
 		if (!input_line)
 			break ;
 		ft_putstr_fd(input_line, pipe_fd[1]);
@@ -59,7 +59,7 @@ void	process_heredoc(t_command *cmd, char **envp)
 	cmd->heredoc_fd = pipe_fd[0];
 }
 
-char	*verify_expand_heredoc(t_command *cmd, char **envp, char *line,
+char	*verify_expand_heredoc(t_command *cmd, t_env **env_lists, char *line,
 		char *limiter)
 {
 	char	*expanded_result;
@@ -71,11 +71,14 @@ char	*verify_expand_heredoc(t_command *cmd, char **envp, char *line,
 		return (NULL);
 	}
 	if (cmd->heredoc_is_quoted == 0)
-	{
-		expanded_result = expand_variable(line, envp);
-		free(line);
-		line = expanded_result;
-	}
+    {
+        expanded_result = expand_variable(line, *env_lists);
+        if (expanded_result != line)
+        {
+            free(line);
+            line = expanded_result;
+        }
+    }
 	if (!line)
 	{
 		perror("Heredoc expansion failed");

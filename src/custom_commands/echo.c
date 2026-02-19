@@ -15,14 +15,14 @@
 int	ft_echo(char **argv)
 {
 	int	i;
-	int	newline;
+	int	do_newline;
 
 	i = 1;
-	newline = 1;
+	do_newline = 1;
 	//check for n
 	while (argv[i] && ft_strncmp(argv[i], "-n", 3) == 0)
 	{
-		newline = 0;
+		do_newline = 0;
 		i++;
 	}
 	while (argv[i])
@@ -32,7 +32,7 @@ int	ft_echo(char **argv)
 			ft_putstr_fd(" ", 1);
 		i++;
 	}
-	if (newline)
+	if (do_newline)
 		ft_putstr_fd("\n", 1);
 	return (0);
 }

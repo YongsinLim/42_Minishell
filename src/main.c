@@ -6,11 +6,14 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/11 18:02:45 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/19 23:27:37 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+
+int g_exit_status = 0; // The one and only declaration
 
 int	main(int argc, char **argv, char **envp)
 
@@ -51,11 +54,15 @@ int	main(int argc, char **argv, char **envp)
 
 		tokens = tokenize(input, env_list);
 		if (!tokens)
-			error_exit("minishell : Unclosed quote found\n");
+		{
+			ft_putstr_fd("Minishell: Unclosed quote or syntax error\n", 2);
+			free(input);
+			continue;
+		}
 		ast = parse(&tokens);
 		if (ast != NULL)
 		{
-			heredocs(ast, env_list);
+			heredocs(ast, &env_list);
 			status = execute_ast(ast, &env_list);
 		}
 		print_ast(ast, 0);

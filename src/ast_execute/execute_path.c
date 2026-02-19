@@ -3,41 +3,57 @@
 /*                                                        :::      ::::::::   */
 /*   execute_path.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/08 17:12:04 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/19 22:59:38 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	execute(char **cmd_array, char **envp)
-{
-	char	*path;
+// In execute_path.c
 
-	if (!cmd_array || !cmd_array[0])
-		report_error("command not found", NULL, NULL, 127);
-	path = cmd_array[0];
-	if (ft_strchr(path, '/') != NULL)
-	{
-		if (access(path, F_OK) != ACCESS_PERMITTED)
-			report_error("no such file or directory", NULL, cmd_array, 127);
-		if (access(path, X_OK) != ACCESS_PERMITTED)
-			report_error("permission denied", NULL, cmd_array, 126);
-	}
-	else
-		path = construct_full_path(envp, path);
-	if (!path)
-		report_error("command not found", cmd_array[0], cmd_array, 127);
-	if (execve(path, cmd_array, envp) == ERROR)
-	{
-		perror(path);
-		free_array_str(cmd_array);
-		if (path != cmd_array[0])
-			free(path);
-		exit (126);
-	}
+void execute(char **cmd_array, t_env **env_list)
+{
+    char *path;
+    char **envp_array;
+
+    if (!cmd_array || !cmd_array[0])
+        report_error("command not found", NULL, NULL, 127);
+    envp_array = env_list_to_array(*env_list);
+    if (!envp_array)
+        error_exit("Malloc failed for envp_array");
+    path = cmd_array[0];
+    if (ft_strchr(path, '/') != NULL)
+    {
+        if (access(path, F_OK) != ACCESS_PERMITTED)
+        {
+            free_array_str(envp_array);
+            report_error("no such file or directory", NULL, cmd_array, 127);
+        }
+        if (access(path, X_OK) != ACCESS_PERMITTED)
+        {
+            free_array_str(envp_array);
+            report_error("permission denied", NULL, cmd_array, 126);
+        }
+    }
+    else
+        path = construct_full_path(envp_array, path); // Use the converted array
+    if (!path)
+    {
+        free_array_str(envp_array);
+        report_error("command not found", cmd_array[0], cmd_array, 127);
+    }
+    if (execve(path, cmd_array, envp_array) == ERROR)
+    {
+        perror(path);
+        free_array_str(cmd_array);
+        free_array_str(envp_array); // Make sure to free on failure!
+        if (path != cmd_array[0])
+            free(path);
+        exit(126);
+    }
 }
 
 /*
