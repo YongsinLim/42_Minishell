@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/19 23:31:32 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/19 23:54:58 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,10 +201,13 @@ char	*get_env_val(t_env *env, char *key);
 void	update_env(t_env **env, char *key, char *value);
 void	free_env_list(t_env *env);
 char	**env_list_to_array(t_env *env);
+void 	remove_env_node(t_env **env_head, char *key);
 
 // -----Builtins---------------//
 int			ft_echo(char **argv);
 int 		ft_env(t_env *env);
 int			ft_pwd(void);
+int 		ft_unset(char **argv, t_env **env_head);
+int			ft_export(char **argv, t_env **env_head);
 
 #endif
