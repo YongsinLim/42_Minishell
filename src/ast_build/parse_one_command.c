@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_one_command.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 17:11:34 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/22 18:08:41 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,20 +58,19 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 
 int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
 {
-	char	*value_dup;
+	char	*clean_value;
 
 	if ((*token_ptr)->type == TOKEN_REDIRECT_OUT
 		|| (*token_ptr)->type == TOKEN_REDIRECT_IN
 		|| (*token_ptr)->type == TOKEN_HEREDOC
 		|| (*token_ptr)->type == TOKEN_APPEND)
 		return (parse_redirection(token_ptr, cmd));
-	if ((*token_ptr)->type == TOKEN_WORD
-		|| (*token_ptr)->type == TOKEN_QUOTED_STRING)
+	if ((*token_ptr)->type == TOKEN_WORD)
 	{
-		value_dup = ft_strdup((*token_ptr)->value);
-		if (!value_dup)
+		clean_value = remove_quotes((*token_ptr)->value); 
+		if (!clean_value)
 			return (SHELL_FAILURE);
-		ft_lstadd_back(argv_list, ft_lstnew(value_dup));
+		ft_lstadd_back(argv_list, ft_lstnew(clean_value));
 		(*token_ptr) = (*token_ptr)->next;
 	}
 	return (SHELL_SUCCESS);
@@ -100,25 +99,24 @@ int	parse_redirection(t_token **tokens, t_command *cmd)
 t_token	*token_redirection(t_token *token, t_command *command)
 {
 	t_token_type	type;
+	char			*clean_filename;
 
 	type = token->type;
 	token = token->next;
 	if (token == NULL)
-	{
-		ft_putstr_fd("minishell : invalid file name", 2);
-		return (NULL);
-	}
+		return (ft_putstr_fd("minishell: invalid file", 1), NULL);
+	clean_filename = remove_quotes(token->value);
 	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND)
 	{
-		command->output_file = ft_strdup(token->value);
-		command->is_append = type == TOKEN_APPEND;
+		command->output_file = clean_filename;
+		command->is_append = (type == TOKEN_APPEND);
 	}
 	else if (type == TOKEN_REDIRECT_IN)
-		command->input_file = ft_strdup(token->value);
+		command->input_file = clean_filename;
 	else if (type == TOKEN_HEREDOC)
 	{
-		command->heredoc_delimiter = ft_strdup(token->value);
-		if (token->type == TOKEN_QUOTED_STRING)
+		command->heredoc_delimiter = clean_filename;
+		if (ft_strchr(token->value, '"') || ft_strchr(token->value, '\''))
 			command->heredoc_is_quoted = 1;
 		else
 			command->heredoc_is_quoted = 0;

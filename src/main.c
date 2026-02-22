@@ -6,14 +6,48 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/19 23:27:37 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/22 18:17:38 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
 
-int g_exit_status = 0; // The one and only declaration
+int g_exit_status = 0; // The only declaration
+
+static int	is_empty_line(char *line)
+{
+	int	i;
+
+	i = 0;
+	if (!line)
+		return (1);
+	while (line[i])
+	{
+		if (line[i] != ' ' && line[i] != '\t')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int	has_unclosed_quotes(char *line)
+{
+	int		i;
+	char	quote;
+
+	i = 0;
+	quote = 0;
+	while (line[i])
+	{
+		if (!quote && (line[i] == '\'' || line[i] == '"'))
+			quote = line[i];
+		else if (quote && line[i] == quote)
+			quote = 0;
+		i++;
+	}
+	return (quote != 0);
+}
 
 int	main(int argc, char **argv, char **envp)
 
@@ -34,15 +68,23 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		input = readline("Minishell > ");
-		if (input == NULL)
+		if (input == NULL) // Ctrl+D (EOF)
 		{
 			ft_putstr_fd("exit\n", 1);
 			break ;
 		}
-		if (input[0] != '\0')
+		if (is_empty_line(input))
 		{
-			add_history(input);
-			add_to_history(input, &history_list);
+			free(input);
+			continue ;
+		}
+		add_history(input);
+		add_to_history(input, &history_list);
+		if (has_unclosed_quotes(input))
+		{
+			ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
+			free(input);
+			continue ;
 		}
 		if (ft_strncmp(input, "history", 8) == 0)
 			display_history(history_list);
@@ -51,21 +93,14 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			break ;
 		}
-
-		tokens = tokenize(input, env_list);
-		if (!tokens)
-		{
-			ft_putstr_fd("Minishell: Unclosed quote or syntax error\n", 2);
-			free(input);
-			continue;
-		}
+		tokens = tokenize(input, env_list); 
 		ast = parse(&tokens);
 		if (ast != NULL)
 		{
-			heredocs(ast, &env_list);
+			heredocs(ast, &env_list); 
 			status = execute_ast(ast, &env_list);
 		}
-		print_ast(ast, 0);
+		
 		free(input);
 		free_tokens(&tokens);
 		free_ast(&ast);

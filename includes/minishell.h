@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/22 17:41:08 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/22 18:05:42 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,12 @@ t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
 int 			handle_quoted_string(char *line, int *i, t_token **tokens, 
 	t_env *env);
+
+
+char 			*remove_quotes(char *str);
+void 			handle_word_1(char *line, int *i, t_token **tokens);
+
+
 int				is_separator(char c);
 void			handle_word(char *line, int *i, t_token **tokens);
 

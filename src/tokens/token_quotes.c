@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 10:45:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/19 23:37:34 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/22 18:08:55 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,4 +39,35 @@ int handle_quoted_string(char *line, int *i, t_token **tokens, t_env *env)
 	else if (quote_char == '\'')
 		add_token(tokens, new_token(quoted_str, TOKEN_QUOTED_STRING));
 	return (free(quoted_str), 0);
+}
+
+char *remove_quotes(char *str)
+{
+    int     i;
+    int     j;
+    char    *new_str;
+    char    quote;
+
+    if (!str)
+        return (NULL);
+    new_str = ft_calloc(ft_strlen(str) + 1, sizeof(char));
+    if (!new_str)
+        return (NULL);
+    i = 0;
+    j = 0;
+    quote = 0;
+    while (str[i])
+    {
+        // If we hit a quote and we are NOT inside one, enter quote state
+        if (!quote && (str[i] == '\'' || str[i] == '\"'))
+            quote = str[i];
+        // If we hit a quote and it matches the current one, exit quote state
+        else if (quote && str[i] == quote)
+            quote = 0;
+        // Otherwise, copy the character
+        else
+            new_str[j++] = str[i];
+        i++;
+    }
+    return (new_str);
 }
