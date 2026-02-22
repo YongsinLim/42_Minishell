@@ -144,3 +144,6 @@ Pending to do:
 4. ReadMe for Minishell
 5. $? havent do
 6. ctrl + C direct exit, should be prompt new line
+
+Pending Issue List (as Of 22/2/26)
+1. echo with multiple flags, such as -nnnnnnn or -n -n -n -n or -n -a
