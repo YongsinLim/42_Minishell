@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/19 23:54:58 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/02/22 17:41:08 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,5 +209,6 @@ int 		ft_env(t_env *env);
 int			ft_pwd(void);
 int 		ft_unset(char **argv, t_env **env_head);
 int			ft_export(char **argv, t_env **env_head);
+int			ft_cd(char **argv, t_env **env);
 
 #endif

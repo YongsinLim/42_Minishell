@@ -43,7 +43,7 @@ int exec_builtin(char **argv, t_env **env_head)
     if (ft_strncmp(argv[0], "env", 4) == 0)
         return (ft_env(*env_head));
     if (ft_strncmp(argv[0], "cd", 3) == 0)
-        return (0); // Placeholder for ft_cd(argv, env_head)
+        return (ft_cd(argv, env_head));
     if (ft_strncmp(argv[0], "export", 7) == 0)
         return (ft_export(argv, env_head));
     if (ft_strncmp(argv[0], "unset", 6) == 0)
