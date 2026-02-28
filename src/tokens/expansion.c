@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/12 14:01:57 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/26 17:42:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,29 +95,18 @@ int	get_var_name_len(char *str, char **var_name_ptr)
 
 char	*get_var_value(char *var_name, t_minishell *minishell)
 {
-	int		i;
-	int		name_len;
-	char	*entry;
-	int		value_start_index;
-	int		value_len;
+	t_env	*current;
 
 	if (!var_name)
 		return (ft_strdup(""));
 	if (ft_strncmp(var_name, "?", 2) == 0)
 		return (ft_itoa(minishell->last_exit_status));
-	name_len = ft_strlen(var_name);
-	i = 0;
-	while (minishell->envp && minishell->envp[i])
+	current = minishell->env_list;
+	while (current)
 	{
-		entry = minishell->envp[i];
-		if (ft_strncmp(entry, var_name, name_len) == 0
-			&& entry[name_len] == '=')
-		{
-			value_start_index = name_len + 1;
-			value_len = ft_strlen(entry) - value_start_index;
-			return (ft_substr(entry, value_start_index, value_len));
-		}
-		i++;
+		if (ft_strncmp(current->key, var_name, ft_strlen(var_name) + 1) == 0)
+			return (ft_strdup(current->value));
+		current = current->next;
 	}
 	return (ft_strdup(""));
 }

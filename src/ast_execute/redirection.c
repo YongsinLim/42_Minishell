@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/12 14:03:24 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/26 20:15:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,23 @@ void	redirect_output(t_command *cmd)
 
 void	execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd)
 {
+	int	status;
+
 	close(pipe_fd[0]);
 	dup2(pipe_fd[1], STDOUT_FILENO);
 	close(pipe_fd[1]);
-	exit(execute_ast(ast->left, minishell));
+	status = execute_ast(ast->left, minishell);
+	cleanup_and_exit(minishell, status);
 }
 
 void	execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 	int *pipe_fd)
 {
+	int	status;
+
 	close(pipe_fd[1]);
 	dup2(pipe_fd[0], STDIN_FILENO);
 	close(pipe_fd[0]);
-	exit(execute_ast(ast->right, minishell));
+	status = execute_ast(ast->right, minishell);
+	cleanup_and_exit(minishell, status);
 }

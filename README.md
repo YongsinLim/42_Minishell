@@ -126,8 +126,10 @@ RoadMap - 12.02.2026
 2. implement $?
 3. fix real exit code return
 
-
-
+RoadMap - 28.02.2026
+1. Builtin (exit) - all cases testing on exit, exit 44, exit abc and exit 12 34 done
+2. Merge history, env, pwd function into Builtin function
+3. Builtin (Echo) - implement no -n, -n, -nnnn, -n -n -n -n cases
 
 
 
@@ -149,6 +151,11 @@ Pending to do:
 2. Tokenize : handle unclosed " or ' issue
 3. ReadMe for Minishell
 4. ctrl + C direct exit, should be prompt new line
+5. ctrl+C in terminal and child behave differently
+6. 
+
+Pending Issue List (as Of 22/2/26)
+1. echo with multiple flags, such as -nnnnnnn or -n -n -n -n or -n -a
 
 
 [Process completed]
