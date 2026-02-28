@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/12 13:32:28 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/28 18:44:13 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,10 @@
 # include <readline/history.h> // for readline
 # include <stdlib.h> // for malloc, free, exit, getenv
 # include <stdio.h> // for printf, perror
-# include <unistd.h> // for access, write, execve, open, close, fork
-# include <fcntl.h> // for O_RDONLY & O_WRONLY & O_TRUNC
+# include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe, getcwd
+# include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
+# include <limits.h> // for PATH_MAX
 
 
 
@@ -35,6 +36,8 @@
 # define SHELL_SUCCESS 0
 # define SHELL_FAILURE 1
 # define SYNTAX_ERROR 2
+# define TRUE 1
+# define FALSE 0
 # define CMD_NOT_FOUND 127
 # define ACCESS_PERMITTED 0
 # define ERROR -1
@@ -45,40 +48,12 @@ typedef struct s_history
 	struct s_history	*next;
 }				t_history;
 
-typedef struct s_minishell
+typedef struct s_env
 {
-	t_history	*history_list;
-	char		**envp;
-	int			last_exit_status;
-}				t_minishell;
-
-typedef struct s_command
-{
-	char				**argv;
-	char				*input_file;
-	char				*output_file;
-	int					is_append;
-	char				*heredoc_delimiter;
-	int					heredoc_is_quoted;
-	int					heredoc_fd;
-}			t_command;
-
-typedef enum e_ast_node_type
-{
-	NODE_COMMAND,
-	NODE_PIPE,
-	NODE_AND,
-	NODE_OR,
-	NODE_SUBSHELL
-}			t_ast_node_type;
-
-typedef struct s_ast_node
-{
-	t_ast_node_type		type;
-	struct s_ast_node	*left;
-	struct s_ast_node	*right;
-	t_command			*command;
-}						t_ast_node;
+	char            *key;   // e.g., "USER"
+	char            *value; // e.g., "me"
+	struct s_env    *next;
+}				t_env;
 
 typedef enum e_token_type
 {
@@ -102,16 +77,86 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
+typedef enum e_ast_node_type
+{
+	NODE_COMMAND,
+	NODE_PIPE,
+	NODE_AND,
+	NODE_OR,
+	NODE_SUBSHELL
+}			t_ast_node_type;
+
+typedef struct s_command
+{
+	char				**argv;
+	char				*input_file;
+	char				*output_file;
+	int					is_append;
+	char				*heredoc_delimiter;
+	int					heredoc_is_quoted;
+	int					heredoc_fd;
+}				t_command;
+
+typedef struct s_ast_node
+{
+	t_ast_node_type		type;
+	struct s_ast_node	*left;
+	struct s_ast_node	*right;
+	t_command			*command;
+}						t_ast_node;
+
+typedef struct s_minishell
+{
+	t_history	*history_list;
+	t_env		*env_list;
+	t_token		*tokens;
+	t_ast_node	*ast;
+	char		*input;
+	int			last_exit_status;
+}				t_minishell;
+
 // ----- Debug Functions -----
 void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
-
-
-
 // ----- Main Functions -----
-void			execution(char *input, t_token *tokens, t_minishell *minishell);
+void			execution(t_minishell *minishell);
+void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
+
+// ----- Env_Utils Functions -----
+t_env			*new_env_node(char *key, char *value);
+t_env			*init_env(char **envp);
+
+
+int				count_env_nodes(t_env *env_list);
+char			**env_list_to_array(t_env *env_list);
+
+
+
+
+
+
+
+// ----- Builtins Functions -----
+int				is_builtin(char *cmd);
+int				execute_builtin(char **argv, t_minishell *minishell);
+
+
+
+// ----- Builtin - Echo -----
+void			print_arguments(char **argv, int i, int n_flag);
+int				ft_echo(char **argv);
+
+// ----- Builtin - Pwd -----
+int				ft_pwd(void);
+
+// ----- Builtin - Env -----
+int				ft_env(t_minishell *minishell);
+
+// ----- Builtin - Exit -----
+int				ft_is_numeric(char *str);
+int				ft_exit(char **argv, t_minishell *minishell);
 
 // ----- Heredoc Functions -----
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
@@ -126,12 +171,11 @@ int				exec_pipe(t_ast_node *ast, t_minishell *minishell);
 int				exec_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Execute Path Functions -----
-void			execute(char **cmd_array, char **envp);
-char			*construct_full_path(char *envp[], char *command);
-char			**get_path(char *envp[]);
+void			execute(char **cmd_array, t_minishell *minishell);
+char			*construct_full_path(t_env *env_list, char *command);
+char			**get_path(t_env *env_list);
 char			*search_path(char **path_dir, char *command);
-void			report_error(char *msg, char *param, char **free_me,
-					int exit_code);
+void			report_error(char *msg, char *param);
 
 // ----- Wait Child Functions -----
 int				wait_for_children(pid_t last_pid);
@@ -170,10 +214,11 @@ void			free_tokens(t_token **tokens);
 void			free_array_str(char **array);
 void			free_command(t_command *cmd);
 void			free_ast(t_ast_node **ast_ptr);
+void			free_env_list(t_env *env);
 
 // ----- History Functions -----
 void			add_to_history(char *command, t_history **history_list);
-void			display_history(t_history *history_list);
+int				ft_history(char **argv, t_history *history_list);
 void			free_history(t_history **history_list);
 
 // ----- Expansion Functions -----

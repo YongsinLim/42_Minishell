@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/30 12:31:16 by yolim             #+#    #+#             */
-/*   Updated: 2026/01/20 16:39:53 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/26 19:22:35 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,4 +71,19 @@ void	free_ast(t_ast_node **ast_ptr)
 		free_command(ast->command);
 	free(ast);
 	*ast_ptr = NULL;
+}
+
+void	free_env_list(t_env *env)
+{
+	t_env	*temp;
+
+	while (env)
+	{
+		temp = env;
+		env = env->next;
+		free(temp->key);
+		if (temp->value)
+			free(temp->value);
+		free(temp);
+	}
 }
