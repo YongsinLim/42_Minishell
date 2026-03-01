@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/22 18:17:38 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/03/01 19:58:28 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 int g_exit_status = 0; // The only declaration
 
-static int	is_empty_line(char *line)
+/*static int	is_empty_line(char *line)
 {
 	int	i;
 
@@ -47,67 +47,77 @@ static int	has_unclosed_quotes(char *line)
 		i++;
 	}
 	return (quote != 0);
-}
+}*/
 
 int	main(int argc, char **argv, char **envp)
-
 {
-	t_env		*env_list;
-	char		*input;
-	t_history	*history_list;
-	t_token		*tokens;
-	t_ast_node	*ast;
-	int			status;
+	t_minishell	minishell;
 
 	(void)argc;
 	(void)argv;
+	minishell.history_list = NULL;
+	minishell.env_list = init_env(envp);
+	minishell.last_exit_status = 0;
+	minishell.input = NULL;
+	minishell.tokens = NULL;
 
-	history_list = NULL;
-	status = 0;
-	env_list = init_env(envp);
+	// init_signals_prompt();
 	while (1)
 	{
-		input = readline("Minishell > ");
-		if (input == NULL) // Ctrl+D (EOF)
+		minishell.input = readline("Minishell > "); // handle in terminal or not in terminal
+		if (!minishell.input)
 		{
-			ft_putstr_fd("exit\n", 1);
+			ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
 			break ;
 		}
-		if (is_empty_line(input))
+		minishell.tokens = tokenize(minishell.input, &minishell);
+		if (!minishell.tokens)
 		{
-			free(input);
+			ft_putstr_fd("minishell : Unclosed quote found\n", 2);
+			free(minishell.input);
 			continue ;
 		}
-		add_history(input);
-		add_to_history(input, &history_list);
-		if (has_unclosed_quotes(input))
-		{
-			ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
-			free(input);
-			continue ;
-		}
-		if (ft_strncmp(input, "history", 8) == 0)
-			display_history(history_list);
-		else if (ft_strncmp(input, "exit", 5) == 0)
-		{
-			free(input);
-			break ;
-		}
-		tokens = tokenize(input, env_list); 
-		ast = parse(&tokens);
-		if (ast != NULL)
-		{
-			heredocs(ast, &env_list); 
-			status = execute_ast(ast, &env_list);
-		}
-		
-		free(input);
-		free_tokens(&tokens);
-		free_ast(&ast);
+		execution(&minishell);
 	}
-	free_env_list(env_list);
-	free_history(&history_list);
-	return (status);
+	free_env_list(minishell.env_list);
+	free_history(&minishell.history_list);
+	rl_clear_history();    // TODO : check what is this
+	return (minishell.last_exit_status);
+}
+
+void	execution(t_minishell *minishell)
+{
+	if (minishell->input[0] != '\0')
+	{
+		add_history(minishell->input);
+		add_to_history(minishell->input, &minishell->history_list);
+	}
+	minishell->ast = parse(&minishell->tokens);
+	if (minishell->ast != NULL)
+	{
+		heredocs(minishell->ast, minishell);
+		minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+	}
+	else
+	{
+		ft_putstr_fd("minishell : syntax error\n", 2);
+		minishell->last_exit_status = SHELL_FAILURE;
+	}
+	free(minishell->input);
+	minishell->input = NULL;
+	free_tokens(&minishell->tokens);
+	free_ast(&minishell->ast);
+}
+
+void	cleanup_and_exit(t_minishell *minishell, int exit_status)
+{
+	free_env_list(minishell->env_list);
+	free_history(&minishell->history_list);
+	free(minishell->input);
+	free_tokens(&minishell->tokens);
+	free_ast(&minishell->ast);
+	rl_clear_history();
+	exit(exit_status);
 }
 
 /*

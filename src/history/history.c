@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 12:49:55 by yolim             #+#    #+#             */
-/*   Updated: 2025/12/16 14:13:49 by yolim            ###   ########.fr       */
+/*   Updated: 2026/02/26 17:16:05 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ void	add_to_history(char *command, t_history **history_list)
 	}
 }
 
-void	display_history(t_history *history_list)
+int	ft_history(char **argv, t_history *history_list)
 {
+	(void)argv;
 	t_history	*current;
 	int			i;
 
@@ -53,6 +54,7 @@ void	display_history(t_history *history_list)
 		current = current->next;
 		i++;
 	}
+	return (SHELL_SUCCESS);
 }
 
 void	free_history(t_history **history_list)

@@ -34,7 +34,7 @@ int is_builtin(char *cmd)
     return (0);
 }
 
-int exec_builtin(char **argv, t_env **env_head)
+int exec_builtin(char **argv, t_minishell *minishell)
 {
     if (ft_strncmp(argv[0], "echo", 5) == 0)
         return (ft_echo(argv));

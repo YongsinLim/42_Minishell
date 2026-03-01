@@ -78,7 +78,7 @@ Example usage is as follows
 
 RoadMap - 15.12.2025:
 1. Add Makefile
-2. Fix Header File's Norm Isue
+2. Fix Header File's Norm Issue
 
 RoadMap - 19.12.2025:
 1. Display a prompt
@@ -116,19 +116,28 @@ RoadMap - 09.02.2026
 1. include heredoc handling
 2. fix norm
 
+RoadMap - 11.2.2026
+1. Changed char** envp to t_env env 
+2. added builtins of echo, pwd and env 
+3. Changed logic of expand to fit a linked list
 
+RoadMap - 12.02.2026
+1. fix history cmd display error msg - minishell command not found
+2. implement $?
+3. fix real exit code return
 
-
-
+RoadMap - 28.02.2026
+1. Builtin (exit) - all cases testing on exit, exit 44, exit abc and exit 12 34 done
+2. Merge history, env, pwd function into Builtin function
+3. Builtin (Echo) - implement no -n, -n, -nnnn, -n -n -n -n cases
 
 
 
 	Issue Lists (discovered and unfixed)
 ```
 	   	1. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
-	   	2. running history displays history, but also has error message - minishell command not found, should be an easy fix.
-	   	3. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
-	   	4. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+	   	2. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
+	   	3. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
 ```
 
 
