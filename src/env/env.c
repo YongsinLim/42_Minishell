@@ -14,11 +14,12 @@
 
 int ft_env(t_minishell *minishell)
 {
-    t_env *current;
+    t_env   *current;
 
     current = minishell->env_list;
     while (current)
     {
+        // Only print if value exists (export VAR vs export VAR=value)
         if (current->value)
         {
             ft_putstr_fd(current->key, 1);
@@ -29,3 +30,9 @@ int ft_env(t_minishell *minishell)
     }
     return (SHELL_SUCCESS);
 }
+
+/*
+declare local variable (t_env *current = minishell->env_list) bcos:
+iterate through the list using a copy of the pointer, leaving the original
+minishell->env_list safely pointing to the start of the list for future use
+*/

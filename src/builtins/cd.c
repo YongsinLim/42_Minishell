@@ -12,46 +12,85 @@
 
 #include "../../includes/minishell.h"
 
-int ft_cd(char **argv, t_minishell *ms)
+char	*get_target_path(char **argv, t_minishell *minishell)
 {
-    char    *path;
-    char    cwd[1024];
-    char    new_cwd[1024];
+	char	*path;
 
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
-        cwd[0] = '\0';
-    if (!argv[1] || ft_strncmp(argv[1], "~", 2) == 0)
-    {
-        path = get_env_val(ms->env_list, "HOME");
-        if (!path)
-        {
-            ft_putstr_fd("minishell: cd: HOME not set\n", 2);
-            return (1);
-        }
-    }
-    else if (ft_strncmp(argv[1], "-", 2) == 0)
-    {
-        path = get_env_val(ms->env_list, "OLDPWD");
-        if (!path)
-        {
-            ft_putstr_fd("minishell: cd: OLDPWD not set\n", 2);
-            return (1);
-        }
-    }
-    else
-        path = argv[1];
+	if (!argv[1])
+	{
+		path = get_var_value("HOME", minishell);
+		if (ft_strncmp(path, "", 1) == 0)
+			report_error("cd", "HOME not set");
+		return (path);
+	}
+	if (ft_strncmp(argv[1], "-", 2) == 0)
+	{
+		path = get_var_value("OLDPWD", minishell);
+		if (!path)
+			report_error("cd", "OLDPWD not set");
+		return (path);
+	}
+	return (argv[1]);
+}
 
-    if (chdir(path) == -1)
-    {
-        ft_putstr_fd("minishell: cd: ", 2);
-        perror(path); // This will print "No such file or directory" for a literal "~"
-        return (1);
-    }
-    if (cwd[0] != '\0')
-        update_env(&ms->env_list, "OLDPWD", cwd);
-    if (getcwd(new_cwd, sizeof(new_cwd)) != NULL)
-        update_env(&ms->env_list, "PWD", new_cwd);
-    if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
-        ft_putendl_fd(new_cwd, 1);
-    return (0);
+/*
+cd [no arg] = go to home
+cd ~ = go to home
+cd - = go to OLDPWD
+ */
+
+void	update_env(char *key, char *value, t_minishell *minishell)
+{
+	t_env	*current;
+	t_env	*last;
+	t_env	*new;
+
+	current = minishell->env_list;
+	last = NULL;
+	while (current)
+	{
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+		{
+			free(current->value);
+			current->value = ft_strdup(value);
+			return ;
+		}
+		last = current;
+		current = current->next;
+	}
+	// Key Not found - create new node
+	new = new_env_node(key, value);
+	if (!new)
+		return ;
+	if (last == NULL)
+		minishell->env_list = new;
+	else
+		last->next = new;
+}
+
+int	ft_cd(char **argv, t_minishell *minishell)
+{
+	char	*path;
+	char	cwd[PATH_MAX];
+	char	new_cwd[PATH_MAX];
+
+	if (argv[1] && argv[2])
+		return (report_error("cd", "too many arguments"), SHELL_FAILURE);
+	if (getcwd(cwd, sizeof(cwd)) == NULL)
+		cwd[0] = '\0';
+	path = get_target_path(argv, minishell);
+	if (!path)
+		return (SHELL_FAILURE);
+	if (chdir(path) == ERROR)
+	{
+		ft_putstr_fd("minishell: cd: ", 2);
+		printf("%s: %s\n", strerror(2), path);
+		return (SHELL_FAILURE);
+	}
+	update_env("OLDPWD", cwd, minishell);
+	if (getcwd(new_cwd, sizeof(new_cwd)) != NULL)
+		update_env("PWD", new_cwd, minishell);
+	if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
+		ft_putendl_fd(new_cwd, 1);
+	return (SHELL_SUCCESS);
 }

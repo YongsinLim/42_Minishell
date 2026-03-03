@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/26 17:42:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 19:10:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ char	*expand_variable(char *str, t_minishell *minishell)
 	char	*final_str;
 	int		i;
 
+	if (!str)
+		return (ft_strdup(""));
 	final_str = ft_strdup("");
 	i = 0;
 	while (str[i])
@@ -24,10 +26,7 @@ char	*expand_variable(char *str, t_minishell *minishell)
 		if (str[i] == '$')
 			final_str = handle_dollar_sign(str, &i, final_str, minishell);
 		else
-		{
-			final_str = append_char(final_str, str[i]);
-			i++;
-		}
+			final_str = append_segment(final_str, str, &i);
 	}
 	return (final_str);
 }
@@ -60,15 +59,19 @@ char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
 	return (final_str);
 }
 
-char	*append_char(char *s1, char c)
+char	*append_segment(char *final_str, char *str, int *i)
 {
+	char	*segment;
 	char	*new_str;
-	char	array[2];
+	int		start;
 
-	array[0] = c;
-	array[1] = '\0';
-	new_str = ft_strjoin(s1, array);
-	free(s1);
+	start = *i;
+	while (str[*i] && str[*i] != '$')
+		(*i)++;
+	segment = ft_substr(str, start, *i - start);
+	new_str = ft_strjoin(final_str, segment);
+	free(final_str);
+	free(segment);
 	return (new_str);
 }
 
@@ -109,4 +112,16 @@ char	*get_var_value(char *var_name, t_minishell *minishell)
 		current = current->next;
 	}
 	return (ft_strdup(""));
+}
+
+char	*append_char(char *s1, char c)
+{
+	char	*new_str;
+	char	array[2];
+
+	array[0] = c;
+	array[1] = '\0';
+	new_str = ft_strjoin(s1, array);
+	free(s1);
+	return (new_str);
 }

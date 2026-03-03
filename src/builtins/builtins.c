@@ -40,13 +40,13 @@ int	execute_builtin(char **argv, t_minishell *minishell)
 	if (ft_strncmp(argv[0], "echo", 5) == 0)
 		return (ft_echo(argv));
 	if (ft_strncmp(argv[0], "cd", 3) == 0)
-	 	return (ft_cd(argv, minishell));
+		return (ft_cd(argv, minishell));
 	if (ft_strncmp(argv[0], "pwd", 4) == 0)
 		return (ft_pwd());
 	// if (ft_strncmp(argv[0], "export", 7) == 0)
 	// 	return (ft_export(argv, minishell));
-	// if (ft_strncmp(argv[0], "unset", 6) == 0)
-	// 	return (ft_unset(argv, minishell));
+	if (ft_strncmp(argv[0], "unset", 6) == 0)
+		return (ft_unset(argv, minishell));
 	if (ft_strncmp(argv[0], "env", 4) == 0)
 		return (ft_env(minishell));
 	if (ft_strncmp(argv[0], "exit", 5) == 0)
