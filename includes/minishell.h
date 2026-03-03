@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/03 18:49:40 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/03/03 18:53:02 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,6 @@ char			**env_list_to_array(t_env *env_list);
 // ----- Builtins Functions -----
 int				is_builtin(char *cmd);
 int				execute_builtin(char **argv, t_minishell *minishell);
-
 
 
 // ----- Builtin - Echo -----
