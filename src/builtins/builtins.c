@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:41:28 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/28 17:54:33 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 18:49:11 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,8 @@ int	execute_builtin(char **argv, t_minishell *minishell)
 {
 	if (ft_strncmp(argv[0], "echo", 5) == 0)
 		return (ft_echo(argv));
-	// if (ft_strncmp(argv[0], "cd", 3) == 0)
-	// 	return (ft_cd(argv, minishell));
+	if (ft_strncmp(argv[0], "cd", 3) == 0)
+	 	return (ft_cd(argv, minishell));
 	if (ft_strncmp(argv[0], "pwd", 4) == 0)
 		return (ft_pwd());
 	// if (ft_strncmp(argv[0], "export", 7) == 0)

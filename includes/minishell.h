@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/28 18:44:13 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 18:49:40 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,9 @@ int				ft_env(t_minishell *minishell);
 int				ft_is_numeric(char *str);
 int				ft_exit(char **argv, t_minishell *minishell);
 
+// ------Builtin - CD -------
+int 			ft_cd(char **argv, t_minishell *minishell);
+
 // ----- Heredoc Functions -----
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
@@ -240,5 +243,9 @@ int				handle_quoted_string(char *line, int *i, t_token **tokens,
 					t_minishell *minishell);
 int				is_separator(char c);
 void			handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell);
+
+// -------- Env Functions -------
+char			*get_env_val(t_env *env, char *key);
+void			update_env(t_env **env, char *key, char *value);
 
 #endif
