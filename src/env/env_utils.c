@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:49:03 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/26 18:56:43 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 18:43:41 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,41 @@ t_env	*init_env(char **envp)
 		i++;
 	}
 	return (head);
+}
+
+char	*get_env_val(t_env *env, char *key)
+{
+	while (env)
+	{
+		if (ft_strncmp(env->key, key, ft_strlen(key) + 1) == 0)
+			return (env->value);
+		env = env->next;
+	}
+	return (NULL);
+}
+
+void	update_env(t_env **env, char *key, char *value)
+{
+	t_env	*curr;
+	t_env	*new;
+
+	curr = *env;
+	while (curr)
+	{
+		if (ft_strncmp(curr->key, key, ft_strlen(key) + 1) == 0)
+		{
+			if (curr->value)
+				free(curr->value);
+			if (value)
+				curr->value = ft_strdup(value);
+			else
+				curr->value = NULL;
+			return ;
+		}
+		curr = curr->next;
+	}
+	// Not found? Add to front (simplest)
+	new = new_env_node(key, value);
+	new->next = *env;
+	*env = new;
 }
