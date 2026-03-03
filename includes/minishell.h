@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/02/28 18:44:13 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 19:11:00 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,10 @@
 
 # include "../Libft/libft.h"
 # include <readline/readline.h> // for readline
-# include <readline/history.h> // for readline
-# include <stdlib.h> // for malloc, free, exit, getenv
+# include <readline/history.h> // for readline, add_history
+# include <stdlib.h> // for malloc, free, exit
 # include <stdio.h> // for printf, perror
-# include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe, getcwd
+# include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe, getcwd, chdir
 # include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
 # include <limits.h> // for PATH_MAX
@@ -142,7 +142,22 @@ char			**env_list_to_array(t_env *env_list);
 int				is_builtin(char *cmd);
 int				execute_builtin(char **argv, t_minishell *minishell);
 
+// ----- Builtin - Export -----
 
+
+
+
+
+
+// ----- Builtin - Cd -----
+char			*get_target_path(char **argv, t_minishell *minishell);
+void			update_env(char *key, char *value, t_minishell *minishell);
+int				ft_cd(char **argv, t_minishell *minishell);
+
+// ----- Builtin - Unset -----
+int				is_valid_identifier(char *str);
+void			remove_env_node(t_env **env_head, char *key);
+int				ft_unset(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Echo -----
 void			print_arguments(char **argv, int i, int n_flag);
@@ -224,10 +239,12 @@ void			free_history(t_history **history_list);
 // ----- Expansion Functions -----
 char			*expand_variable(char *str, t_minishell *minishell);
 char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
-					t_minishell *minishell);
-char			*append_char(char *s1, char c);
+			                        t_minishell *minishell);
+char			*append_segment(char *final_str, char *str, int *i);
 int				get_var_name_len(char *str, char **var_name_ptr);
 char			*get_var_value(char *var_name, t_minishell *minishell);
+char			*append_char(char *s1, char c);
+
 
 // ----- Token Functions -----
 void			skip_spaces(char *line, int *i);
@@ -239,6 +256,7 @@ void			add_token(t_token **head, t_token *new_token);
 int				handle_quoted_string(char *line, int *i, t_token **tokens,
 					t_minishell *minishell);
 int				is_separator(char c);
+char			*expand_tilde(char *str, t_minishell *minishell);
 void			handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell);
 
 #endif

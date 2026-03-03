@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 18:06:59 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/28 12:16:31 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/03 19:13:31 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,25 @@
 
 int ft_env(t_minishell *minishell)
 {
-    while (minishell->env_list)
+    t_env   *current;
+
+    current = minishell->env_list;
+    while (current)
     {
         // Only print if value exists (export VAR vs export VAR=value)
-        if (minishell->env_list->value)
+        if (current->value)
         {
-            ft_putstr_fd(minishell->env_list->key, 1);
+            ft_putstr_fd(current->key, 1);
             ft_putstr_fd("=", 1);
-            ft_putendl_fd(minishell->env_list->value, 1);
+            ft_putendl_fd(current->value, 1);
         }
-        minishell->env_list = minishell->env_list->next;
+        current = current->next;
     }
     return (SHELL_SUCCESS);
 }
+
+/*
+declare local variable (t_env *current = minishell->env_list) bcos:
+iterate through the list using a copy of the pointer, leaving the original
+minishell->env_list safely pointing to the start of the list for future use
+*/

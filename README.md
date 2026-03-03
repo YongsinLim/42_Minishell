@@ -131,6 +131,13 @@ RoadMap - 28.02.2026
 2. Merge history, env, pwd function into Builtin function
 3. Builtin (Echo) - implement no -n, -n, -nnnn, -n -n -n -n cases
 
+RoadMap - 02.03.2026
+1. Add Builtin (Unset)
+2. Builtin (env) - fix issue of moving system env list to NULL in 1st called (env). Use local variable to store the head address of the env list to avoid this issue.
+3. Builtin (cd) - implement no argument, '-', '..', path
+4. Tilde ～ - implement '~' in handle_word
+5. Combine get_var_value and get_env_value to avoid duplicate function
+
 
 
 	Issue Lists (discovered and unfixed)
@@ -140,22 +147,14 @@ RoadMap - 28.02.2026
 	   	3. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
 ```
 
-
-
-
-
-
-
 Pending to do:
 1. Makefile : change wildcard, add individual file (mandatory)
 2. Tokenize : handle unclosed " or ' issue
 3. ReadMe for Minishell
 4. ctrl + C direct exit, should be prompt new line
 5. ctrl+C in terminal and child behave differently
-6. 
-
-Pending Issue List (as Of 22/2/26)
-1. echo with multiple flags, such as -nnnnnnn or -n -n -n -n or -n -a
+6. implement wildcard
+7. remove quote in $"..." (havent merge to main)
 
 
 [Process completed]
