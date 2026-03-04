@@ -6,11 +6,11 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:49:03 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/03 18:43:41 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/03/04 16:57:24 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "../../../includes/minishell.h"
 
 t_env	*new_env_node(char *key, char *value)
 {
@@ -67,4 +67,31 @@ t_env	*init_env(char **envp)
 		i++;
 	}
 	return (head);
+}
+
+void	update_env(char *key, char *value, t_minishell *minishell)
+{
+	t_env	*current;
+	t_env	*last;
+
+	current = minishell->env_list;
+	last = NULL;
+	while (current)
+	{
+		if (ft_strncmp(current->key, key, ft_strlen(key) + 1) == 0)
+		{
+			if (!value)
+				return ;
+			free(current->value);
+			current->value = ft_strdup(value);
+			return ;
+		}
+		last = current;
+		current = current->next;
+	}
+	// Key Not found - create new node
+	if (last == NULL)
+		minishell->env_list = new_env_node(key, value);
+	else
+		last->next = new_env_node(key, value);;
 }

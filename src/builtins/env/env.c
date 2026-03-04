@@ -6,11 +6,11 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 18:06:59 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/03 18:58:24 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/03/04 16:57:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../includes/minishell.h"
+#include "../../../includes/minishell.h"
 
 int ft_env(t_minishell *minishell)
 {

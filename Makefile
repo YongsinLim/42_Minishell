@@ -25,7 +25,7 @@ HEADER_DIR = ./includes
 HEADER_LIB = $(HEADER_DIR)/minishell.h
 
 # ----- Source Files ----- 
-SRC = $(wildcard src/*.c src/**/*.c)
+SRC = $(wildcard src/*.c src/**/*.c src/**/**/*.c)
 ## change to wildcard to real src file name!!!!!src/main.c src/history/history.c
 OBJS := $(SRC:%.c=%.o)
 

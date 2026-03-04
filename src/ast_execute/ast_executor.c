@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/26 20:16:56 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/04 13:15:41 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,27 +42,15 @@ fork() :
 Positive value (the child's PID): The code is executing within the parent process
 */
 
-
 int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	pid_t	pid;
 	int		status;
-	int		stdin_backup;
-	int		stdout_backup;
 
+	if (!ast->command->argv[0]) // edge case : < file or > file (without command to run)
+		return (redirect_input(ast->command), redirect_output(ast->command), SHELL_SUCCESS);
 	if (is_builtin(ast->command->argv[0]))
-	{
-		stdin_backup = dup(STDIN_FILENO);
-		stdout_backup = dup(STDOUT_FILENO);
-		redirect_input(ast->command);
-		redirect_output(ast->command);
-		status = execute_builtin(ast->command->argv, minishell);
-		dup2(stdin_backup, STDIN_FILENO);
-		dup2(stdout_backup, STDOUT_FILENO);
-		close(stdin_backup);
-		close(stdout_backup);
-		return (status);
-	}
+		return (handle_builtin_execution(ast, minishell));
 	pid = fork();
 	if (pid == -1)
 		error_exit("Fork Error");
@@ -80,6 +68,24 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		ast->command->heredoc_fd = -1;
 	}
 	status = wait_for_children(pid);
+	return (status);
+}
+
+int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
+{
+	int	status;
+	int	stdin_backup;
+	int	stdout_backup;
+
+	stdin_backup = dup(STDIN_FILENO);
+	stdout_backup = dup(STDOUT_FILENO);
+	redirect_input(ast->command);
+	redirect_output(ast->command);
+	status = execute_builtin(ast->command->argv, minishell);
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
 	return (status);
 }
 

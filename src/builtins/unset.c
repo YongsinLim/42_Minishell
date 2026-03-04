@@ -6,35 +6,11 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:12 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/02 16:09:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/04 15:51:55 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-/*
-identifier = the name of an environment variable
-Bash identifier naming rules :
-1st Character: Must be a letter (a-z, A-Z) or an underscore (_), cannot be a
-number.
-The Rest of the Characters: Can be letters, numbers, or underscores.
- */
-
-int	is_valid_identifier(char *str)
-{
-	int	i;
-
-	if (!str || (!ft_isalpha(str[0]) && str[0] != '_'))
-		return (FALSE);
-	i = 1;
-	while (str[i])
-	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
-			return (FALSE);
-		i++;
-	}
-	return (TRUE);
-}
 
 void	remove_env_node(t_env **env_head, char *key)
 {
@@ -74,7 +50,7 @@ int	ft_unset(char **argv, t_minishell *minishell)
 	status = SHELL_SUCCESS;
 	while (argv[i])
 	{
-		if (!is_valid_identifier(argv[i]))
+		if (!check_valid_identifier(argv[i]))
 		{
 			ft_putstr_fd("minishell: unset: `", 2);
 			ft_putstr_fd(argv[i], 2);
