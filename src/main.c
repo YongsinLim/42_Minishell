@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/28 09:37:33 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/04 13:37:13 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,7 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
-	minishell.history_list = NULL;
-	minishell.env_list = init_env(envp);
-	minishell.last_exit_status = 0;
-	minishell.input = NULL;
-	minishell.tokens = NULL;
+	init_minishell(&minishell, envp);
 
 	// init_signals_prompt();
 	while (1)
@@ -42,10 +38,17 @@ int	main(int argc, char **argv, char **envp)
 		}
 		execution(&minishell);
 	}
-	free_env_list(minishell.env_list);
-	free_history(&minishell.history_list);
-	rl_clear_history();    // TODO : check what is this
-	return (minishell.last_exit_status);
+	cleanup_and_exit(&minishell, minishell.last_exit_status);
+}
+
+void	init_minishell(t_minishell *minishell, char **envp)
+{
+	minishell->history_list = NULL;
+	minishell->env_list = init_env(envp);
+	minishell->last_exit_status = 0;
+	minishell->input = NULL;
+	minishell->tokens = NULL;
+	minishell->ast = NULL;
 }
 
 void	execution(t_minishell *minishell)
@@ -79,7 +82,7 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 	free(minishell->input);
 	free_tokens(&minishell->tokens);
 	free_ast(&minishell->ast);
-	rl_clear_history();
+	rl_clear_history(); // TODO : check what function do
 	exit(exit_status);
 }
 

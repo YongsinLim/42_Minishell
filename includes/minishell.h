@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/03 18:53:02 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/03/04 15:52:48 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,42 +120,34 @@ void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
 // ----- Main Functions -----
+void			init_minishell(t_minishell *minishell, char **envp);
 void			execution(t_minishell *minishell);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
-
 
 // ----- Env_Utils Functions -----
 t_env			*new_env_node(char *key, char *value);
 t_env			*init_env(char **envp);
+void			update_env(char *key, char *value, t_minishell *minishell);
 
-
+// ----- Env_Convert Functions -----
 int				count_env_nodes(t_env *env_list);
 char			**env_list_to_array(t_env *env_list);
-
-
-
-
-
-
 
 // ----- Builtins Functions -----
 int				is_builtin(char *cmd);
 int				execute_builtin(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Export -----
-
-
-
-
-
+int				print_export(t_env *env);
+int				check_valid_identifier(char *arg);
+void			process_export_arg(char *arg, t_minishell *minishell);
+int				ft_export(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Cd -----
 char			*get_target_path(char **argv, t_minishell *minishell);
-void			update_env(char *key, char *value, t_minishell *minishell);
 int				ft_cd(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Unset -----
-int				is_valid_identifier(char *str);
 void			remove_env_node(t_env **env_head, char *key);
 int				ft_unset(char **argv, t_minishell *minishell);
 
@@ -182,6 +174,7 @@ char			*verify_expand_heredoc(t_command *cmd, t_minishell *minishell, char *line
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
 int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
+int				handle_builtin_execution(t_ast_node *ast, t_minishell *minishell);
 int				exec_pipe(t_ast_node *ast, t_minishell *minishell);
 int				exec_subshell(t_ast_node *ast, t_minishell *minishell);
 

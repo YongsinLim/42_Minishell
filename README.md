@@ -138,6 +138,11 @@ RoadMap - 02.03.2026
 4. Tilde ～ - implement '~' in handle_word
 5. Combine get_var_value and get_env_value to avoid duplicate function
 
+RoadMap - 04.03.2026
+1. Builtin (export) - add export function, combine is_valid_identifier & check_valid_identifier
+2. Move env folder into builtins folder
+
+
 
 
 	Issue Lists (discovered and unfixed)
