@@ -142,7 +142,9 @@ RoadMap - 04.03.2026
 1. Builtin (export) - add export function, combine is_valid_identifier & check_valid_identifier
 2. Move env folder into builtins folder
 
-
+RoadMap - 05.03.2026
+1. fix $"..." $'...', $"$USER" and $'$USER' print '$' issue 
+2. handle add_history issue - input (all space / enter)
 
 
 	Issue Lists (discovered and unfixed)
@@ -159,7 +161,6 @@ Pending to do:
 4. ctrl + C direct exit, should be prompt new line
 5. ctrl+C in terminal and child behave differently
 6. implement wildcard
-7. remove quote in $"..." (havent merge to main)
 
 
 [Process completed]

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/04 13:37:13 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/05 16:32:00 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,14 @@ int	main(int argc, char **argv, char **envp)
 			ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
 			break ;
 		}
+		if (!is_all_whitespace(minishell.input))
+		{
+			add_history(minishell.input);
+			add_to_history(minishell.input, &minishell.history_list);
+		}
 		minishell.tokens = tokenize(minishell.input, &minishell);
 		if (!minishell.tokens)
 		{
-			ft_putstr_fd("minishell : Unclosed quote found\n", 2);
 			free(minishell.input);
 			continue ;
 		}
@@ -51,13 +55,22 @@ void	init_minishell(t_minishell *minishell, char **envp)
 	minishell->ast = NULL;
 }
 
+int	is_all_whitespace(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!((str[i] >= 9 && str[i] <= 13) || str[i] == 32))
+			return (FALSE);
+		i++;
+	}
+	return (TRUE);
+}
+
 void	execution(t_minishell *minishell)
 {
-	if (minishell->input[0] != '\0')
-	{
-		add_history(minishell->input);
-		add_to_history(minishell->input, &minishell->history_list);
-	}
 	minishell->ast = parse(&minishell->tokens);
 	if (minishell->ast != NULL)
 	{

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/09 10:45:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/12 14:02:53 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/05 15:31:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	handle_quoted_string(char *line, int *i, t_token **tokens,
 	if (line[*i] == '\0')
 	{
 		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
-		return (1);
+		return (minishell->last_exit_status = 2, 1);
 	}
 	quoted_str = ft_substr(line, start_idx, *i - start_idx);
 	if (quote_char == '"')

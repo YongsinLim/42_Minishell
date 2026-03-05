@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/04 15:52:48 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/05 16:25:59 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ void			print_ast(t_ast_node *node, int level);
 
 // ----- Main Functions -----
 void			init_minishell(t_minishell *minishell, char **envp);
+int				is_all_whitespace(char *str);
 void			execution(t_minishell *minishell);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
@@ -240,7 +241,7 @@ char			*append_char(char *s1, char c);
 
 
 // ----- Token Functions -----
-void			skip_spaces(char *line, int *i);
+void			skip_invalid_char(char *line, int *i);
 void			add_redirection_token(char *line, int *i, t_token **tokens);
 t_token			*tokenize(char *line, t_minishell *minishell);
 t_token			*new_token(char *value, t_token_type type);
