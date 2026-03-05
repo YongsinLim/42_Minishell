@@ -6,15 +6,17 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/12 14:02:18 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/05 15:47:53 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	skip_spaces(char *line, int *i)
+void	skip_invalid_char(char *line, int *i)
 {
-	while (line[*i] && (line[*i] == ' ' || line[*i] == '\t'))
+	while (line[*i]
+		&& (line[*i] == ' ' || line[*i] == '\t'
+		|| (line[*i] == '$' && (line[*i + 1] == '"' || line[*i + 1] == '\''))))
 		(*i)++;
 }
 
@@ -51,10 +53,10 @@ t_token	*tokenize(char *line, t_minishell *minishell)
 	i = 0;
 	while (line[i])
 	{
-		skip_spaces(line, &i);
+		skip_invalid_char(line, &i);
 		if (!line[i])
 			break ;
-		else if ((line[i] == '&' && line[i + 1] == '&') || line[i] == '|'
+		if ((line[i] == '&' && line[i + 1] == '&') || line[i] == '|'
 			|| line[i] == '(' || line[i] == ')')
 			add_token(&tokens, make_token(&line[i], &i));
 		else if (line[i] == '<' || line[i] == '>')
