@@ -3,32 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 18:06:59 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/04 16:57:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:46:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
 
-int ft_env(t_minishell *minishell)
+int	ft_env(t_minishell *minishell)
 {
-    t_env   *current;
+	t_env	*current;
 
-    current = minishell->env_list;
-    while (current)
-    {
-        // Only print if value exists (export VAR vs export VAR=value)
-        if (current->value)
-        {
-            ft_putstr_fd(current->key, 1);
-            ft_putstr_fd("=", 1);
-            ft_putendl_fd(current->value, 1);
-        }
-        current = current->next;
-    }
-    return (SHELL_SUCCESS);
+	current = minishell->env_list;
+	while (current)
+	{
+		if (current->value)
+		{
+			ft_putstr_fd(current->key, 1);
+			ft_putstr_fd("=", 1);
+			ft_putendl_fd(current->value, 1);
+		}
+		current = current->next;
+	}
+	return (SHELL_SUCCESS);
 }
 
 /*

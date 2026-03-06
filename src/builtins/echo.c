@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:40:55 by jenlee            #+#    #+#             */
-/*   Updated: 2026/02/28 18:57:27 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:48:53 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	print_arguments(char **argv, int i, int n_flag)
 		ft_putstr_fd("\n", 1);
 }
 
-int ft_echo(char **argv)
+int	ft_echo(char **argv)
 {
 	int	i;
 	int	j;

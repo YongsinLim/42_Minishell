@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:12 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/04 15:51:55 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:44:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ void	remove_env_node(t_env **env_head, char *key)
 				*env_head = current->next;
 			else
 				previous->next = current->next;
-
 			free(current->key);
 			if (current->value)
 				free(current->value);

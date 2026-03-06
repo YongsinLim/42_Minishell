@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/04 13:15:41 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:53:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 	int		status;
 
 	if (!ast->command->argv[0]) // edge case : < file or > file (without command to run)
-		return (redirect_input(ast->command), redirect_output(ast->command), SHELL_SUCCESS);
+		return (redirect_input(ast->command), redirect_output(ast->command),
+			SHELL_SUCCESS);
 	if (is_builtin(ast->command->argv[0]))
 		return (handle_builtin_execution(ast, minishell));
 	pid = fork();

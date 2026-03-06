@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 17:11:34 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 15:22:25 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,7 @@ int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
 		|| (*token_ptr)->type == TOKEN_HEREDOC
 		|| (*token_ptr)->type == TOKEN_APPEND)
 		return (parse_redirection(token_ptr, cmd));
-	if ((*token_ptr)->type == TOKEN_WORD
-		|| (*token_ptr)->type == TOKEN_QUOTED_STRING)
+	if ((*token_ptr)->type == TOKEN_WORD)
 	{
 		value_dup = ft_strdup((*token_ptr)->value);
 		if (!value_dup)
@@ -118,7 +117,7 @@ t_token	*token_redirection(t_token *token, t_command *command)
 	else if (type == TOKEN_HEREDOC)
 	{
 		command->heredoc_delimiter = ft_strdup(token->value);
-		if (token->type == TOKEN_QUOTED_STRING)
+		if (token->has_quotes)
 			command->heredoc_is_quoted = 1;
 		else
 			command->heredoc_is_quoted = 0;
