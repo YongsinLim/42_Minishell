@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:51 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/04 15:40:45 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:50:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	process_export_arg(char *arg, t_minishell *minishell)
 		free(value);
 	}
 	else
-		update_env(arg, NULL, minishell); // e.g. "export VAR" (no value)
+		update_env(arg, NULL, minishell);
 }
 
 int	ft_export(char **argv, t_minishell *minishell)

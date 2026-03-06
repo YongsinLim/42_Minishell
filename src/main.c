@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/05 16:32:00 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:30:08 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
+	char		*line;
 
 	(void)argc;
 	(void)argv;
@@ -23,10 +24,28 @@ int	main(int argc, char **argv, char **envp)
 	// init_signals_prompt();
 	while (1)
 	{
-		minishell.input = readline("Minishell > "); // handle in terminal or not in terminal
+
+
+		// to check if stdin is a terminal using isatty(STDIN_FILENO):
+		if (isatty(STDIN_FILENO))
+			minishell.input = readline("Minishell > "); // handle in terminal or not in terminal
+		else {
+			line = get_next_line(STDIN_FILENO);
+			if (line) {
+				minishell.input = ft_strtrim(line, "\n");
+				free(line);
+			}
+			else
+				minishell.input = NULL;
+		}
+
+
+
+
 		if (!minishell.input)
 		{
-			ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
+			if (isatty(STDIN_FILENO))
+				ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
 			break ;
 		}
 		if (!is_all_whitespace(minishell.input))

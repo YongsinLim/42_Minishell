@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 11:10:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/28 11:21:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:44:51 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ int	ft_exit(char **argv, t_minishell *minishell)
 	}
 	free_history(&minishell->history_list);
 	free_env_list(minishell->env_list);
-	// Add any other cleanup you need
 	exit(minishell->last_exit_status);
 }
 

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/05 15:47:53 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 16:47:44 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ void	skip_invalid_char(char *line, int *i)
 {
 	while (line[*i]
 		&& (line[*i] == ' ' || line[*i] == '\t'
-		|| (line[*i] == '$' && (line[*i + 1] == '"' || line[*i + 1] == '\''))))
+			|| (line[*i] == '$' && (line[*i + 1] == '"'
+					|| line[*i + 1] == '\''))))
 		(*i)++;
 }
 
@@ -26,21 +27,21 @@ void	add_redirection_token(char *line, int *i, t_token **tokens)
 	{
 		if (line[*i + 1] == '>')
 		{
-			add_token(tokens, new_token(">>", TOKEN_APPEND));
+			add_token(tokens, new_token(">>", TOKEN_APPEND, FALSE));
 			(*i)++;
 		}
 		else
-			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT));
+			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
 	}
 	else if (line[*i] == '<')
 	{
 		if (line[*i + 1] == '<')
 		{
-			add_token(tokens, new_token("<<", TOKEN_HEREDOC));
+			add_token(tokens, new_token("<<", TOKEN_HEREDOC, FALSE));
 			(*i)++;
 		}
 		else
-			add_token(tokens, new_token("<", TOKEN_REDIRECT_IN));
+			add_token(tokens, new_token("<", TOKEN_REDIRECT_IN, FALSE));
 	}
 }
 
@@ -61,11 +62,6 @@ t_token	*tokenize(char *line, t_minishell *minishell)
 			add_token(&tokens, make_token(&line[i], &i));
 		else if (line[i] == '<' || line[i] == '>')
 			add_redirection_token(line, &i, &tokens);
-		else if (line[i] == '"' || line[i] == '\'')
-		{
-			if (handle_quoted_string(line, &i, &tokens, minishell) == 1)
-				return (free_tokens(&tokens), NULL);
-		}
 		else
 			handle_word(line, &i, &tokens, minishell);
 		i++;

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/05 16:25:59 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/06 15:20:56 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@
 
 
 
+# include <dirent.h> // for opendir, readdir, closedir
 # include <signal.h>
 # include <sys/stat.h>
-# include <dirent.h>
 # include <string.h>
 # include <sys/ioctl.h>
 # include <termios.h>
@@ -63,7 +63,6 @@ typedef enum e_token_type
 	TOKEN_REDIRECT_OUT,
 	TOKEN_APPEND,
 	TOKEN_HEREDOC,
-	TOKEN_QUOTED_STRING,
 	TOKEN_AND,
 	TOKEN_OR,
 	TOKEN_L_PAREN,
@@ -74,6 +73,7 @@ typedef struct s_token
 {
 	char			*value;
 	t_token_type	type;
+	int				has_quotes;
 	struct s_token	*next;
 }				t_token;
 
@@ -244,13 +244,14 @@ char			*append_char(char *s1, char c);
 void			skip_invalid_char(char *line, int *i);
 void			add_redirection_token(char *line, int *i, t_token **tokens);
 t_token			*tokenize(char *line, t_minishell *minishell);
-t_token			*new_token(char *value, t_token_type type);
+t_token			*new_token(char *value, t_token_type type, int has_quotes);
 t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
-int				handle_quoted_string(char *line, int *i, t_token **tokens,
-					t_minishell *minishell);
+
+char			*init_word(char *line, int *i, t_minishell *minishell);
 int				is_separator(char c);
-char			*expand_tilde(char *str, t_minishell *minishell);
+char			*handle_quoted_string(char *line, int *i, t_minishell *minishell);
+char			*get_unquoted_segment(char *line, int *i, t_minishell *minishell);
 void			handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell);
 
 #endif
