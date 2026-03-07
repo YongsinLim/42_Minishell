@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:49:03 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/04 16:57:24 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 12:50:38 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,39 +28,46 @@ t_env	*new_env_node(char *key, char *value)
 	return (node);
 }
 
+t_env	*env_from_str(char *str)
+{
+	char	*equal_position;
+	char	*key;
+	char	*value;
+	t_env	*new;
+
+	equal_position = ft_strchr(str, '=');
+	if (equal_position)
+	{
+		key = ft_substr(str, 0, equal_position - str);
+		value = equal_position + 1;
+	}
+	else
+	{
+		key = ft_strdup(str);
+		value = NULL;
+	}
+	new = new_env_node(key, value);
+	free(key);
+	return (new);
+}
+
 t_env	*init_env(char **envp)
 {
 	t_env	*head;
 	t_env	*current;
 	t_env	*new;
 	int		i;
-	char	*equal_position;
-	char	*key;
-	char	*value;
 
 	head = NULL;
 	current = NULL;
 	i = 0;
 	while (envp && envp[i])
 	{
-		equal_position = ft_strchr(envp[i], '=');
-		if (equal_position)
-		{
-			key = ft_substr(envp[i], 0, equal_position - envp[i]);
-			value = equal_position + 1;
-		}
-		else
-		{
-			key = ft_strdup(envp[i]);
-			value = NULL;
-		}
-		new = new_env_node(key, value);
-		free(key);
+		new = env_from_str(envp[i]);
+		if (!new)
+			break ;
 		if (!head)
-		{
 			head = new;
-			current = new;
-		}
 		else
 			current->next = new;
 		current = new;
@@ -89,9 +96,8 @@ void	update_env(char *key, char *value, t_minishell *minishell)
 		last = current;
 		current = current->next;
 	}
-	// Key Not found - create new node
 	if (last == NULL)
 		minishell->env_list = new_env_node(key, value);
 	else
-		last->next = new_env_node(key, value);;
+		last->next = new_env_node(key, value);
 }

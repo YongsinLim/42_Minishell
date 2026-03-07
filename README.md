@@ -146,6 +146,8 @@ RoadMap - 05.03.2026
 1. fix $"..." $'...', $"$USER" and $'$USER' print '$' issue 
 2. handle add_history issue - input (all space / enter)
 
+RoadMap - 07.03.2026
+1. fix norm - function too long & line too long issue
 
 	Issue Lists (discovered and unfixed)
 ```
@@ -161,6 +163,8 @@ Pending to do:
 4. ctrl + C direct exit, should be prompt new line
 5. ctrl+C in terminal and child behave differently
 6. implement wildcard
+8. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+8. fix error in tester
 
 
 [Process completed]
