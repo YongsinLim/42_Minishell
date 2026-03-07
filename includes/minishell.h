@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/06 15:20:56 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 14:24:33 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@
 # include <readline/history.h> // for readline, add_history
 # include <stdlib.h> // for malloc, free, exit
 # include <stdio.h> // for printf, perror
-# include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe, getcwd, chdir
+# include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe,
+					//	getcwd, chdir
 # include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
 # include <limits.h> // for PATH_MAX
@@ -50,9 +51,9 @@ typedef struct s_history
 
 typedef struct s_env
 {
-	char            *key;   // e.g., "USER"
-	char            *value; // e.g., "me"
-	struct s_env    *next;
+	char			*key;	// e.g., "USER"
+	char			*value; // e.g., "me"
+	struct s_env	*next;
 }				t_env;
 
 typedef enum e_token_type
@@ -127,6 +128,7 @@ void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // ----- Env_Utils Functions -----
 t_env			*new_env_node(char *key, char *value);
+t_env			*env_from_str(char *str);
 t_env			*init_env(char **envp);
 void			update_env(char *key, char *value, t_minishell *minishell);
 
@@ -169,32 +171,38 @@ int				ft_exit(char **argv, t_minishell *minishell);
 // ----- Heredoc Functions -----
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
-char			*verify_expand_heredoc(t_command *cmd, t_minishell *minishell, char *line,
-					char *limiter);
+char			*verify_expand_heredoc(t_command *cmd, t_minishell *minishell,
+					char *line, char *limiter);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
 int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
-int				handle_builtin_execution(t_ast_node *ast, t_minishell *minishell);
+int				handle_builtin_execution(t_ast_node *ast,
+					t_minishell *minishell);
 int				exec_pipe(t_ast_node *ast, t_minishell *minishell);
 int				exec_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Execute Path Functions -----
 void			execute(char **cmd_array, t_minishell *minishell);
+char			*build_path(char *cmd, t_minishell *minishell);
 char			*construct_full_path(t_env *env_list, char *command);
 char			**get_path(t_env *env_list);
 char			*search_path(char **path_dir, char *command);
-void			report_error(char *msg, char *param);
 
 // ----- Wait Child Functions -----
 int				wait_for_children(pid_t last_pid);
+
+// ----- Error Handling Functions -----
 void			error_exit(char *error_msg);
+void			report_error(char *msg, char *param);
 
 // ----- Redirection Functions -----
 void			redirect_input(t_command *cmd);
 void			redirect_output(t_command *cmd);
-void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd);
-void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell, int *pipe_fd);
+void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
+					int *pipe_fd);
+void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
+					int *pipe_fd);
 
 // ----- Parse Functions -----
 t_ast_node		*parse(t_token **tokens);
@@ -233,7 +241,7 @@ void			free_history(t_history **history_list);
 // ----- Expansion Functions -----
 char			*expand_variable(char *str, t_minishell *minishell);
 char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
-			                        t_minishell *minishell);
+					t_minishell *minishell);
 char			*append_segment(char *final_str, char *str, int *i);
 int				get_var_name_len(char *str, char **var_name_ptr);
 char			*get_var_value(char *var_name, t_minishell *minishell);
@@ -250,8 +258,13 @@ void			add_token(t_token **head, t_token *new_token);
 
 char			*init_word(char *line, int *i, t_minishell *minishell);
 int				is_separator(char c);
-char			*handle_quoted_string(char *line, int *i, t_minishell *minishell);
-char			*get_unquoted_segment(char *line, int *i, t_minishell *minishell);
-void			handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell);
+char			*handle_quoted_string(char *line, int *i,
+					t_minishell *minishell);
+char			*get_unquoted_segment(char *line, int *i,
+					t_minishell *minishell);
+char			*strjoin_free(char *full_word, char *segment);
+void			handle_word(char *line, int *i, t_token **tokens,
+					t_minishell *minishell);
+
 
 #endif

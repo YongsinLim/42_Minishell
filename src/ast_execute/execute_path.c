@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/26 19:42:47 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 14:23:17 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,30 +19,9 @@ void	execute(char **cmd_array, t_minishell *minishell)
 
 	if (!cmd_array || !cmd_array[0])
 		return ;
-	path = cmd_array[0];
-	if (ft_strchr(path, '/') != NULL)
-	{
-		if (access(path, F_OK) != ACCESS_PERMITTED)
-		{
-			report_error("no such file or directory", path);
-			minishell->last_exit_status = 127;
-			return ;
-		}
-		if (access(path, X_OK) != ACCESS_PERMITTED)
-		{
-			report_error("permission denied", path);
-			minishell->last_exit_status = 126;
-			return ;
-		}
-	}
-	else
-		path = construct_full_path(minishell->env_list, path);
+	path = build_path(cmd_array[0], minishell);
 	if (!path)
-	{
-		report_error("command not found", cmd_array[0]);
-		minishell->last_exit_status = 127;
 		return ;
-	}
 	envp_array = env_list_to_array(minishell->env_list);
 	if (execve(path, cmd_array, envp_array) == ERROR)
 	{
@@ -61,6 +40,35 @@ search for executable commands.
 e.g.
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 */
+
+char	*build_path(char *cmd, t_minishell *minishell)
+{
+	char	*path;
+
+	if (ft_strchr(cmd, '/'))
+	{
+		if (access(cmd, F_OK) != ACCESS_PERMITTED)
+		{
+			report_error("no such file or directory", cmd);
+			minishell->last_exit_status = 127;
+			return (NULL);
+		}
+		if (access(cmd, X_OK) != ACCESS_PERMITTED)
+		{
+			report_error("permission denied", cmd);
+			minishell->last_exit_status = 126;
+			return (NULL);
+		}
+		return (cmd);
+	}
+	path = construct_full_path(minishell->env_list, cmd);
+	if (!path)
+	{
+		report_error("command not found", cmd);
+		minishell->last_exit_status = 127;
+	}
+	return (path);
+}
 
 char	*construct_full_path(t_env *env_list, char *command)
 {
@@ -107,16 +115,4 @@ char	*search_path(char **path_dir, char *command)
 		i++;
 	}
 	return (NULL);
-}
-
-void	report_error(char *msg, char *param)
-{
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(msg, 2);
-	if (param)
-	{
-		ft_putstr_fd(": ", 2);
-		ft_putstr_fd(param, 2);
-	}
-	ft_putstr_fd("\n", 2);
 }

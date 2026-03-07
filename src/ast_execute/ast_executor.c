@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/06 16:53:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 14:27:05 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,18 @@ fork() :
 -1: The creation of the child process was unsuccessful due to an error
 0: The code is executing within the child process.
 Positive value (the child's PID): The code is executing within the parent process
+
+To check edge case : < file or > file (without command to run)
+if (!ast->command->argv[0])
+		return (redirect_input(ast->command), redirect_output(ast->command),
+			SHELL_SUCCESS);
 */
 
 int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	pid_t	pid;
-	int		status;
 
-	if (!ast->command->argv[0]) // edge case : < file or > file (without command to run)
+	if (!ast->command->argv[0])
 		return (redirect_input(ast->command), redirect_output(ast->command),
 			SHELL_SUCCESS);
 	if (is_builtin(ast->command->argv[0]))
@@ -68,8 +72,7 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
-	status = wait_for_children(pid);
-	return (status);
+	return (wait_for_children(pid));
 }
 
 int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)

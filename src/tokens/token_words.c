@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:42:18 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 13:36:21 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,27 @@ char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell)
 	return (expanded);
 }
 
+char	*strjoin_free(char *full_word, char *segment)
+{
+	char	*new;
+
+	if (!segment)
+	{
+		free(full_word);
+		return (NULL);
+	}
+	new = ft_strjoin(full_word, segment);
+	free(full_word);
+	free(segment);
+	return (new);
+}
+
 void	handle_word(char *line, int *i, t_token **tokens,
 		t_minishell *minishell)
 {
 	int		has_quotes;
 	char	*full_word;
 	char	*segment;
-	char	*temp;
 
 	has_quotes = FALSE;
 	full_word = init_word(line, i, minishell);
@@ -100,15 +114,9 @@ void	handle_word(char *line, int *i, t_token **tokens,
 		}
 		else
 			segment = get_unquoted_segment(line, i, minishell);
-		if (!segment)
-		{
-			free(full_word);
+		full_word = strjoin_free(full_word, segment);
+		if (!full_word)
 			return ;
-		}
-		temp = ft_strjoin(full_word, segment);
-		free(full_word);
-		free(segment);
-		full_word = temp;
 	}
 	if (full_word && (full_word[0] != '\0' || has_quotes))
 		add_token(tokens, new_token(full_word, TOKEN_WORD, has_quotes));

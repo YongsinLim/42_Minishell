@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/12 13:48:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/07 14:17:33 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,3 @@ WIFSIGNALED checks if the child was terminated by a signal
 
 WTERMSIG gets the signal number (start from 128 onwards)
 */
-
-void	error_exit(char *error_msg)
-{
-	perror(error_msg);
-	exit (SHELL_FAILURE);
-}
