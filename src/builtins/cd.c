@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 18:46:25 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:48:45 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/25 16:30:20 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ int	ft_cd(char **argv, t_minishell *minishell)
 	if (chdir(path) == ERROR)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
-		printf("%s: %s\n", strerror(2), path);
+		printf("%s: %s\n", path, strerror(errno));
 		return (SHELL_FAILURE);
 	}
 	update_env("OLDPWD", cwd, minishell);

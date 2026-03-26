@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/12 14:03:47 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/25 16:10:08 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,23 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("Heredoc pipe failed");
-	limiter = cmd->heredoc_delimiter;
+	limiter = ft_strdup(cmd->heredoc_delimiter);
+	if (!limiter)
+		error_exit("Heredoc limiter malloc failed");
 	while (1)
 	{
 		input_line = readline("heredoc> ");
 		if (!input_line)
+		{
+			free(limiter);
 			break ;
+		}
 		input_line = verify_expand_heredoc(cmd, minishell, input_line, limiter);
 		if (!input_line)
+		{
+			free(limiter);
 			break ;
+		}
 		ft_putstr_fd(input_line, pipe_fd[1]);
 		ft_putstr_fd("\n", pipe_fd[1]);
 		free(input_line);

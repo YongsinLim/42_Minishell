@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/07 14:23:17 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/26 16:41:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,30 @@
 
 void	execute(char **cmd_array, t_minishell *minishell)
 {
+	char	*cmd_name;
 	char	*path;
 	char	**envp_array;
 
-	if (!cmd_array || !cmd_array[0])
+	cmd_name = "";
+	if (cmd_array && cmd_array[0])
+		cmd_name = cmd_array[0];
+	if (!cmd_array || !cmd_array[0] || cmd_array[0][0] == '\0')
+	{
+		report_error(cmd_name, "command not found");
+		minishell->last_exit_status = 127;
 		return ;
+	}
 	path = build_path(cmd_array[0], minishell);
 	if (!path)
 		return ;
 	envp_array = env_list_to_array(minishell->env_list);
+	if (!envp_array) {
+		report_error("malloc error", "enve_list_to_array");
+		minishell->last_exit_status = SHELL_FAILURE;
+		if (path != cmd_array[0])
+			free(path);
+		return ;
+	}
 	if (execve(path, cmd_array, envp_array) == ERROR)
 	{
 		perror(path);
@@ -97,6 +112,19 @@ char	**get_path(t_env *env_list)
 	return (NULL);
 }
 
+int	is_directory_path(char *path)
+{
+	DIR *dir;
+
+	dir = opendir(path);
+	if (dir)
+	{
+		closedir(dir);
+		return (TRUE);
+	}
+	return (FALSE);
+}
+
 char	*search_path(char **path_dir, char *command)
 {
 	int		i;
@@ -109,7 +137,8 @@ char	*search_path(char **path_dir, char *command)
 		temp_path = ft_strjoin(path_dir[i], "/");
 		full_path = ft_strjoin(temp_path, command);
 		free(temp_path);
-		if (access(full_path, X_OK) == ACCESS_PERMITTED)
+		if (access(full_path, X_OK) == ACCESS_PERMITTED
+			&& !is_directory_path(full_path))
 			return (full_path);
 		free(full_path);
 		i++;

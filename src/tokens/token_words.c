@@ -6,18 +6,18 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/07 13:36:21 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/25 15:27:59 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*init_word(char *line, int *i, t_minishell *minishell)
+char	*init_word(char *line, int *i, t_minishell *minishell, int disable_expand)
 {
 	char	*home;
 
-	if (line[*i] == '~' && (is_separator(line[*i + 1]) || line[*i + 1] == '/'
-			|| line[*i + 1] == '\0'))
+	if (!disable_expand && line[*i] == '~' && (is_separator(line[*i + 1])
+		|| line[*i + 1] == '/' || line[*i + 1] == '\0'))
 	{
 		home = get_var_value("HOME", minishell);
 		(*i)++;
@@ -38,7 +38,8 @@ int	is_separator(char c)
 		|| c == '&' || c == '(' || c == ')');
 }
 
-char	*handle_quoted_string(char *line, int *i, t_minishell *minishell)
+char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
+		int disable_expand)
 {
 	char	quote_char;
 	int		start_idx;
@@ -57,7 +58,7 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell)
 	}
 	quoted_str = ft_substr(line, start_idx, *i - start_idx);
 	(*i)++;
-	if (quote_char == '"')
+	if (quote_char == '"' && !disable_expand)
 		expanded_str = expand_variable(quoted_str, minishell);
 	else
 		expanded_str = ft_strdup(quoted_str);
@@ -65,7 +66,8 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell)
 	return (expanded_str);
 }
 
-char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell)
+char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
+		int disable_expand)
 {
 	int		start_idx;
 	char	*word;
@@ -76,7 +78,10 @@ char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell)
 		&& line[*i] != '\'')
 		(*i)++;
 	word = ft_substr(line, start_idx, *i - start_idx);
-	expanded = expand_variable(word, minishell);
+	if (disable_expand)
+		expanded = ft_strdup(word);
+	else
+		expanded = expand_variable(word, minishell);
 	free(word);
 	return (expanded);
 }
@@ -94,32 +99,4 @@ char	*strjoin_free(char *full_word, char *segment)
 	free(full_word);
 	free(segment);
 	return (new);
-}
-
-void	handle_word(char *line, int *i, t_token **tokens,
-		t_minishell *minishell)
-{
-	int		has_quotes;
-	char	*full_word;
-	char	*segment;
-
-	has_quotes = FALSE;
-	full_word = init_word(line, i, minishell);
-	while (line[*i] && !is_separator(line[*i]))
-	{
-		if (line[*i] == '"' || line[*i] == '\'')
-		{
-			has_quotes = TRUE;
-			segment = handle_quoted_string(line, i, minishell);
-		}
-		else
-			segment = get_unquoted_segment(line, i, minishell);
-		full_word = strjoin_free(full_word, segment);
-		if (!full_word)
-			return ;
-	}
-	if (full_word && (full_word[0] != '\0' || has_quotes))
-		add_token(tokens, new_token(full_word, TOKEN_WORD, has_quotes));
-	free(full_word);
-	(*i)--;
 }
