@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:51 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:50:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/26 16:00:08 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,15 +58,18 @@ void	process_export_arg(char *arg, t_minishell *minishell)
 	char	*equal_pos;
 	char	*key;
 	char	*value;
+	char	*clean_value;
 
 	equal_pos = ft_strchr(arg, '=');
 	if (equal_pos)
 	{
 		key = ft_substr(arg, 0, equal_pos - arg);
 		value = ft_strdup(equal_pos + 1);
-		update_env(key, value, minishell);
+		clean_value = ft_strtrim(value, "\r\n");
+		update_env(key, clean_value, minishell);
 		free(key);
 		free(value);
+		free(clean_value);
 	}
 	else
 		update_env(arg, NULL, minishell);

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/07 14:24:33 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/26 17:54:51 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MINISHELL_H
 
 # include "../Libft/libft.h"
+# include "signals.h"
 # include <readline/readline.h> // for readline
 # include <readline/history.h> // for readline, add_history
 # include <stdlib.h> // for malloc, free, exit
@@ -23,10 +24,12 @@
 # include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
 # include <limits.h> // for PATH_MAX
-
-
-
 # include <dirent.h> // for opendir, readdir, closedir
+# include <errno.h> // for errno
+
+
+
+
 # include <signal.h>
 # include <sys/stat.h>
 # include <string.h>
@@ -75,6 +78,7 @@ typedef struct s_token
 	char			*value;
 	t_token_type	type;
 	int				has_quotes;
+	int				has_wildcard;
 	struct s_token	*next;
 }				t_token;
 
@@ -187,6 +191,7 @@ void			execute(char **cmd_array, t_minishell *minishell);
 char			*build_path(char *cmd, t_minishell *minishell);
 char			*construct_full_path(t_env *env_list, char *command);
 char			**get_path(t_env *env_list);
+int				is_directory_path(char *path);
 char			*search_path(char **path_dir, char *command);
 
 // ----- Wait Child Functions -----
@@ -215,6 +220,9 @@ t_ast_node		*parse_subshell(t_token **tokens);
 t_ast_node		*parse_simple_command(t_token **tokens);
 
 t_command		*parse_one_command(t_token **tokens_ptr);
+int				add_argv_value(t_list **argv_list, char *value);
+int				is_whitespace(char c);
+int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
 int				tokens_to_cmd(t_token **token_ptr, t_command *cmd,
 					t_list **argv_list);
 int				parse_redirection(t_token **tokens, t_command *cmd);
@@ -247,7 +255,6 @@ int				get_var_name_len(char *str, char **var_name_ptr);
 char			*get_var_value(char *var_name, t_minishell *minishell);
 char			*append_char(char *s1, char c);
 
-
 // ----- Token Functions -----
 void			skip_invalid_char(char *line, int *i);
 void			add_redirection_token(char *line, int *i, t_token **tokens);
@@ -256,15 +263,21 @@ t_token			*new_token(char *value, t_token_type type, int has_quotes);
 t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
 
-char			*init_word(char *line, int *i, t_minishell *minishell);
+char			*init_word(char *line, int *i, t_minishell *minishell, int disable_expand);
 int				is_separator(char c);
-char			*handle_quoted_string(char *line, int *i,
-					t_minishell *minishell);
-char			*get_unquoted_segment(char *line, int *i,
-					t_minishell *minishell);
+char			*handle_quoted_string(char *line, int *i, t_minishell *minishell,
+					int disable_expand);
+char			*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
+					int disable_expand);
 char			*strjoin_free(char *full_word, char *segment);
+void			create_and_add_token(char *full_word, int *flags, t_token **tokens);
 void			handle_word(char *line, int *i, t_token **tokens,
 					t_minishell *minishell);
 
+// ----- Wildcard Functions -----
+int				match_pattern(char *pattern, char *filename);
+int				compare_filename(char *a, char *b);
+void			sort_argv_list(t_list **argv_list);
+void			expand_wildcard(char *pattern, t_list **argv_list);
 
 #endif
