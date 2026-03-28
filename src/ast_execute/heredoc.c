@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/25 16:10:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 16:06:42 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,26 +38,28 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 {
 	int		pipe_fd[2];
 	char	*input_line;
-	char	*limiter;
+	char	*expanded_result;
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("Heredoc pipe failed");
-	limiter = ft_strdup(cmd->heredoc_delimiter);
-	if (!limiter)
-		error_exit("Heredoc limiter malloc failed");
 	while (1)
 	{
 		input_line = readline("heredoc> ");
 		if (!input_line)
+			break ;
+		if (ft_strncmp(input_line, cmd->heredoc_delimiter,
+			ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
 		{
-			free(limiter);
+			free(input_line);
 			break ;
 		}
-		input_line = verify_expand_heredoc(cmd, minishell, input_line, limiter);
-		if (!input_line)
+		if (cmd->heredoc_is_quoted == 0)
 		{
-			free(limiter);
-			break ;
+			expanded_result = expand_variable(input_line, minishell);
+			free(input_line);
+			input_line = expanded_result;
+			if (!input_line)
+				break ;
 		}
 		ft_putstr_fd(input_line, pipe_fd[1]);
 		ft_putstr_fd("\n", pipe_fd[1]);
@@ -65,29 +67,4 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 	}
 	close(pipe_fd[1]);
 	cmd->heredoc_fd = pipe_fd[0];
-}
-
-char	*verify_expand_heredoc(t_command *cmd, t_minishell *minishell,
-		char *line, char *limiter)
-{
-	char	*expanded_result;
-
-	if (ft_strncmp(line, limiter, ft_strlen(limiter)) == 0
-		&& ft_strlen(line) == ft_strlen(limiter))
-	{
-		free(line);
-		return (NULL);
-	}
-	if (cmd->heredoc_is_quoted == 0)
-	{
-		expanded_result = expand_variable(line, minishell);
-		free(line);
-		line = expanded_result;
-	}
-	if (!line)
-	{
-		perror("Heredoc expansion failed");
-		return (NULL);
-	}
-	return (line);
 }

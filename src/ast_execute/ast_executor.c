@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/07 14:27:05 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/27 16:19:41 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 	pid_t	pid_right;
 	int		pipe_fd[2];
 	int		status;
+	int		right_status;
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("Pipe failed");
@@ -114,9 +115,15 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 		execute_pipe_right(ast, minishell, pipe_fd);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	wait_for_children(pid_left);
-	status = wait_for_children(pid_right);
-	return (status);
+	if (waitpid(pid_right, &right_status, 0) == -1)
+		return (SHELL_FAILURE);
+	while (waitpid(-1, &status, 0) != -1)
+		; // avoids zombie side effects that can look like shell “stuck” behavior in longer runs.
+	if (WIFEXITED(right_status))
+		return (WEXITSTATUS(right_status));
+	if (WIFSIGNALED(right_status))
+		return (128 + WTERMSIG(right_status));
+	return (SHELL_FAILURE);
 }
 
 int	exec_subshell(t_ast_node *ast, t_minishell *minishell)

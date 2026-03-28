@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/26 17:54:51 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 15:08:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,8 +175,6 @@ int				ft_exit(char **argv, t_minishell *minishell);
 // ----- Heredoc Functions -----
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
-char			*verify_expand_heredoc(t_command *cmd, t_minishell *minishell,
-					char *line, char *limiter);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);

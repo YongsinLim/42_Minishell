@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 16:39:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/09 17:22:17 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/27 17:00:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_ast_node	*parse_command_or_subshell(t_token **tokens)
 {
-	if (!tokens ||!*tokens)
+	if (!tokens || !*tokens)
 		return (NULL);
 	if ((*tokens)->type == TOKEN_L_PAREN)
 		return (parse_subshell(tokens));
@@ -55,6 +55,15 @@ t_ast_node	*parse_simple_command(t_token **tokens)
 {
 	t_ast_node	*node;
 
+	if (!tokens || !*tokens)
+		return (ft_putstr_fd("minishell: syntax error near unexpected token 'newline'\n", 2), NULL);
+	if ((*tokens)->type == TOKEN_PIPE || (*tokens)->type == TOKEN_AND || (*tokens)->type == TOKEN_OR)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token '", 2);
+		ft_putstr_fd((*tokens)->value, 2);
+		ft_putstr_fd("'\n", 2);
+		return (NULL);
+	}
 	node = create_new_ast_node(NODE_COMMAND);
 	if (!node)
 		return (NULL);

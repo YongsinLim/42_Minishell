@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/26 18:03:24 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 15:21:26 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,7 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	{
 		status = tokens_to_cmd(&token, cmd, &argv_list);
 		if (status == SHELL_FAILURE)
-			return (parse_error_cleanup(&argv_list, cmd,
-					"minishell: malloc error\n"));
+			return (ft_lstclear(&argv_list, free), free(cmd), NULL);
 	}
 	cmd->argv = to_str_array(argv_list);
 	if (!cmd->argv)
@@ -173,23 +172,27 @@ t_token	*token_redirection(t_token *token, t_command *command)
 	token = token->next;
 	if (token == NULL)
 	{
-		ft_putstr_fd("minishell : invalid file name", 2);
+		ft_putstr_fd("minishell : syntax error near unexpected token 'newline'\n", 2);
+		return (NULL);
+	}
+	if (token->type != TOKEN_WORD)
+	{
+		ft_putstr_fd("minishell : syntax error near unexpected token '", 2);
+		ft_putstr_fd(token->value, 2);
+		ft_putstr_fd("'\n", 2);
 		return (NULL);
 	}
 	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND)
 	{
 		command->output_file = ft_strdup(token->value);
-		command->is_append = type == TOKEN_APPEND;
+		command->is_append = (type == TOKEN_APPEND);
 	}
 	else if (type == TOKEN_REDIRECT_IN)
 		command->input_file = ft_strdup(token->value);
 	else if (type == TOKEN_HEREDOC)
 	{
 		command->heredoc_delimiter = ft_strdup(token->value);
-		if (token->has_quotes)
-			command->heredoc_is_quoted = 1;
-		else
-			command->heredoc_is_quoted = 0;
+		command->heredoc_is_quoted = token->has_quotes;
 	}
 	return (token);
 }

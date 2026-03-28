@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:47:44 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 15:30:07 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,12 @@ void	add_redirection_token(char *line, int *i, t_token **tokens)
 		if (line[*i + 1] == '>')
 		{
 			add_token(tokens, new_token(">>", TOKEN_APPEND, FALSE));
+			(*i)++;
+		}
+		else if (line[*i + 1] == '|')
+		{
+			/* Treat >| like output redirection (force clobber in sh). */
+			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
 			(*i)++;
 		}
 		else

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:02:43 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/06 21:52:01 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 16:10:39 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,7 @@ t_ast_node	*parse(t_token **tokens)
 		op_node->left = left_node;
 		op_node->right = parse_pipeline(tokens);
 		if (!op_node->right)
-		{
-			ft_putstr_fd("minishell: syntax error after logical operator\n", 2);
 			return (free_ast(&op_node), NULL);
-		}
 		left_node = op_node;
 	}
 	return (left_node);
@@ -49,13 +46,13 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	left_cmd = parse_command_or_subshell(tokens);
 	if (!left_cmd)
 		return (NULL);
-	current_token = *tokens;
-	while (current_token && current_token->type == TOKEN_PIPE)
+
+	while (*tokens && (*tokens)->type == TOKEN_PIPE)
 	{
+		current_token = *tokens;
 		*tokens = current_token->next;
 		free(current_token->value);
 		free(current_token);
-		current_token = *tokens;
 		pipe_node = create_new_ast_node(NODE_PIPE);
 		if (!pipe_node)
 			return (free_ast(&left_cmd), NULL);
