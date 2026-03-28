@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/26 16:41:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 15:35:10 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,13 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	{
 		if (access(cmd, F_OK) != ACCESS_PERMITTED)
 		{
-			report_error("no such file or directory", cmd);
+			report_error(cmd, "no such file or directory");
 			minishell->last_exit_status = 127;
 			return (NULL);
 		}
 		if (access(cmd, X_OK) != ACCESS_PERMITTED)
 		{
-			report_error("permission denied", cmd);
+			report_error(cmd, "permission denied");
 			minishell->last_exit_status = 126;
 			return (NULL);
 		}
@@ -79,7 +79,7 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	path = construct_full_path(minishell->env_list, cmd);
 	if (!path)
 	{
-		report_error("command not found", cmd);
+		report_error(cmd, "command not found");
 		minishell->last_exit_status = 127;
 	}
 	return (path);

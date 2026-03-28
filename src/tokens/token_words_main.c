@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/26 18:00:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/27 15:09:05 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,13 @@ int	last_token_is_heredoc(t_token *tokens)
 void	create_and_add_token(char *full_word, int *flags, t_token **tokens)
 {
 	t_token	*new_node;
+	char	*trim_word;
 
 	if (full_word && (full_word[0] != '\0' || flags[0]))
 	{
-		new_node = new_token(full_word, TOKEN_WORD, flags[0]);
+		trim_word = ft_strtrim(full_word, "\n\r");
+		new_node = new_token(trim_word, TOKEN_WORD, flags[0]);
+		free(trim_word);
 		new_node->has_wildcard = flags[1];
 		add_token(tokens, new_node);
 	}

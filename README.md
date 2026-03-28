@@ -154,6 +154,10 @@ RoadMap - 26.03.2026
 2. Solve export issue (export T="echo segfault | grep segfault" --> $T)
 3. Solve echo issue ('''''''''''''''' echo ok) - 1st arg exists but is empty
 
+RoadMap - 28.03.2026
+1. exit code for pipe (wrong store the exit code for other childs, should return the rightward child's exit code)
+2. exit code for non_numeric arg change to 255
+3. fix issue : >> >> >> >> (no valid command, file, etc)
 
 
 	Issue Lists (discovered and unfixed)

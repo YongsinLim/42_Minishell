@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 18:46:25 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/25 16:30:20 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/28 15:42:05 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,26 @@ char	*get_target_path(char **argv, t_minishell *minishell)
 {
 	char	*path;
 
-	if (!argv[1])
+	if (!argv[1] || ft_strncmp(argv[1], "--", 3) == 0)
 	{
 		path = get_var_value("HOME", minishell);
-		if (ft_strncmp(path, "", 1) == 0)
+		if (!path || path[0] == '\0')
+		{
+			free(path);
 			report_error("cd", "HOME not set");
+			return (NULL);
+		}
 		return (path);
 	}
 	if (ft_strncmp(argv[1], "-", 2) == 0)
 	{
 		path = get_var_value("OLDPWD", minishell);
-		if (!path)
+		if (!path || path[0] == '\0')
+		{
+			free(path);
 			report_error("cd", "OLDPWD not set");
+			return (NULL);
+		}
 		return (path);
 	}
 	return (argv[1]);
@@ -35,6 +43,7 @@ char	*get_target_path(char **argv, t_minishell *minishell)
 
 /*
 cd [no arg] = go to home
+cd -- = go to home
 cd ~ = go to home
 cd - = go to OLDPWD
  */

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/06 16:30:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/27 17:10:02 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	main(int argc, char **argv, char **envp)
 		else {
 			line = get_next_line(STDIN_FILENO);
 			if (line) {
-				minishell.input = ft_strtrim(line, "\n");
+				minishell.input = ft_strtrim(line, "\r\n");
 				free(line);
 			}
 			else
@@ -97,10 +97,7 @@ void	execution(t_minishell *minishell)
 		minishell->last_exit_status = execute_ast(minishell->ast, minishell);
 	}
 	else
-	{
-		ft_putstr_fd("minishell : syntax error\n", 2);
-		minishell->last_exit_status = SHELL_FAILURE;
-	}
+		minishell->last_exit_status = SYNTAX_ERROR;
 	free(minishell->input);
 	minishell->input = NULL;
 	free_tokens(&minishell->tokens);
