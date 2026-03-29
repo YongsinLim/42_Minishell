@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 12:43:13 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/08 18:27:04 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/29 13:11:31 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,6 @@ void	*parse_error_cleanup(t_list **argv_list, t_command *cmd, char *msg)
 {
 	ft_putstr_fd(msg, 2);
 	ft_lstclear(argv_list, free);
-	free(cmd);
+	free_command(cmd);
 	return (NULL);
 }

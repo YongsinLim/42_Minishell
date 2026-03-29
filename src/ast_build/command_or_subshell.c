@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 16:39:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/27 17:00:27 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/29 13:25:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,6 @@ t_ast_node	*parse_simple_command(t_token **tokens)
 		return (NULL);
 	node->command = parse_one_command(tokens);
 	if (!node->command)
-	{
-		free_ast(&node);
-		return (NULL);
-	}
-	if (parse_redirection(tokens, node->command) != 0)
 	{
 		free_ast(&node);
 		return (NULL);
