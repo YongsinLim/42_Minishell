@@ -38,13 +38,28 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 {
 	int		pipe_fd[2];
 	char	*input_line;
+	char	*line;
 	char	*expanded_result;
+	int		interactive;
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("Heredoc pipe failed");
+	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{
-		input_line = readline("heredoc> ");
+		if (interactive)
+			input_line = readline("heredoc> ");
+		else
+		{
+			line = get_next_line(STDIN_FILENO);
+			if (line)
+			{
+				input_line = ft_strtrim(line, "\r\n");
+				free(line);
+			}
+			else
+				input_line = NULL;
+		}
 		if (!input_line)
 			break ;
 		if (ft_strncmp(input_line, cmd->heredoc_delimiter,

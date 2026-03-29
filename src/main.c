@@ -16,41 +16,39 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
 	char		*line;
+	int			interactive;
 
 	(void)argc;
 	(void)argv;
 	init_minishell(&minishell, envp);
 
 	// init_signals_prompt();
+	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{
-
-
-		// to check if stdin is a terminal using isatty(STDIN_FILENO):
-		if (isatty(STDIN_FILENO))
-			minishell.input = readline("Minishell > "); // handle in terminal or not in terminal
-		else {
+		if (interactive)
+			minishell.input = readline("Minishell > ");
+		else
+		{
 			line = get_next_line(STDIN_FILENO);
-			if (line) {
+			if (line)
+			{
 				minishell.input = ft_strtrim(line, "\r\n");
 				free(line);
 			}
 			else
 				minishell.input = NULL;
 		}
-
-
-
-
 		if (!minishell.input)
 		{
-			if (isatty(STDIN_FILENO))
+			if (interactive)
 				ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
 			break ;
 		}
 		if (!is_all_whitespace(minishell.input))
 		{
-			add_history(minishell.input);
+			if (interactive)
+				add_history(minishell.input);
 			add_to_history(minishell.input, &minishell.history_list);
 		}
 		minishell.tokens = tokenize(minishell.input, &minishell);
