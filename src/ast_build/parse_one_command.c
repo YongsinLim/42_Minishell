@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/28 15:21:26 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/29 13:26:42 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	{
 		status = tokens_to_cmd(&token, cmd, &argv_list);
 		if (status == SHELL_FAILURE)
-			return (ft_lstclear(&argv_list, free), free(cmd), NULL);
+			return (parse_error_cleanup(&argv_list, cmd, NULL));
 	}
 	cmd->argv = to_str_array(argv_list);
 	if (!cmd->argv)
