@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/27 15:09:05 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/29 14:26:18 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,12 @@ void	handle_word(char *line, int *i, t_token **tokens,
 		}
 		else
 		{
+			if (!disable_expand && line[*i] == '$'
+				&& (line[*i + 1] == '"' || line[*i + 1] == '\''))
+			{
+				(*i)++;
+				continue ;
+			}
 			segment = get_unquoted_segment(line, i, minishell, disable_expand);
 			if (!disable_expand && segment && ft_strchr(segment, '*'))
 				flags[1] = TRUE;

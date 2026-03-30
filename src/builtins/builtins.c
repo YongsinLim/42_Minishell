@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:41:28 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/04 15:36:09 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 12:32:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ int	execute_builtin(char **argv, t_minishell *minishell)
 	if (ft_strncmp(argv[0], "unset", 6) == 0)
 		return (ft_unset(argv, minishell));
 	if (ft_strncmp(argv[0], "env", 4) == 0)
-		return (ft_env(minishell));
+		return (ft_env(argv, minishell));
 	if (ft_strncmp(argv[0], "exit", 5) == 0)
 		return (ft_exit(argv, minishell));
 	if (ft_strncmp(argv[0], "history", 8) == 0)
