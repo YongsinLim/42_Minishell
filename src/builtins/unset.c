@@ -6,11 +6,29 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:12 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:44:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 16:35:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+int	check_valid_unset_identifier(char *arg)
+{
+	int	i;
+
+	// first char must be alpha or underscore, and arg must not be empty
+	if (!arg || !arg[0] || (!ft_isalpha(arg[0]) && arg[0] != '_'))
+		return (FALSE);
+	i = 1;
+	while (arg[i])
+	{
+		// unset must reject '=' and '+' and any non [A-Za-z0-9_]
+		if (!ft_isalnum(arg[i]) && arg[i] != '_')
+			return (FALSE);
+		i++;
+	}
+	return (TRUE);
+}
 
 void	remove_env_node(t_env **env_head, char *key)
 {
@@ -49,7 +67,7 @@ int	ft_unset(char **argv, t_minishell *minishell)
 	status = SHELL_SUCCESS;
 	while (argv[i])
 	{
-		if (!check_valid_identifier(argv[i]))
+		if (!check_valid_unset_identifier(argv[i]))
 		{
 			ft_putstr_fd("minishell: unset: `", 2);
 			ft_putstr_fd(argv[i], 2);
