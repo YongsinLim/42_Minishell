@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/03 18:46:25 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/28 15:42:05 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/29 19:18:37 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ char	*get_target_path(char **argv, t_minishell *minishell)
 		}
 		return (path);
 	}
-	return (argv[1]);
+	return (ft_strdup(argv[1]));
 }
 
 /*
@@ -53,6 +53,7 @@ int	ft_cd(char **argv, t_minishell *minishell)
 	char	*path;
 	char	cwd[PATH_MAX];
 	char	new_cwd[PATH_MAX];
+	int		got_new_cwd;
 
 	if (argv[1] && argv[2])
 		return (report_error("cd", "too many arguments"), SHELL_FAILURE);
@@ -64,13 +65,19 @@ int	ft_cd(char **argv, t_minishell *minishell)
 	if (chdir(path) == ERROR)
 	{
 		ft_putstr_fd("minishell: cd: ", 2);
-		printf("%s: %s\n", path, strerror(errno));
+		ft_putstr_fd(path, 2);
+		ft_putstr_fd(": ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n", 2);
+		free(path);
 		return (SHELL_FAILURE);
 	}
+	free(path);
 	update_env("OLDPWD", cwd, minishell);
-	if (getcwd(new_cwd, sizeof(new_cwd)) != NULL)
+	got_new_cwd = (getcwd(new_cwd, sizeof(new_cwd)) != NULL);
+	if (got_new_cwd)
 		update_env("PWD", new_cwd, minishell);
-	if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0)
+	if (argv[1] && ft_strncmp(argv[1], "-", 2) == 0 && got_new_cwd)
 		ft_putendl_fd(new_cwd, 1);
 	return (SHELL_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/28 15:08:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 12:31:48 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,9 @@ int				is_builtin(char *cmd);
 int				execute_builtin(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Export -----
+int				env_key_cmp(t_env *a, t_env *b);
+void			swap_env_ptr(t_env **a, t_env **b);
+void			sort_env_parts(t_env **arr, int count);
 int				print_export(t_env *env);
 int				check_valid_identifier(char *arg);
 void			process_export_arg(char *arg, t_minishell *minishell);
@@ -166,7 +169,7 @@ int				ft_echo(char **argv);
 int				ft_pwd(void);
 
 // ----- Builtin - Env -----
-int				ft_env(t_minishell *minishell);
+int				ft_env(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Exit -----
 int				ft_is_numeric(char *str);

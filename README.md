@@ -159,6 +159,12 @@ RoadMap - 28.03.2026
 2. exit code for non_numeric arg change to 255
 3. fix issue : >> >> >> >> (no valid command, file, etc)
 
+RoadMap - 30.03.2026
+1. Fix export : TEST+=100 is append, not replace test
+2. Fix cd : fix error go to stdout, instead of stderr
+3. Fix env : Reject extra option and arg when calling env
+
+
 
 	Issue Lists (discovered and unfixed)
 ```
