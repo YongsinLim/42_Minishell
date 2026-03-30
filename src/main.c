@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/27 17:10:02 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 17:41:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,13 @@ int	main(int argc, char **argv, char **envp)
 		if (!minishell.tokens)
 		{
 			free(minishell.input);
+			if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
+				break ;
 			continue ;
 		}
 		execution(&minishell);
+		if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
+			break ;
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
 }
