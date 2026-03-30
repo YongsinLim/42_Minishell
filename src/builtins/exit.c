@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 11:10:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/27 17:39:47 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 17:13:25 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,13 @@ int	ft_is_numeric(char *str)
 
 int	ft_exit(char **argv, t_minishell *minishell)
 {
-	ft_putstr_fd("exit\n", 2);
+	int	interactive;
+
+	interactive = isatty(STDIN_FILENO);
 	if (argv[1] && !ft_is_numeric(argv[1]))
 	{
+		if (interactive)
+			ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
@@ -48,6 +52,8 @@ int	ft_exit(char **argv, t_minishell *minishell)
 		minishell->last_exit_status = 1;
 		return (minishell->last_exit_status);
 	}
+	if (interactive)
+		ft_putstr_fd("exit\n", 2);
 	if (!argv[1])
 		cleanup_and_exit(minishell, minishell->last_exit_status);
 	cleanup_and_exit(minishell, ft_atoi(argv[1]) % 256);

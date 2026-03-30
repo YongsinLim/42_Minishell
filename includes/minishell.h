@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/30 12:31:48 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/30 16:16:50 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,6 +158,7 @@ char			*get_target_path(char **argv, t_minishell *minishell);
 int				ft_cd(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Unset -----
+int				check_valid_unset_identifier(char *arg);
 void			remove_env_node(t_env **env_head, char *key);
 int				ft_unset(char **argv, t_minishell *minishell);
 
