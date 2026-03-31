@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 18:06:59 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/30 12:31:32 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 21:53:43 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,10 @@ int	ft_env(char **argv, t_minishell *minishell)
 			ft_putstr_fd("env: usage: env\n", 2);
 			return (2);
 		}
-		return (report_error("env", "too many arguments"), SHELL_FAILURE);
+		ft_putstr_fd("env: ‘", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd("’: No such file or directory\n", 2);
+		return (127);
 	}
 	current = minishell->env_list;
 	while (current)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_helper.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 12:43:13 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/29 13:11:31 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:45:47 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,7 @@ t_command	*init_cmd(void)
 	if (!command)
 		return (NULL);
 	command->argv = NULL;
-	command->input_file = NULL;
-	command->output_file = NULL;
-	command->is_append = 0;
+	command->redirs = NULL;
 	command->heredoc_delimiter = NULL;
 	command->heredoc_is_quoted = 0;
 	command->heredoc_fd = -1;

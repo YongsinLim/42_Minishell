@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/30 17:41:27 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:58:22 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,30 @@ int	main(int argc, char **argv, char **envp)
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
 }
+void	increment_shlvl(t_minishell *minishell)
+{
+	char	*shlvl_str;
+	int		shlvl_num;
+	char	*new_shlvl_str;
+
+	shlvl_str = get_var_value("SHLVL", minishell);
+	if (shlvl_str[0] == '\0')
+	{
+		update_env("SHLVL", "1", minishell);
+	}
+	else
+	{
+		shlvl_num = ft_atoi(shlvl_str);
+		shlvl_num++;
+		new_shlvl_str = ft_itoa(shlvl_num);
+		if (new_shlvl_str)
+		{
+			update_env("SHLVL", new_shlvl_str, minishell);
+			free(new_shlvl_str);
+		}
+	}
+	free(shlvl_str);
+}
 
 void	init_minishell(t_minishell *minishell, char **envp)
 {
@@ -74,6 +98,7 @@ void	init_minishell(t_minishell *minishell, char **envp)
 	minishell->input = NULL;
 	minishell->tokens = NULL;
 	minishell->ast = NULL;
+	increment_shlvl(minishell);
 }
 
 int	is_all_whitespace(char *str)

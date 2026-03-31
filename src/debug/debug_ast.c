@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   debug_ast.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/18 16:12:07 by jenlee            #+#    #+#             */
-/*   Updated: 2026/01/31 12:41:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:49:12 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ void	print_indent(int level)
 
 void	print_ast(t_ast_node *node, int level)
 {
-	int	i;
+	int		i;
+	t_redir	*current_redir;
 
 	if (!node)
 	{
@@ -51,17 +52,17 @@ void	print_ast(t_ast_node *node, int level)
 				ft_printf("'%s' ", node->command->argv[i]);
 				i++;
 			}
-			// Optional: Print redirections
-			if (node->command->input_file)
-				ft_printf(" < %s", node->command->input_file);
-			if (node->command->output_file)
+			// Print all redirections from the new linked list
+			current_redir = node->command->redirs;
+			while (current_redir)
 			{
-				if (node->command->is_append)
-					ft_printf(" >> %s", node->command->output_file);
-					// Handles append
-				else
-					ft_printf(" > %s", node->command->output_file);
-					// Handles truncate
+				if (current_redir->type == TOKEN_REDIRECT_IN)
+					ft_printf(" < %s", current_redir->file);
+				else if (current_redir->type == TOKEN_REDIRECT_OUT)
+					ft_printf(" > %s", current_redir->file);
+				else if (current_redir->type == TOKEN_APPEND)
+					ft_printf(" >> %s", current_redir->file);
+				current_redir = current_redir->next;
 			}
 			if (node->command->heredoc_delimiter)
 				ft_printf(" << %s", node->command->heredoc_delimiter);
