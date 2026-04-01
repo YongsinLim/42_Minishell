@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/30 16:16:50 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:45:28 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,16 +91,21 @@ typedef enum e_ast_node_type
 	NODE_SUBSHELL
 }			t_ast_node_type;
 
+typedef struct s_redir
+{
+	t_token_type	type;  // Will hold TOKEN_REDIRECT_OUT, TOKEN_APPEND, or TOKEN_REDIRECT_IN
+	char			*file;
+	struct s_redir	*next;
+}	t_redir;
+
 typedef struct s_command
 {
-	char				**argv;
-	char				*input_file;
-	char				*output_file;
-	int					is_append;
-	char				*heredoc_delimiter;
-	int					heredoc_is_quoted;
-	int					heredoc_fd;
-}				t_command;
+	char		**argv;
+	t_redir		*redirs;
+	char		*heredoc_delimiter;
+	int			heredoc_is_quoted;
+	int			heredoc_fd;
+}	t_command;
 
 typedef struct s_ast_node
 {

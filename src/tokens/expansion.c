@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansion.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/03 19:10:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/01 16:39:05 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,11 @@ char	*get_var_value(char *var_name, t_minishell *minishell)
 	while (current)
 	{
 		if (ft_strncmp(current->key, var_name, ft_strlen(var_name) + 1) == 0)
+		{
+			if (current->value == NULL)
+				return (ft_strdup(""));
 			return (ft_strdup(current->value));
+		}
 		current = current->next;
 	}
 	return (ft_strdup(""));

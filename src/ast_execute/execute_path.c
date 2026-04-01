@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_path.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/28 15:35:10 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:55:21 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void	execute(char **cmd_array, t_minishell *minishell)
 	path = build_path(cmd_array[0], minishell);
 	if (!path)
 		return ;
+	update_env("_", path, minishell);
 	envp_array = env_list_to_array(minishell->env_list);
 	if (!envp_array) {
 		report_error("malloc error", "enve_list_to_array");

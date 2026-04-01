@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:12 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/30 16:35:29 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:14:41 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,17 @@ int	ft_unset(char **argv, t_minishell *minishell)
 		return (SHELL_SUCCESS);
 	i = 1;
 	status = SHELL_SUCCESS;
+	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0')
+	{
+		if (ft_strncmp(argv[i], "--", 3) != 0)
+		{
+			ft_putstr_fd("minishell: unset: ", 2);
+			ft_putstr_fd(argv[i], 2);
+			ft_putstr_fd(": invalid option\n", 2);
+			return (2); 
+		}
+		i++; 
+	}
 	while (argv[i])
 	{
 		if (!check_valid_unset_identifier(argv[i]))

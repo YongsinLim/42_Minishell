@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/30 12:31:16 by yolim             #+#    #+#             */
-/*   Updated: 2026/02/26 19:22:35 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:47:51 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,11 +47,20 @@ void	free_array_str(char **array)
 
 void	free_command(t_command *cmd)
 {
+	t_redir	*current;
+	t_redir	*next;
+
 	if (!cmd)
 		return ;
 	free_array_str(cmd->argv);
-	free(cmd->input_file);
-	free(cmd->output_file);
+	current = cmd->redirs;
+	while (current)
+	{
+		next = current->next;
+		free(current->file);
+		free(current);
+		current = next;
+	}
 	free(cmd->heredoc_delimiter);
 	if (cmd->heredoc_fd != -1)
 		close(cmd->heredoc_fd);

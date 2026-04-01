@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_one_command.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/29 13:26:42 by yolim            ###   ########.fr       */
+/*   Updated: 2026/03/31 22:46:43 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,28 @@ int	parse_redirection(t_token **tokens, t_command *cmd)
 	return (SHELL_SUCCESS);
 }
 
+void	add_redir(t_command *cmd, t_token_type type, char *file)
+{
+	t_redir	*new_node;
+	t_redir	*current;
+
+	new_node = malloc(sizeof(t_redir));
+	if (!new_node)
+		return ;
+	new_node->type = type;
+	new_node->file = ft_strdup(file);
+	new_node->next = NULL;
+	if (!cmd->redirs)
+		cmd->redirs = new_node;
+	else
+	{
+		current = cmd->redirs;
+		while (current->next)
+			current = current->next;
+		current->next = new_node;
+	}
+}
+
 t_token	*token_redirection(t_token *token, t_command *command)
 {
 	t_token_type	type;
@@ -182,13 +204,8 @@ t_token	*token_redirection(t_token *token, t_command *command)
 		ft_putstr_fd("'\n", 2);
 		return (NULL);
 	}
-	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND)
-	{
-		command->output_file = ft_strdup(token->value);
-		command->is_append = (type == TOKEN_APPEND);
-	}
-	else if (type == TOKEN_REDIRECT_IN)
-		command->input_file = ft_strdup(token->value);
+	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND || type == TOKEN_REDIRECT_IN)
+		add_redir(command, type, token->value);
 	else if (type == TOKEN_HEREDOC)
 	{
 		command->heredoc_delimiter = ft_strdup(token->value);
@@ -218,3 +235,5 @@ char	**to_str_array(t_list *argv_list)
 	ft_lstclear(&argv_list, NULL);
 	return (argv);
 }
+
+
