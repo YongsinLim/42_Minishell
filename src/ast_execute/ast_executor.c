@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/27 16:19:41 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/01 18:26:08 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,12 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	pid_t	pid;
 
-	if (!ast->command->argv[0])
-		return (redirect_input(ast->command), redirect_output(ast->command),
-			SHELL_SUCCESS);
+	if (!ast->command->argv[0]) {
+		if (redirect_input(ast->command) != SHELL_SUCCESS
+			|| redirect_output(ast->command) != SHELL_SUCCESS)
+			return (SHELL_FAILURE);
+		return (SHELL_SUCCESS);
+	}
 	if (is_builtin(ast->command->argv[0]))
 		return (handle_builtin_execution(ast, minishell));
 	pid = fork();
@@ -61,8 +64,9 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error");
 	if (pid == 0)
 	{
-		redirect_input(ast->command);
-		redirect_output(ast->command);
+		if (redirect_input(ast->command) != SHELL_SUCCESS
+			|| redirect_output(ast->command) != SHELL_SUCCESS)
+			cleanup_and_exit(minishell, SHELL_FAILURE);
 		minishell->last_exit_status = 127;
 		execute(ast->command->argv, minishell);
 		cleanup_and_exit(minishell, minishell->last_exit_status);
@@ -83,8 +87,14 @@ int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
 
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);
-	redirect_input(ast->command);
-	redirect_output(ast->command);
+	if (redirect_input(ast->command) != SHELL_SUCCESS
+			|| redirect_output(ast->command) != SHELL_SUCCESS) {
+		dup2(stdin_backup, STDIN_FILENO);
+		dup2(stdout_backup, STDOUT_FILENO);
+		close(stdin_backup);
+		close(stdout_backup);
+		return (SHELL_FAILURE);
+	}
 	status = execute_builtin(ast->command->argv, minishell);
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);

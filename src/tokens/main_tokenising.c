@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/28 15:30:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/01 18:54:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,11 @@ t_token	*tokenize(char *line, t_minishell *minishell)
 			add_token(&tokens, make_token(&line[i], &i));
 		else if (line[i] == '<' || line[i] == '>')
 			add_redirection_token(line, &i, &tokens);
-		else
-			handle_word(line, &i, &tokens, minishell);
+		else if (!handle_word(line, &i, &tokens, minishell))
+		{
+			free_tokens(&tokens);
+			return (NULL);
+		}
 		i++;
 	}
 	return (tokens);
