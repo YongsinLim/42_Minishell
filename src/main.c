@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/31 22:58:22 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/01 16:33:58 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,7 @@ void	init_minishell(t_minishell *minishell, char **envp)
 	minishell->input = NULL;
 	minishell->tokens = NULL;
 	minishell->ast = NULL;
+	update_env("OLDPWD", NULL, minishell);
 	increment_shlvl(minishell);
 }
 

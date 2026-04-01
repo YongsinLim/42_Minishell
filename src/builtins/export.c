@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:51 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/30 21:21:30 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/01 16:19:13 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,10 +73,13 @@ int	print_export(t_env *env)
 	i = 0;
 	while (i < count)
 	{
-		if (arr[i]->value)
-			printf("declare -x %s=\"%s\"\n", arr[i]->key, arr[i]->value);
-		else
-			printf("declare -x %s\n", arr[i]->key);
+		if (ft_strncmp(arr[i]->key, "_", 2) != 0)
+		{
+			if (arr[i]->value)
+				printf("declare -x %s=\"%s\"\n", arr[i]->key, arr[i]->value);
+			else
+				printf("declare -x %s\n", arr[i]->key);
+		}
 		i++;
 	}
 	free(arr);
