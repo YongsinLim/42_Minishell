@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/29 14:26:18 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/01 18:45:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,17 @@ int	last_token_is_heredoc(t_token *tokens)
 void	create_and_add_token(char *full_word, int *flags, t_token **tokens)
 {
 	t_token	*new_node;
-	char	*trim_word;
 
 	if (full_word && (full_word[0] != '\0' || flags[0]))
 	{
-		trim_word = ft_strtrim(full_word, "\n\r");
-		new_node = new_token(trim_word, TOKEN_WORD, flags[0]);
-		free(trim_word);
+		new_node = new_token(full_word, TOKEN_WORD, flags[0]);
 		new_node->has_wildcard = flags[1];
 		add_token(tokens, new_node);
 	}
 }
 
 // flags[0] = has_quotes, flags[1] = has_wildcard
-void	handle_word(char *line, int *i, t_token **tokens,
+int	handle_word(char *line, int *i, t_token **tokens,
 			t_minishell *minishell)
 {
 	int		flags[2];
@@ -73,10 +70,11 @@ void	handle_word(char *line, int *i, t_token **tokens,
 		}
 		full_word = strjoin_free(full_word, segment);
 		if (!full_word)
-			return ;
+			return (FALSE);
 	}
 	create_and_add_token(full_word, flags, tokens);
 	free(full_word);
 	(*i)--;
+	return (TRUE);
 }
 

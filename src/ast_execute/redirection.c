@@ -6,13 +6,22 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/31 22:47:29 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/01 18:26:49 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	redirect_input(t_command *cmd)
+int	redirect_open_error(char *file)
+{
+	ft_putstr_fd("minishell: ",2);
+	ft_putstr_fd(file,2);
+	ft_putstr_fd(": ",2);
+	ft_putendl_fd(strerror(errno), 2);
+	return (SHELL_FAILURE);
+}
+
+int	redirect_input(t_command *cmd)
 {
 	t_redir	*current;
 	int		infile_fd;
@@ -29,15 +38,16 @@ void	redirect_input(t_command *cmd)
 		{
 			infile_fd = open(current->file, O_RDONLY);
 			if (infile_fd < 0)
-				error_exit("Input file error"); //might need to change to specify filename
+				return (redirect_open_error(current->file));
 			dup2(infile_fd, STDIN_FILENO);
 			close(infile_fd);
 		}
 		current = current->next;
 	}
+	return (SHELL_SUCCESS);
 }
 
-void	redirect_output(t_command *cmd)
+int	redirect_output(t_command *cmd)
 {
 	t_redir	*current;
 	int		outfile_fd;
@@ -53,12 +63,13 @@ void	redirect_output(t_command *cmd)
 				outfile_fd = open(current->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 			
 			if (outfile_fd < 0)
-				error_exit("Output file error");
+				return (redirect_open_error(current->file));
 			dup2(outfile_fd, STDOUT_FILENO);
 			close(outfile_fd);
 		}
 		current = current->next;
 	}
+	return (SHELL_SUCCESS);
 }
 
 void	execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd)

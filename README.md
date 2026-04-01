@@ -182,5 +182,63 @@ Pending to do:
 6. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 7. fix error in tester
 
+Issue no need to fix:
+
+Compare Parsing
+24:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:52 (Bcos \)
+25:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:54 (Bcos \)
+26:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:56 (Bcos \)
+27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:58 (Bcos \)
+28:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:60 (Bcos \)
+29:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:62 (Bcos \)
+30:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:64 (Bcos \)
+
+Parsing Hell
+67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (Run in Ubuntu correct)
+88:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:244 (Run in Ubuntu correct)
+
+Builtin
+27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:59 (Bcos \)
+28:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:61 (Bcos \)
+29:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:63 (Bcos \)
+30:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:65 (Bcos \)
+31:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:67 (Bcos \)
+32:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:69 (Bcos \)
+33:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:71 (Bcos \)
+102:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(1)  bash(0) ]  .//cmds/mand/1_builtins.sh:233 (Bcos 2>)
+105:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:239 (Bcos 2>)
+107:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:243 (Bcos 2>))
+128:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:314 (Run in Ubuntu correct)
+130:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:324 (Run in Ubuntu correct)
+224:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(127) ]  .//cmds/mand/1_builtins.sh:552 (Bcos ; separator : unset TES;T)
+
+
+
+
+Pending to fix:
+140:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:360
+7.	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(133)  bash(0) ]  .//cmds/mand/1_scmds.sh:19 (consider unclosed quote ??)
+45:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:130  
+46:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:133  
+47:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:136  
+48:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:139  
+49:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:142  
+50:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:145  
+51:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:148  
+52:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:151  
+53:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:154
+56:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:163  
+57:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:166  
+58:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:169
+110:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:261  
+111:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:265  
+113:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:273
+11:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/2_path_check.sh:43  
+12:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/2_path_check.sh:47
+10:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/9_go_wild.sh:30
+13:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:46  
+14:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:49  
+15:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:52
+
 
 [Process completed]

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/03/31 22:45:28 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/01 18:45:26 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,8 +209,9 @@ void			error_exit(char *error_msg);
 void			report_error(char *msg, char *param);
 
 // ----- Redirection Functions -----
-void			redirect_input(t_command *cmd);
-void			redirect_output(t_command *cmd);
+int				redirect_open_error(char *file);
+int				redirect_input(t_command *cmd);
+int				redirect_output(t_command *cmd);
 void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
 void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
@@ -278,7 +279,7 @@ char			*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
 					int disable_expand);
 char			*strjoin_free(char *full_word, char *segment);
 void			create_and_add_token(char *full_word, int *flags, t_token **tokens);
-void			handle_word(char *line, int *i, t_token **tokens,
+int				handle_word(char *line, int *i, t_token **tokens,
 					t_minishell *minishell);
 
 // ----- Wildcard Functions -----

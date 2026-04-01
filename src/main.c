@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/01 16:33:58 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/01 19:00:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!minishell.tokens)
 		{
 			free(minishell.input);
+			minishell.input = NULL;
 			if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
 				break ;
 			continue ;
@@ -65,6 +66,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
 }
+
 void	increment_shlvl(t_minishell *minishell)
 {
 	char	*shlvl_str;
