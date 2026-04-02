@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/31 18:27:24 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/02 15:52:58 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	int		start_idx;
 	char	*quoted_str;
 	char	*expanded_str;
+	int		k = 0;
 
 	quote_char = line[*i];
 	(*i)++;
@@ -63,6 +64,17 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	else
 		expanded_str = ft_strdup(quoted_str);
 	free(quoted_str);
+	k = 0;
+	while (expanded_str && expanded_str[k])
+	{
+		if (expanded_str[k] == ' ')
+			expanded_str[k] = '\x1A';
+		else if (expanded_str[k] == '\t')
+			expanded_str[k] = '\x1B';
+		else if (expanded_str[k] == '\n')
+			expanded_str[k] = '\x1C';
+		k++;
+	}
 	return (expanded_str);
 }
 

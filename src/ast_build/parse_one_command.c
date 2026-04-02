@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/02 15:28:58 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/02 15:51:09 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,23 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	return (cmd);
 }
 
+void	restore_quoted_whitespaces(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str && str[i])
+	{
+		if (str[i] == '\x1A')
+			str[i] = ' ';
+		else if (str[i] == '\x1B')
+			str[i] = '\t';
+		else if (str[i] == '\x1C')
+			str[i] = '\n';
+		i++;
+	}
+}
+
 int	add_argv_value(t_list **argv_list, char *value)
 {
 	char	*value_dup;
@@ -62,6 +79,7 @@ int	add_argv_value(t_list **argv_list, char *value)
 	value_dup = ft_strdup(value);
 	if (!value_dup)
 		return (SHELL_FAILURE);
+	restore_quoted_whitespaces(value_dup);
 	new_node = ft_lstnew(value_dup);
 	if (!new_node)
 	{
@@ -128,7 +146,9 @@ int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
 				tail->next = expanded;
 			}
 		}
-		else if ((*token_ptr)->has_quotes == 0 && ft_strchr((*token_ptr)->value, ' '))
+		else if (ft_strchr((*token_ptr)->value, ' ') 
+				|| ft_strchr((*token_ptr)->value, '\t') 
+				|| ft_strchr((*token_ptr)->value, '\n'))
 		{
 			if (split_unquoted_word_to_argv((*token_ptr)->value, argv_list) == SHELL_FAILURE)
 				return (SHELL_FAILURE);
@@ -203,6 +223,7 @@ t_token	*token_redirection(t_token *token, t_command *command)
 		ft_putstr_fd("'\n", 2);
 		return (NULL);
 	}
+	restore_quoted_whitespaces(token->value);
 	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND || type == TOKEN_REDIRECT_IN)
 		add_redir(command, type, token->value);
 	else if (type == TOKEN_HEREDOC)
