@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/01 18:45:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/02 15:15:28 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int	handle_word(char *line, int *i, t_token **tokens,
 				continue ;
 			}
 			segment = get_unquoted_segment(line, i, minishell, disable_expand);
-			if (!disable_expand && segment && ft_strchr(segment, '*'))
+			if (!disable_expand && segment && (ft_strchr(segment, '*') || ft_strchr(segment, '?')))
 				flags[1] = TRUE;
 		}
 		full_word = strjoin_free(full_word, segment);
