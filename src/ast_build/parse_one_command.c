@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/31 22:46:43 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/02 15:28:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,10 @@ output =
 typedef struct s_command
 {
 	char				**argv; = [echo, hello]
-	char				*input_file; = NULL
-	char				*output_file; = outfile
-	int					is_append; = 0
+	t_redir				*redirs = NULL
 	char				*heredoc_delimiter; = NULL
-	int					heredoc_fd; = -1
+	int					heredoc_is_quoted; = 0
+	int					heredoc_fd = -1
 }			t_command;
 */
 
@@ -235,5 +234,3 @@ char	**to_str_array(t_list *argv_list)
 	ft_lstclear(&argv_list, NULL);
 	return (argv);
 }
-
-

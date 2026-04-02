@@ -6,13 +6,14 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:04 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/24 19:19:10 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/02 15:14:00 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // '*' can match "zero or more characters"
+// '?' can match exactly one character
 int	match_pattern(char *pattern, char *filename)
 {
 	// Check if BOTH reached the end
@@ -48,7 +49,12 @@ int	match_pattern(char *pattern, char *filename)
 		return (0);
 	}
 
-	// RECURSIVE CASE 2: Regular character must match exactly
+	// RECURSIVE CASE 2: Pattern has '?'
+	// '?' matches exactly one character (any character)
+	if (*pattern == '?')
+		return (match_pattern(pattern + 1, filename + 1));
+
+	// RECURSIVE CASE 3: Regular character must match exactly
 	if (*pattern == *filename)
 		return (match_pattern(pattern + 1, filename + 1));
 	return (0);
