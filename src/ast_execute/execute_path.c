@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/31 22:55:21 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/02 17:37:10 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,32 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	path = construct_full_path(minishell->env_list, cmd);
 	if (!path)
 	{
+		// Check if command exists in current directory
+		if (access(cmd, F_OK) == ACCESS_PERMITTED)
+		{
+			if (is_directory_path(cmd)) {
+				// Special case: . (source builtin) without argument should exit with 2
+				if (ft_strncmp(cmd, ".", 2) == 0)
+				{
+					report_error(cmd, "filename argument required");
+					minishell->last_exit_status = 2;
+				}
+				else
+				{
+					report_error(cmd, "Is a directory");
+					minishell->last_exit_status = 126;
+				}
+				return (NULL);
+			}
+			if (access(cmd, X_OK) == ACCESS_PERMITTED)
+				return (cmd);  // Command exists and is executable in current dir
+			else
+			{
+				report_error(cmd, "permission denied");
+				minishell->last_exit_status = 126;
+				return (NULL);
+			}
+		}
 		report_error(cmd, "command not found");
 		minishell->last_exit_status = 127;
 	}

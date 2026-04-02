@@ -195,7 +195,6 @@ Compare Parsing
 
 Parsing Hell
 67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (Run in Ubuntu correct)
-88:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:244 (Run in Ubuntu correct)
 
 Builtin
 27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:59 (Bcos \)
@@ -205,9 +204,11 @@ Builtin
 31:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:67 (Bcos \)
 32:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:69 (Bcos \)
 33:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:71 (Bcos \)
+
 102:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(1)  bash(0) ]  .//cmds/mand/1_builtins.sh:233 (Bcos 2>)
 105:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:239 (Bcos 2>)
 107:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:243 (Bcos 2>))
+
 128:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:314 (Run in Ubuntu correct)
 130:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:324 (Run in Ubuntu correct)
 224:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(127) ]  .//cmds/mand/1_builtins.sh:552 (Bcos ; separator : unset TES;T)
@@ -215,9 +216,26 @@ Builtin
 
 
 
+
+
+Verify both minishell and bash same exit code 127, dont know why tester fail
+1:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:5
+13:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:37
+26:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/1_scmds.sh:84 (both exit 2)
+
+
+
+
+
+
+
+
+
 Pending to fix:
 140:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:360
+
 7.	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(133)  bash(0) ]  .//cmds/mand/1_scmds.sh:19 (consider unclosed quote ??)
+
 45:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:130  
 46:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:133  
 47:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:136  
@@ -230,11 +248,15 @@ Pending to fix:
 56:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:163  
 57:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:166  
 58:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:169
-110:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:261  
-111:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:265  
-113:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(127)  bash(0) ]  .//cmds/mand/2_correction.sh:273
+
+
+
 11:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/2_path_check.sh:43  
 12:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/2_path_check.sh:47
+
+15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33  
+16:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:35  
+
 10:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/9_go_wild.sh:30
 13:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:46  
 14:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:49  
