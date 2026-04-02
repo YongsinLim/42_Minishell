@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/01 19:00:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/02 15:55:57 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	main(int argc, char **argv, char **envp)
 	t_minishell	minishell;
 	char		*line;
 	int			interactive;
+	char		*raw_line;
 
 	(void)argc;
 	(void)argv;
@@ -27,7 +28,11 @@ int	main(int argc, char **argv, char **envp)
 	while (1)
 	{
 		if (interactive)
-			minishell.input = readline("Minishell > ");
+		{
+			raw_line = readline("Minishell > ");
+			minishell.input = (raw_line) ? ft_strtrim(raw_line, "\r\n") : NULL;
+			free(raw_line);
+		}
 		else
 		{
 			line = get_next_line(STDIN_FILENO);
