@@ -14,19 +14,11 @@
 
 int	check_valid_unset_identifier(char *arg)
 {
-	int	i;
-
-	// first char must be alpha or underscore, and arg must not be empty
-	if (!arg || !arg[0] || (!ft_isalpha(arg[0]) && arg[0] != '_'))
+	if (!arg)
 		return (FALSE);
-	i = 1;
-	while (arg[i])
-	{
-		// unset must reject '=' and '+' and any non [A-Za-z0-9_]
-		if (!ft_isalnum(arg[i]) && arg[i] != '_')
-			return (FALSE);
-		i++;
-	}
+	// first char cant use -, as it might treat as option (e.g. -t -v)
+	if (arg[0] == '-')
+		return (FALSE);
 	return (TRUE);
 }
 
