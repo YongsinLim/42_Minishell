@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/02 17:37:10 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/03 14:17:03 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,12 @@ char	*build_path(char *cmd, t_minishell *minishell)
 				{
 					report_error(cmd, "filename argument required");
 					minishell->last_exit_status = 2;
+				}
+				// Special case: .. (parent directory reference) should be treated as not found
+				else if (ft_strncmp(cmd, "..", 3) == 0)
+				{
+					report_error(cmd, "command not found");
+					minishell->last_exit_status = 127;
 				}
 				else
 				{

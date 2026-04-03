@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/01 18:26:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/03 15:15:37 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,25 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		return (SHELL_SUCCESS);
 	}
 	if (is_builtin(ast->command->argv[0]))
+	{
+		// Only treat 'env' as builtin if it has NO arguments
+		if (ft_strncmp(ast->command->argv[0], "env", 4) == 0
+			&& ast->command->argv[1] != NULL)
+		{
+			// env with arguments -> execute as external command
+			pid = fork();
+			if (pid == 0)
+			{
+				if (redirect_input(ast->command) != SHELL_SUCCESS
+					|| redirect_output(ast->command) != SHELL_SUCCESS)
+					cleanup_and_exit(minishell, SHELL_FAILURE);
+				execute(ast->command->argv, minishell);
+				cleanup_and_exit(minishell, minishell->last_exit_status);
+			}
+			return (wait_for_children(pid));
+		}
 		return (handle_builtin_execution(ast, minishell));
+	}
 	pid = fork();
 	if (pid == -1)
 		error_exit("Fork Error");
