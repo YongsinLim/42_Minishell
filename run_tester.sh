@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/opt/homebrew/bin/bash
+# #!/bin/bash
 
 # Build the project
 make re

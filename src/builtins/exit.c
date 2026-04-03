@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 11:10:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/30 17:13:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/03 19:09:49 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ int	ft_exit(char **argv, t_minishell *minishell)
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
-		cleanup_and_exit(minishell, 255);
+		cleanup_and_exit(minishell, 2);
 	}
 	if (argv[1] && argv[2])
 	{
