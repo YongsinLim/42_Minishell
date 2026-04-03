@@ -222,6 +222,8 @@ Verify both minishell and bash same exit code 127, dont know why tester fail
 1:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:5
 13:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:37
 26:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/1_scmds.sh:84 (both exit 2)
+15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33 (both exit 2)
+
 
 
 
@@ -249,18 +251,9 @@ Pending to fix:
 57:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:166  
 58:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:169
 
-
-
-11:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/2_path_check.sh:43  
 12:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/2_path_check.sh:47
 
-15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33  
-16:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:35  
-
 10:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/9_go_wild.sh:30
-13:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:46  
-14:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:49  
-15:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(2)  bash(0) ]  .//cmds/mand/9_go_wild.sh:52
 
 
 [Process completed]
