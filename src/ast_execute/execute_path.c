@@ -80,6 +80,12 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	path = construct_full_path(minishell->env_list, cmd);
 	if (!path)
 	{
+		// Check if PATH environment variable exists
+		char **path_dirs = get_path(minishell->env_list);
+		int path_exists = (path_dirs != NULL);
+		if (path_dirs)
+			free_array_str(path_dirs);
+		
 		// Check if command exists in current directory
 		if (access(cmd, F_OK) == ACCESS_PERMITTED)
 		{
@@ -107,8 +113,19 @@ char	*build_path(char *cmd, t_minishell *minishell)
 				return (cmd);  // Command exists and is executable in current dir
 			else
 			{
-				report_error(cmd, "permission denied");
-				minishell->last_exit_status = 126;
+				// If PATH exists but command not found there, and file exists in current dir but not executable
+				// bash still reports "command not found" (127) instead of "permission denied" (126)
+				if (path_exists)
+				{
+					report_error(cmd, "command not found");
+					minishell->last_exit_status = 127;
+				}
+				else
+				{
+					// PATH doesn't exist, so bash checks current directory and reports permission denied
+					report_error(cmd, "permission denied");
+					minishell->last_exit_status = 126;
+				}
 				return (NULL);
 			}
 		}

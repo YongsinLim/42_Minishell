@@ -193,9 +193,6 @@ Compare Parsing
 29:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:62 (Bcos \)
 30:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:64 (Bcos \)
 
-Parsing Hell
-67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (Run in Ubuntu correct)
-
 Builtin
 27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:59 (Bcos \)
 28:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:61 (Bcos \)
@@ -209,51 +206,37 @@ Builtin
 105:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:239 (Bcos 2>)
 107:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:243 (Bcos 2>))
 
-128:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:314 (Run in Ubuntu correct)
-130:	STD_OUT: ❌  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:324 (Run in Ubuntu correct)
 224:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(127) ]  .//cmds/mand/1_builtins.sh:552 (Bcos ; separator : unset TES;T)
 
 
 
 
 
+Not sure need to fix tak
+Parsing Hell
+67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (Run in Ubuntu correct)
 
-Verify both minishell and bash same exit code 127, dont know why tester fail
-1:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:5
-13:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(126)  bash(127) ]  .//cmds/mand/10_parsing_hell.sh:37
-26:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/1_scmds.sh:84 (both exit 2)
-15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33 (both exit 2)
+108:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:245
+112:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:253
+258:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:635
+280:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:679                                                                              
+281:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:681   
+299:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:717
 
-
-
-
-
-
-
-
-
-
-Pending to fix:
-140:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:360
-
-7.	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(133)  bash(0) ]  .//cmds/mand/1_scmds.sh:19 (consider unclosed quote ??)
-
-45:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:130  
-46:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:133  
-47:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:136  
-48:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:139  
-49:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:142  
-50:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:145  
-51:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:148  
-52:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:151  
-53:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:154
-56:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:163  
-57:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:166  
-58:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_variables.sh:169
-
-12:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/2_path_check.sh:47
+20:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:45                                                                             
+21:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:47
+24:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:53
 
 10:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/9_go_wild.sh:30
 
+
+Pending to fix:
+7.	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(133)  bash(0) ]  .//cmds/mand/1_scmds.sh:19 (consider unclosed quote ??)
+
+26:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/1_scmds.sh:84 (both exit 2)
+
+81:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  /home/wk/minishell-test/tester/cmds/mand/2_correction.sh:171 (both same output, not sure why stdout wrong)
+
+15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33 (both exit code are 2)
 
 [Process completed]
