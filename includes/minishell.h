@@ -207,6 +207,7 @@ int				wait_for_children(pid_t last_pid);
 // ----- Error Handling Functions -----
 void			error_exit(char *error_msg);
 void			report_error(char *msg, char *param);
+char			*exit_status(t_minishell *minishell, char *cmd_name, char *message, int exit_status);
 
 // ----- Redirection Functions -----
 int				redirect_open_error(char *file);

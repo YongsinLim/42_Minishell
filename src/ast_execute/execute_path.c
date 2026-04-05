@@ -57,84 +57,57 @@ e.g.
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 */
 
-char	*build_path(char *cmd, t_minishell *minishell)
-{
-	char	*path;
-
-	if (ft_strchr(cmd, '/'))
-	{
-		if (access(cmd, F_OK) != ACCESS_PERMITTED)
-		{
-			report_error(cmd, "no such file or directory");
-			minishell->last_exit_status = 127;
-			return (NULL);
-		}
-		if (access(cmd, X_OK) != ACCESS_PERMITTED)
-		{
-			report_error(cmd, "permission denied");
-			minishell->last_exit_status = 126;
-			return (NULL);
-		}
-		return (cmd);
-	}
-	path = construct_full_path(minishell->env_list, cmd);
-	if (!path)
-	{
-		// Check if PATH environment variable exists
-		char **path_dirs = get_path(minishell->env_list);
-		int path_exists = (path_dirs != NULL);
-		if (path_dirs)
-			free_array_str(path_dirs);
-		
-		// Check if command exists in current directory
-		if (access(cmd, F_OK) == ACCESS_PERMITTED)
-		{
-			if (is_directory_path(cmd)) {
-				// Special case: . (source builtin) without argument should exit with 2
-				if (ft_strncmp(cmd, ".", 2) == 0)
-				{
-					report_error(cmd, "filename argument required");
-					minishell->last_exit_status = 2;
-				}
-				// Special case: .. (parent directory reference) should be treated as not found
-				else if (ft_strncmp(cmd, "..", 3) == 0)
-				{
-					report_error(cmd, "command not found");
-					minishell->last_exit_status = 127;
-				}
-				else
-				{
-					report_error(cmd, "Is a directory");
-					minishell->last_exit_status = 126;
-				}
-				return (NULL);
-			}
-			if (access(cmd, X_OK) == ACCESS_PERMITTED)
-				return (cmd);  // Command exists and is executable in current dir
-			else
-			{
-				// If PATH exists but command not found there, and file exists in current dir but not executable
-				// bash still reports "command not found" (127) instead of "permission denied" (126)
-				if (path_exists)
-				{
-					report_error(cmd, "command not found");
-					minishell->last_exit_status = 127;
-				}
-				else
-				{
-					// PATH doesn't exist, so bash checks current directory and reports permission denied
-					report_error(cmd, "permission denied");
-					minishell->last_exit_status = 126;
-				}
-				return (NULL);
-			}
-		}
-		report_error(cmd, "command not found");
-		minishell->last_exit_status = 127;
-	}
-	return (path);
+char * full_path_cmd(char *cmd, t_minishell *minishell) {
+	if (access(cmd, F_OK) != ACCESS_PERMITTED)
+		return exit_status(minishell, cmd,
+		                   "no such file or directory", 127);
+	if (access(cmd, X_OK) != ACCESS_PERMITTED)
+		return exit_status(minishell, cmd,
+		                   "permission denied", 126);
+	return (cmd);
 }
 
+char * cmd_with_dir(char *cmd, t_minishell *minishell) {
+	// Special case: . (source builtin) without argument should exit with 2
+	if (ft_strncmp(cmd, ".", 2) == 0)
+		return exit_status(minishell, cmd, "filename argument required", 2);
+	// Special case: .. (parent directory reference) should be treated as not found
+	if (ft_strncmp(cmd, "..", 3) == 0)
+		return exit_status(minishell, cmd, "command not found", 127);
+	// directory case
+	return exit_status(minishell, cmd, "Is a directory", 126);
+}
+
+char	*build_path(char *cmd, t_minishell *minishell)
+{
+	char	*full_path;
+	char	**path_dir;
+
+	if (ft_strchr(cmd, '/'))
+		return full_path_cmd(cmd, minishell);
+	full_path = NULL;
+	path_dir = get_path(minishell->env_list);
+	if (path_dir != NULL)
+	{
+		full_path = search_path(path_dir, cmd);
+		free_array_str(path_dir);
+	}
+	if (full_path)
+		return (full_path);
+	if (is_directory_path(cmd))
+		return cmd_with_dir(cmd, minishell);
+	if (access(cmd, F_OK) == ACCESS_PERMITTED)
+	{
+		if (access(cmd, X_OK) == ACCESS_PERMITTED)
+			return (cmd);  // Command exists and is executable in current dir
+		// PATH doesn't exist, and it is not a executable return 126
+		if (path_dir == NULL)
+			return exit_status(minishell, cmd, "permission denied", 126);
+	}
+	return exit_status(minishell, cmd, "command not found", 127);
+}
+
+// todo remove
 char	*construct_full_path(t_env *env_list, char *command)
 {
 	char	**path_dir;

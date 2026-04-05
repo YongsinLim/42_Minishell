@@ -29,3 +29,10 @@ void	report_error(char *msg, char *param)
 	}
 	ft_putstr_fd("\n", 2);
 }
+
+char	*exit_status(t_minishell *minishell, char *cmd_name, char *message, int exit_status)
+{
+	report_error(cmd_name, message);
+	minishell->last_exit_status = exit_status;
+	return (NULL);
+}
