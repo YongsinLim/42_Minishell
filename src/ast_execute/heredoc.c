@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 14:35:00 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:57:50 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,27 +35,6 @@ void	heredocs(t_ast_node *ast, t_minishell *minishell)
 }
 
 void	process_heredoc(t_command *cmd, t_minishell *minishell)
-{
-	pid_t	pid;
-	int		status;
-
-	pid = fork();
-	if (pid == -1)
-		error_exit("Heredoc fork failed");
-	if (pid == 0)
-	{
-		// Child process - handles heredoc input
-		init_signals_heredoc();
-		heredoc_child_process(cmd, minishell);
-		exit(0);  // Child exits after heredoc completes
-	}
-	// Parent waits for heredoc child to finish
-	waitpid(pid, &status, 0);
-	// Return to prompt signal handling
-	init_signals_prompt();
-}
-
-void	heredoc_child_process(t_command *cmd, t_minishell *minishell)
 {
 	int		pipe_fd[2];
 	char	*input_line;
