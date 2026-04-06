@@ -1,5 +1,7 @@
 Welcome to Minishell Project
 
+This Project is to mimic Bash Version 5.1.16
+
 Reminder:
 1. Git Pull all latest changes from main branch before start any new changes
 2. Branch out (Create new branch) from main branch
@@ -210,33 +212,9 @@ Builtin
 
 
 
-
-
-Not sure need to fix tak
-Parsing Hell
-67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (Run in Ubuntu correct)
-
-108:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:245
-112:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:253
-258:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:635
-280:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:679                                                                              
-281:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:681   
-299:  STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/1_builtins.sh:717
-
-20:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:45                                                                             
-21:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:47
-24:   STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(2) ]  .//cmds/mand/2_correction.sh:53
-
-10:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/9_go_wild.sh:30
-
-
 Pending to fix:
-7.	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(133)  bash(0) ]  .//cmds/mand/1_scmds.sh:19 (consider unclosed quote ??)
+67:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (ENV) - totally same order and same output
 
-26:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/1_scmds.sh:84 (both exit 2)
-
-81:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  /home/wk/minishell-test/tester/cmds/mand/2_correction.sh:171 (both same output, not sure why stdout wrong)
-
-15:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(2)  bash(127) ]  .//cmds/mand/8_syntax_errors.sh:33 (both exit code are 2)
+81:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  /home/wk/minishell-test/tester/cmds/mand/2_correction.sh:171 (env | grep $USER) - both same output, not sure why stdout wrong
 
 [Process completed]

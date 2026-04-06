@@ -12,6 +12,41 @@
 
 #include "../includes/minishell.h"
 
+int	has_unclosed_quotes(char *str)
+{
+	int		i;
+	int		in_single_quote;
+	int		in_double_quote;
+
+	i = 0;
+	in_single_quote = 0;
+	in_double_quote = 0;
+	while (str[i])
+	{
+		if (str[i] == '\'' && !in_double_quote)
+			in_single_quote = !in_single_quote;
+		else if (str[i] == '"' && !in_single_quote)
+			in_double_quote = !in_double_quote;
+		i++;
+	}
+	return (in_single_quote || in_double_quote);
+}
+
+char	*ft_strjoin_with_newline(char *s1, char *s2)
+{
+	char	*with_newline;
+	char	*result;
+
+	if (!s1 || !s2)
+		return (NULL);
+	with_newline = ft_strjoin(s1, "\n");
+	if (!with_newline)
+		return (NULL);
+	result = ft_strjoin(with_newline, s2);
+	free(with_newline);
+	return (result);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
@@ -40,6 +75,22 @@ int	main(int argc, char **argv, char **envp)
 			{
 				minishell.input = ft_strtrim(line, "\r\n");
 				free(line);
+				// Check for unclosed quotes and continue reading if needed
+				while (has_unclosed_quotes(minishell.input))
+				{
+					char *next_line = get_next_line(STDIN_FILENO);
+					if (next_line)
+					{
+						char *trimmed_next = ft_strtrim(next_line, "\r\n");
+						char *combined = ft_strjoin_with_newline(minishell.input, trimmed_next);
+						free(minishell.input);
+						free(trimmed_next);
+						free(next_line);
+						minishell.input = combined;
+					}
+					else
+						break;
+				}
 			}
 			else
 				minishell.input = NULL;
