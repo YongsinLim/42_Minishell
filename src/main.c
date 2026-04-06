@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:31:54 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 13:44:05 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_minishell(&minishell, envp);
-
-	// init_signals_prompt();
+	init_signals_prompt();
 	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{

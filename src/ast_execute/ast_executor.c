@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:57:22 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 14:49:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error");
 	if (pid == 0)
 	{
+		init_signals_child();
 		if (redirect_input(ast->command) != SHELL_SUCCESS
 			|| redirect_output(ast->command) != SHELL_SUCCESS)
 			cleanup_and_exit(minishell, SHELL_FAILURE);
@@ -90,11 +91,16 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		execute(ast->command->argv, minishell);
 		cleanup_and_exit(minishell, minishell->last_exit_status);
 	}
+	// Parent ignores signals while waiting
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	if (ast->command->heredoc_fd != -1)
 	{
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
+	// Restore prompt signal handlers
+	init_signals_prompt();
 	return (wait_for_children(pid));
 }
 
@@ -137,18 +143,29 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 	if (pid_left == -1)
 		error_exit("Fork Error for pipe_left");
 	if (pid_left == 0)
+	{
+		init_signals_child();
 		execute_pipe_left(ast, minishell, pipe_fd);
+	}
 	pid_right = fork();
 	if (pid_right == -1)
 		error_exit("Fork Error for pipe_right");
 	if (pid_right == 0)
+	{
+		init_signals_child();
 		execute_pipe_right(ast, minishell, pipe_fd);
+	}
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
+	// Parent ignores signals while waiting - signals will naturally go to children
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	if (waitpid(pid_right, &right_status, 0) == -1)
 		return (SHELL_FAILURE);
 	while (waitpid(-1, &status, 0) != -1)
 		; // avoids zombie side effects that can look like shell “stuck” behavior in longer runs.
+	// Restore prompt signal handlers
+	init_signals_prompt();
 	if (WIFEXITED(right_status))
 		return (WEXITSTATUS(right_status));
 	if (WIFSIGNALED(right_status))
@@ -166,6 +183,7 @@ int	exec_subshell(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error for subshell");
 	if (pid == 0)
 	{
+		init_signals_child();
 		status = execute_ast(ast->left, minishell);
 		exit (status);
 	}

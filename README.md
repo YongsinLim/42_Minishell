@@ -170,19 +170,14 @@ RoadMap - 30.03.2026
 
 	Issue Lists (discovered and unfixed)
 ```
-	   	1. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
-	   	2. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
-	   	3. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+	   	1. runnign echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
+	   	2. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
 ```
 
 Pending to do:
 1. Makefile : change wildcard, add individual file (mandatory)
-2. Tokenize : handle unclosed " or ' issue
-3. ReadMe for Minishell
-4. ctrl + C direct exit, should be prompt new line
-5. ctrl+C in terminal and child behave differently
-6. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
-7. fix error in tester
+2. ReadMe for Minishell
+3. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
 Issue no need to fix:
 
