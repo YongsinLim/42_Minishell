@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/02 15:55:57 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:31:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,14 +82,15 @@ int	main(int argc, char **argv, char **envp)
 					if (next_line)
 					{
 						char *trimmed_next = ft_strtrim(next_line, "\r\n");
-						char *combined = ft_strjoin_with_newline(minishell.input, trimmed_next);
+						char *combined = ft_strjoin_with_newline(minishell.input,
+							trimmed_next);
 						free(minishell.input);
 						free(trimmed_next);
 						free(next_line);
 						minishell.input = combined;
 					}
 					else
-						break;
+						break ;
 				}
 			}
 			else

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:26:04 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/02 15:14:00 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:46:35 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,9 @@ int	match_pattern(char *pattern, char *filename)
 	// Check if BOTH reached the end
 	if (*pattern == '\0' && *filename == '\0')
 		return (1);
-
 	// Check if pattern reached end but filename hasn't
 	if (*pattern == '\0' && *filename != '\0')
 		return (0); // Pattern too short to match
-
 	// Check if filename reached end but pattern hasn't
 	if (*filename == '\0')
 	{
@@ -36,7 +34,6 @@ int	match_pattern(char *pattern, char *filename)
 		}
 		return (1);
 	}
-
 	// RECURSIVE CASE 1: Pattern has '*'
 	if (*pattern == '*')
 	{
@@ -48,12 +45,10 @@ int	match_pattern(char *pattern, char *filename)
 			return (1);
 		return (0);
 	}
-
 	// RECURSIVE CASE 2: Pattern has '?'
 	// '?' matches exactly one character (any character)
 	if (*pattern == '?')
 		return (match_pattern(pattern + 1, filename + 1));
-
 	// RECURSIVE CASE 3: Regular character must match exactly
 	if (*pattern == *filename)
 		return (match_pattern(pattern + 1, filename + 1));
@@ -91,7 +86,8 @@ void	sort_argv_list(t_list **argv_list)
 		while (current && current->next)
 		{
 			next = current->next;
-			if (compare_filename((char *)current->content, (char *)next->content) > 0)
+			if (compare_filename((char *)current->content,
+					(char *)next->content) > 0)
 			{
 				temp = (char *)current->content;
 				current->content = next->content;
@@ -129,7 +125,8 @@ void	expand_wildcard(char *pattern, t_list **argv_list)
 			if (match_pattern(pattern, entry->d_name))
 			{
 				filename_copy = ft_strdup(entry->d_name);
-				if (!filename_copy) {
+				if (!filename_copy)
+				{
 					closedir(dir);
 					return ;
 				}

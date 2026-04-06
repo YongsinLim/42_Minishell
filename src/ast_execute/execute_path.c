@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/05 15:19:28 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:54:23 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ void	execute(char **cmd_array, t_minishell *minishell)
 		return ;
 	update_env("_", path, minishell);
 	envp_array = env_list_to_array(minishell->env_list);
-	if (!envp_array) {
+	if (!envp_array)
+	{
 		report_error("malloc error", "enve_list_to_array");
 		minishell->last_exit_status = SHELL_FAILURE;
 		if (path != cmd_array[0])
@@ -57,25 +58,29 @@ e.g.
 PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 */
 
-char * full_path_cmd(char *cmd, t_minishell *minishell) {
+char	*full_path_cmd(char *cmd, t_minishell *minishell)
+{
 	if (access(cmd, F_OK) != ACCESS_PERMITTED)
-		return exit_status(minishell, cmd,
-		                   "no such file or directory", 127);
+		return (exit_status(minishell, cmd,
+				"no such file or directory", 127));
 	if (access(cmd, X_OK) != ACCESS_PERMITTED)
-		return exit_status(minishell, cmd,
-		                   "permission denied", 126);
+		return (exit_status(minishell, cmd,
+				"permission denied", 126));
 	return (cmd);
 }
 
-char * cmd_with_dir(char *cmd, t_minishell *minishell) {
+char	*cmd_with_dir(char *cmd, t_minishell *minishell)
+{
 	// Special case: . (source builtin) without argument should exit with 2
 	if (ft_strncmp(cmd, ".", 2) == 0)
-		return exit_status(minishell, cmd, "filename argument required", 127);
-	// Special case: .. (parent directory reference) should be treated as not found
+		return (exit_status(minishell, cmd, "filename argument"
+				"required", 127));
+	// Special case: .. (parent directory reference) should treated as not found
 	if (ft_strncmp(cmd, "..", 3) == 0)
-		return exit_status(minishell, cmd, "command not found", 127);
+		return (exit_status(minishell, cmd, "command not found",
+				127));
 	// directory case
-	return exit_status(minishell, cmd, "Is a directory", 126);
+	return (exit_status(minishell, cmd, "Is a directory", 126));
 }
 
 char	*build_path(char *cmd, t_minishell *minishell)
@@ -84,7 +89,7 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	char	**path_dir;
 
 	if (ft_strchr(cmd, '/'))
-		return full_path_cmd(cmd, minishell);
+		return (full_path_cmd(cmd, minishell));
 	full_path = NULL;
 	path_dir = get_path(minishell->env_list);
 	if (path_dir != NULL)
@@ -95,16 +100,16 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	if (full_path)
 		return (full_path);
 	if (is_directory_path(cmd))
-		return cmd_with_dir(cmd, minishell);
+		return (cmd_with_dir(cmd, minishell));
 	if (access(cmd, F_OK) == ACCESS_PERMITTED)
 	{
 		if (access(cmd, X_OK) == ACCESS_PERMITTED)
-			return (cmd);  // Command exists and is executable in current dir
+			return (cmd);	// Command exists and is executable in current dir
 		// PATH doesn't exist, and it is not a executable return 126
 		if (path_dir == NULL)
-			return exit_status(minishell, cmd, "permission denied", 126);
+			return (exit_status(minishell, cmd, "permission denied", 126));
 	}
-	return exit_status(minishell, cmd, "command not found", 127);
+	return (exit_status(minishell, cmd, "command not found", 127));
 }
 
 // todo remove
@@ -137,7 +142,7 @@ char	**get_path(t_env *env_list)
 
 int	is_directory_path(char *path)
 {
-	DIR *dir;
+	DIR	*dir;
 
 	dir = opendir(path);
 	if (dir)

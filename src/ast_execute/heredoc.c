@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/28 16:06:42 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:57:50 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 		if (!input_line)
 			break ;
 		if (ft_strncmp(input_line, cmd->heredoc_delimiter,
-			ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
+				ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
 		{
 			free(input_line);
 			break ;

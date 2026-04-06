@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/01 18:45:26 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:31:09 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 # include <limits.h> // for PATH_MAX
 # include <dirent.h> // for opendir, readdir, closedir
 # include <errno.h> // for errno
+
+
 
 
 
@@ -93,10 +95,11 @@ typedef enum e_ast_node_type
 
 typedef struct s_redir
 {
-	t_token_type	type;  // Will hold TOKEN_REDIRECT_OUT, TOKEN_APPEND, or TOKEN_REDIRECT_IN
+	t_token_type	type;	// Hold TOKEN_REDIRECT_OUT, TOKEN_APPEND,
+							// TOKEN_REDIRECT_IN
 	char			*file;
 	struct s_redir	*next;
-}	t_redir;
+}				t_redir;
 
 typedef struct s_command
 {
@@ -105,7 +108,7 @@ typedef struct s_command
 	char		*heredoc_delimiter;
 	int			heredoc_is_quoted;
 	int			heredoc_fd;
-}	t_command;
+}				t_command;
 
 typedef struct s_ast_node
 {
@@ -113,7 +116,7 @@ typedef struct s_ast_node
 	struct s_ast_node	*left;
 	struct s_ast_node	*right;
 	t_command			*command;
-}						t_ast_node;
+}				t_ast_node;
 
 typedef struct s_minishell
 {
@@ -130,6 +133,9 @@ void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
 // ----- Main Functions -----
+int				has_unclosed_quotes(char *str);
+char			*ft_strjoin_with_newline(char *s1, char *s2);
+void			increment_shlvl(t_minishell *minishell);
 void			init_minishell(t_minishell *minishell, char **envp);
 int				is_all_whitespace(char *str);
 void			execution(t_minishell *minishell);
@@ -207,7 +213,8 @@ int				wait_for_children(pid_t last_pid);
 // ----- Error Handling Functions -----
 void			error_exit(char *error_msg);
 void			report_error(char *msg, char *param);
-char			*exit_status(t_minishell *minishell, char *cmd_name, char *message, int exit_status);
+char			*exit_status(t_minishell *minishell, char *cmd_name,
+					char *message, int exit_status);
 
 // ----- Redirection Functions -----
 int				redirect_open_error(char *file);
@@ -272,14 +279,16 @@ t_token			*new_token(char *value, t_token_type type, int has_quotes);
 t_token			*make_token(char *value, int *i);
 void			add_token(t_token **head, t_token *new_token);
 
-char			*init_word(char *line, int *i, t_minishell *minishell, int disable_expand);
+char			*init_word(char *line, int *i, t_minishell *minishell,
+					int disable_expand);
 int				is_separator(char c);
-char			*handle_quoted_string(char *line, int *i, t_minishell *minishell,
-					int disable_expand);
-char			*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
-					int disable_expand);
+char			*handle_quoted_string(char *line, int *i,
+					t_minishell *minishell, int disable_expand);
+char			*get_unquoted_segment(char *line, int *i,
+					t_minishell *minishell, int disable_expand);
 char			*strjoin_free(char *full_word, char *segment);
-void			create_and_add_token(char *full_word, int *flags, t_token **tokens);
+void			create_and_add_token(char *full_word, int *flags,
+					t_token **tokens);
 int				handle_word(char *line, int *i, t_token **tokens,
 					t_minishell *minishell);
 

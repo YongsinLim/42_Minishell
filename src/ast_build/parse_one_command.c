@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/03 16:56:15 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/06 12:42:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,19 +97,19 @@ int	is_whitespace(char c)
 
 int	split_unquoted_word_to_argv(char *value, t_list **argv_list)
 {
-	int	i;
-	int	start;
-	char *field;
+	int		i;
+	int		start;
+	char	*field;
 
 	i = 0;
 	while (value[i])
 	{
-		while (value[i]  && is_whitespace(value[i]))
+		while (value[i] && is_whitespace(value[i]))
 			i++;
 		if (!value[i])
 			break ;
 		start = i;
-		while (value[i]  && !is_whitespace(value[i]))
+		while (value[i] && !is_whitespace(value[i]))
 			i++;
 		field = ft_substr(value, start, i - start);
 		if (!field || add_argv_value(argv_list, field) == SHELL_FAILURE)
@@ -128,22 +128,26 @@ int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
 	t_list	*current;
 	t_list	*expanded;
 
-	if ((*token_ptr)->type == TOKEN_REDIRECT_OUT || (*token_ptr)->type == TOKEN_REDIRECT_IN
-		|| (*token_ptr)->type == TOKEN_HEREDOC || (*token_ptr)->type == TOKEN_APPEND)
+	if ((*token_ptr)->type == TOKEN_REDIRECT_OUT
+		|| (*token_ptr)->type == TOKEN_REDIRECT_IN
+		|| (*token_ptr)->type == TOKEN_HEREDOC
+		|| (*token_ptr)->type == TOKEN_APPEND)
 		return (parse_redirection(token_ptr, cmd));
 	if ((*token_ptr)->type == TOKEN_WORD)
 	{
 		temp_split = NULL;
-		if (ft_strchr((*token_ptr)->value, ' ') 
-			|| ft_strchr((*token_ptr)->value, '\t') 
+		if (ft_strchr((*token_ptr)->value, ' ')
+			|| ft_strchr((*token_ptr)->value, '\t')
 			|| ft_strchr((*token_ptr)->value, '\n'))
 		{
-			if (split_unquoted_word_to_argv((*token_ptr)->value, &temp_split) == SHELL_FAILURE)
+			if (split_unquoted_word_to_argv((*token_ptr)->value,
+					&temp_split) == SHELL_FAILURE)
 				return (SHELL_FAILURE);
 		}
 		else
 		{
-			if (add_argv_value(&temp_split, (*token_ptr)->value) == SHELL_FAILURE)
+			if (add_argv_value(&temp_split,
+					(*token_ptr)->value) == SHELL_FAILURE)
 				return (SHELL_FAILURE);
 		}
 		if ((*token_ptr)->has_wildcard)
@@ -223,7 +227,8 @@ t_token	*token_redirection(t_token *token, t_command *command)
 	token = token->next;
 	if (token == NULL)
 	{
-		ft_putstr_fd("minishell : syntax error near unexpected token 'newline'\n", 2);
+		ft_putstr_fd("minishell : syntax error near unexpected token "
+			"'newline'\n", 2);
 		return (NULL);
 	}
 	if (token->type != TOKEN_WORD)
@@ -234,7 +239,8 @@ t_token	*token_redirection(t_token *token, t_command *command)
 		return (NULL);
 	}
 	restore_quoted_whitespaces(token->value);
-	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND || type == TOKEN_REDIRECT_IN)
+	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND
+		|| type == TOKEN_REDIRECT_IN)
 		add_redir(command, type, token->value);
 	else if (type == TOKEN_HEREDOC)
 	{
