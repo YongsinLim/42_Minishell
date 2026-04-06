@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/01 18:26:49 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:55:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int	redirect_open_error(char *file)
 {
-	ft_putstr_fd("minishell: ",2);
-	ft_putstr_fd(file,2);
-	ft_putstr_fd(": ",2);
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(file, 2);
+	ft_putstr_fd(": ", 2);
 	ft_putendl_fd(strerror(errno), 2);
 	return (SHELL_FAILURE);
 }
@@ -55,13 +55,15 @@ int	redirect_output(t_command *cmd)
 	current = cmd->redirs;
 	while (current)
 	{
-		if (current->type == TOKEN_REDIRECT_OUT || current->type == TOKEN_APPEND)
+		if (current->type == TOKEN_REDIRECT_OUT
+			|| current->type == TOKEN_APPEND)
 		{
 			if (current->type == TOKEN_APPEND)
-				outfile_fd = open(current->file, O_CREAT | O_WRONLY | O_APPEND, 0644);
+				outfile_fd = open(current->file, O_CREAT | O_WRONLY | O_APPEND,
+						0644);
 			else
-				outfile_fd = open(current->file, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-			
+				outfile_fd = open(current->file, O_CREAT | O_WRONLY | O_TRUNC,
+						0644);
 			if (outfile_fd < 0)
 				return (redirect_open_error(current->file));
 			dup2(outfile_fd, STDOUT_FILENO);

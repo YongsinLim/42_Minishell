@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:02:43 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/28 16:10:39 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:44:07 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	left_cmd = parse_command_or_subshell(tokens);
 	if (!left_cmd)
 		return (NULL);
-
 	while (*tokens && (*tokens)->type == TOKEN_PIPE)
 	{
 		current_token = *tokens;

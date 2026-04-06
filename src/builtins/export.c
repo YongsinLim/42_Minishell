@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:51 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/01 16:19:13 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/06 12:36:48 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,12 @@ void	swap_env_ptr(t_env **a, t_env **b)
 
 void	sort_env_parts(t_env **arr, int count)
 {
-	int i;
-	int j;
+	int	i;
+	int	j;
 
 	i = 0;
-	while (i < count - 1) {
+	while (i < count - 1)
+	{
 		j = 0;
 		while (j < count - i - 1)
 		{
@@ -98,7 +99,8 @@ int	export_invalid_option(char *arg)
 			ft_putchar_fd(arg[1], 2);
 	}
 	ft_putstr_fd(": invalid option\n", 2);
-	ft_putstr_fd("export: usage: export [-nf] [name[=value] ...] or export -p\n", 2);
+	ft_putstr_fd("export: usage: export [-nf] [name[=value] ...] "
+		"or export -p\n", 2);
 	return (2);
 }
 

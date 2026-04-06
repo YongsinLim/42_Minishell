@@ -6,17 +6,17 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:12 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/31 22:14:41 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/06 12:33:01 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
+// first char cant use -, as it might treat as option (e.g. -t -v)
 int	check_valid_unset_identifier(char *arg)
 {
 	if (!arg)
 		return (FALSE);
-	// first char cant use -, as it might treat as option (e.g. -t -v)
 	if (arg[0] == '-')
 		return (FALSE);
 	return (TRUE);
@@ -64,9 +64,9 @@ int	ft_unset(char **argv, t_minishell *minishell)
 			ft_putstr_fd("minishell: unset: ", 2);
 			ft_putstr_fd(argv[i], 2);
 			ft_putstr_fd(": invalid option\n", 2);
-			return (2); 
+			return (2);
 		}
-		i++; 
+		i++;
 	}
 	while (argv[i])
 	{

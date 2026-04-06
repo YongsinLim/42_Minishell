@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/03 15:15:37 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/06 12:57:22 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	pid_t	pid;
 
-	if (!ast->command->argv[0]) {
+	if (!ast->command->argv[0])
+	{
 		if (redirect_input(ast->command) != SHELL_SUCCESS
 			|| redirect_output(ast->command) != SHELL_SUCCESS)
 			return (SHELL_FAILURE);
@@ -106,7 +107,8 @@ int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);
 	if (redirect_input(ast->command) != SHELL_SUCCESS
-			|| redirect_output(ast->command) != SHELL_SUCCESS) {
+		|| redirect_output(ast->command) != SHELL_SUCCESS)
+	{
 		dup2(stdin_backup, STDIN_FILENO);
 		dup2(stdout_backup, STDOUT_FILENO);
 		close(stdin_backup);

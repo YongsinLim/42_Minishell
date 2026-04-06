@@ -6,18 +6,19 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/02 15:52:58 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/06 12:47:56 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*init_word(char *line, int *i, t_minishell *minishell, int disable_expand)
+char	*init_word(char *line, int *i, t_minishell *minishell,
+	int disable_expand)
 {
 	char	*home;
 
 	if (!disable_expand && line[*i] == '~' && (is_separator(line[*i + 1])
-		|| line[*i + 1] == '/' || line[*i + 1] == '\0'))
+			|| line[*i + 1] == '/' || line[*i + 1] == '\0'))
 	{
 		home = get_var_value("HOME", minishell);
 		(*i)++;
@@ -45,7 +46,7 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	int		start_idx;
 	char	*quoted_str;
 	char	*expanded_str;
-	int		k = 0;
+	int		k;
 
 	quote_char = line[*i];
 	(*i)++;
