@@ -58,7 +58,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argv;
 	init_minishell(&minishell, envp);
 
-	// init_signals_prompt();
+	init_signals_prompt();
 	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{

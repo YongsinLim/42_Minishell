@@ -190,6 +190,9 @@ int				ft_exit(char **argv, t_minishell *minishell);
 // ----- Heredoc Functions -----
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
+char			*read_heredoc_line_simple(void);
+void			heredoc_child_process(t_command *cmd, t_minishell *minishell, int write_fd);
+void			process_heredoc_noninteractive(t_command *cmd, t_minishell *minishell, int *pipe_fd);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);

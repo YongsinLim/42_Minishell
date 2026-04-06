@@ -12,6 +12,8 @@
 
 #include "../../includes/signals.h"
 
+volatile sig_atomic_t g_heredoc_interrupted = 0;
+
 void	sigint_handler_prompt(int sig)
 {
 	(void)sig;
@@ -25,5 +27,5 @@ void	sigint_handler_heredoc(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
-	exit(1);
+	_exit(130); // Use _exit instead of exit for immediate termination
 }
