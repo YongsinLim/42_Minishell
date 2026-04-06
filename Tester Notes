@@ -46,7 +46,7 @@ Signal issue all correct??
 
 Pending to do:
 1. Makefile : change wildcard, add individual file (mandatory)
-2. ReadMe for Minishell
+2. Fix Norm
 3. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 
 
