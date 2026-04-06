@@ -1,0 +1,52 @@
+Issue no need to fix:
+
+Compare Parsing
+24:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:52 (Bcos \)
+25:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:54 (Bcos \)
+26:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:56 (Bcos \)
+27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:58 (Bcos \)
+28:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:60 (Bcos \)
+29:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:62 (Bcos \)
+30:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/0_compare_parsing.sh:64 (Bcos \)
+
+Builtin
+27:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:59 (Bcos \)
+28:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:61 (Bcos \)
+29:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:63 (Bcos \)
+30:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:65 (Bcos \)
+31:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:67 (Bcos \)
+32:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:69 (Bcos \)
+33:	STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:71 (Bcos \)
+
+102:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ❌ [ minishell(1)  bash(0) ]  .//cmds/mand/1_builtins.sh:233 (Bcos 2>)
+105:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:239 (Bcos 2>)
+107:	STD_OUT: ✅  STD_ERR: ❌  EXIT_CODE: ✅  .//cmds/mand/1_builtins.sh:243 (Bcos 2>))
+
+224:	STD_OUT: ✅  STD_ERR: ✅  EXIT_CODE: ❌ [ minishell(1)  bash(127) ]  .//cmds/mand/1_builtins.sh:552 (Bcos ; separator : unset TES;T)
+
+
+
+Pending to fix:
+Signal issue all correct??
+
+67:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (ENV) - totally same order and same output
+
+81:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  /home/wk/minishell-test/tester/cmds/mand/2_correction.sh:171 (env | grep $USER) - both same output, not sure why stdout wrong
+
+
+
+
+	Issue Lists (discovered and unfixed)
+```
+	   	1. running echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
+	   	2. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+```
+
+
+
+Pending to do:
+1. Makefile : change wildcard, add individual file (mandatory)
+2. Fix Norm
+3. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
+
+
