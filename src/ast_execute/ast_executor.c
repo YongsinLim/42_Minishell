@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:57:22 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/07 17:11:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,13 +171,6 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 			write(1, "\n", 1);
 		return (128 + WTERMSIG(right_status));
 	}
-	return (SHELL_FAILURE);
-	while (waitpid(-1, &status, 0) != -1)
-		; // avoids zombie side effects that can look like shell “stuck” behavior in longer runs.
-	if (WIFEXITED(right_status))
-		return (WEXITSTATUS(right_status));
-	if (WIFSIGNALED(right_status))
-		return (128 + WTERMSIG(right_status));
 	return (SHELL_FAILURE);
 }
 
