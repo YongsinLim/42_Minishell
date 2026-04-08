@@ -6,12 +6,11 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:57:50 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/08 14:28:33 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-#include <errno.h>
 
 void	heredocs(t_ast_node *ast, t_minishell *minishell)
 {
@@ -55,8 +54,11 @@ char	*read_heredoc_line_simple(void)
 		{
 			if (errno == EINTR) // Interrupted by signal (Ctrl+C)
 			{
-				free(line);
-				return (NULL);
+				if (g_heredoc_interrupted)
+				{
+					free(line);
+					return (NULL);
+				}
 			}
 			// Other error, continue or break depending on needs
 			break ;
@@ -83,7 +85,7 @@ void	heredoc_sigint_handler(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
-	_exit(130);
+	g_heredoc_interrupted = 1;
 }
 
 void	setup_heredoc_signals(void)
@@ -94,7 +96,7 @@ void	setup_heredoc_signals(void)
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0; // No SA_RESTART - ensure read() doesn't restart after signal
 	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_DFL);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void	heredoc_child_process(t_command *cmd, t_minishell *minishell, int write_fd)
@@ -106,6 +108,11 @@ void	heredoc_child_process(t_command *cmd, t_minishell *minishell, int write_fd)
 	
 	while (1)
 	{
+		if (g_heredoc_interrupted)
+		{
+			close(write_fd);
+			exit(130);
+		}
 		input_line = read_heredoc_line_simple();
 		if (!input_line) // EOF, error, or interrupted
 			break ;

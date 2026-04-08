@@ -8,3 +8,5 @@ Reminder :
 7. During pull request, if there is conflict, pull latest changes from main branch, then merge main to your branch, resolve conflict locally, then only push to remote and merge via pull request
 8. Delete remote branch at github
 
+Use bash 5.1.16
+Run /usr/local/bin/bash in terminal
