@@ -6,96 +6,76 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 18:49:23 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/08 21:19:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-int	has_unclosed_quotes(char *str)
-{
-	int		i;
-	int		in_single_quote;
-	int		in_double_quote;
+/*
+int isatty(int fd) :
+isatty is a function used to determine if a file descriptor is associated
+with a terminal device (such as a console or serial port) rather than a
+regular file or pipe
 
-	i = 0;
-	in_single_quote = 0;
-	in_double_quote = 0;
-	while (str[i])
-	{
-		if (str[i] == '\'' && !in_double_quote)
-			in_single_quote = !in_single_quote;
-		else if (str[i] == '"' && !in_single_quote)
-			in_double_quote = !in_double_quote;
-		i++;
-	}
-	return (in_single_quote || in_double_quote);
-}
+Returns: 1 if the descriptor refers to a terminal;
+		 0 otherwise
 
-char	*ft_strjoin_with_newline(char *s1, char *s2)
-{
-	char	*with_newline;
-	char	*result;
+STDIN_FILENO is a macro that represents the integer file descriptor for the
+standard input stream.
 
-	if (!s1 || !s2)
-		return (NULL);
-	with_newline = ft_strjoin(s1, "\n");
-	if (!with_newline)
-		return (NULL);
-	result = ft_strjoin(with_newline, s2);
-	free(with_newline);
-	return (result);
-}
+readline:  readi a line (user input) from the terminal with interactive
+features like history and tab completion
+
+add_history(): allow users to press the Up / Down arrow to see previous commands
+
+Use readline for interactive :
+Requires a terminal (TTY) to work properly
+Shows a prompt string
+Provides interactive features: history, editing, completion
+Returns string WITHOUT the newline character
+Allocates memory that needs to be freed
+Will fail or behave unexpectedly with pipes/files
+
+Use GNL for non-interactive :
+Works with any file descriptor (stdin, pipes, files)
+No prompt support - just reads
+No interactive features
+Returns string WITH the newline character
+*/
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
-	char		*line;
 	int			interactive;
 	char		*raw_line;
 
 	(void)argc;
 	(void)argv;
 	init_minishell(&minishell, envp);
-
-	init_signals_prompt();
+		init_signals_prompt();
 	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{
 		if (interactive)
-		{
 			raw_line = readline("Minishell > ");
-			minishell.input = (raw_line) ? ft_strtrim(raw_line, "\r\n") : NULL;
-			free(raw_line);
-		}
 		else
-		{
-			line = get_next_line(STDIN_FILENO);
-			if (line)
-			{
-				minishell.input = ft_strtrim(line, "\r\n");
-				free(line);
-				// Check for unclosed quotes and continue reading if needed
-				while (has_unclosed_quotes(minishell.input))
-				{
-					char *next_line = get_next_line(STDIN_FILENO);
-					if (next_line)
-					{
-						char *trimmed_next = ft_strtrim(next_line, "\r\n");
-						char *combined = ft_strjoin_with_newline(minishell.input,
-							trimmed_next);
-						free(minishell.input);
-						free(trimmed_next);
-						free(next_line);
-						minishell.input = combined;
-					}
-					else
-						break ;
-				}
-			}
-			else
-				minishell.input = NULL;
-		}
+			raw_line = get_next_line(STDIN_FILENO);
+		if (raw_line)
+			minishell.input = ft_strtrim(raw_line, "\r\n");
+		else
+			minishell.input = NULL;
+		free(raw_line);
+		minishell.input = read_with_unclosed_quotes(minishell.input, interactive);
+
+	// -------------------------------------------------------------------------------------
+
+
+
+
+
+
+
 		if (!minishell.input)
 		{
 			if (interactive)
@@ -122,43 +102,6 @@ int	main(int argc, char **argv, char **envp)
 			break ;
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
-}
-
-void	increment_shlvl(t_minishell *minishell)
-{
-	char	*shlvl_str;
-	int		shlvl_num;
-	char	*new_shlvl_str;
-
-	shlvl_str = get_var_value("SHLVL", minishell);
-	if (shlvl_str[0] == '\0')
-	{
-		update_env("SHLVL", "1", minishell);
-	}
-	else
-	{
-		shlvl_num = ft_atoi(shlvl_str);
-		shlvl_num++;
-		new_shlvl_str = ft_itoa(shlvl_num);
-		if (new_shlvl_str)
-		{
-			update_env("SHLVL", new_shlvl_str, minishell);
-			free(new_shlvl_str);
-		}
-	}
-	free(shlvl_str);
-}
-
-void	init_minishell(t_minishell *minishell, char **envp)
-{
-	minishell->history_list = NULL;
-	minishell->env_list = init_env(envp);
-	minishell->last_exit_status = 0;
-	minishell->input = NULL;
-	minishell->tokens = NULL;
-	minishell->ast = NULL;
-	update_env("OLDPWD", NULL, minishell);
-	increment_shlvl(minishell);
 }
 
 int	is_all_whitespace(char *str)
@@ -201,10 +144,3 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 	rl_clear_history(); // TODO : check what function do
 	exit(exit_status);
 }
-
-/*
-add_history :
-Purpose : adds the user's input to GNU Readline's internal history list.
-Functionality : allows user to press UP and DOWN arrow keys to cycle through
-previous commands.
-*/
