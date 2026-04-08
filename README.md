@@ -72,7 +72,7 @@ make re         # Rebuild everything
 
 ## Limitations
 
-- Minishell does not interpret unclosed quotes or special characters, such as backslashes `\` or semicolons `;` are not interpreted as escape characters or command separators
+- Minishell does not interpret special characters, such as backslashes `\` or semicolons `;` as escape characters or command separators
 - Memory leaks: The readline() library may cause memory leaks (external library limitation), but all code written for this project is leak-free.
 
 --- 

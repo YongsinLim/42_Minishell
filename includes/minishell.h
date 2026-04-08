@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/06 12:31:09 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/08 21:17:59 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 # include <stdlib.h> // for malloc, free, exit
 # include <stdio.h> // for printf, perror
 # include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe,
-					//	getcwd, chdir
+					//	getcwd, chdir, isatty
 # include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
 # include <limits.h> // for PATH_MAX
@@ -101,6 +101,11 @@ typedef struct s_redir
 	struct s_redir	*next;
 }				t_redir;
 
+
+
+
+
+
 typedef struct s_command
 {
 	char		**argv;
@@ -128,24 +133,42 @@ typedef struct s_minishell
 	int			last_exit_status;
 }				t_minishell;
 
+// ----- Init Functions -----
+void			init_minishell(t_minishell *minishell, char **envp);
+t_env			*init_env(char **envp);
+void			increment_shlvl(t_minishell *minishell);
+
+// ----- Env_Utils Functions -----
+t_env			*env_from_str(char *str);
+t_env			*new_env_node(char *key, char *value);
+void			update_env(char *key, char *value, t_minishell *minishell);
+
+// ----- Unclosed Quotes Functions -----
+char			*read_with_unclosed_quotes(char *input, int is_interactive);
+int				has_unclosed_quotes(char *str);
+char			*strjoin_with_nextline(char *s1, char *s2);
+
+// -------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 // ----- Debug Functions -----
 void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
+
+
 // ----- Main Functions -----
-int				has_unclosed_quotes(char *str);
-char			*ft_strjoin_with_newline(char *s1, char *s2);
-void			increment_shlvl(t_minishell *minishell);
-void			init_minishell(t_minishell *minishell, char **envp);
 int				is_all_whitespace(char *str);
 void			execution(t_minishell *minishell);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
-
-// ----- Env_Utils Functions -----
-t_env			*new_env_node(char *key, char *value);
-t_env			*env_from_str(char *str);
-t_env			*init_env(char **envp);
-void			update_env(char *key, char *value, t_minishell *minishell);
 
 // ----- Env_Convert Functions -----
 int				count_env_nodes(t_env *env_list);
@@ -191,8 +214,10 @@ int				ft_exit(char **argv, t_minishell *minishell);
 void			heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
 char			*read_heredoc_line_simple(void);
-void			heredoc_child_process(t_command *cmd, t_minishell *minishell, int write_fd);
-void			process_heredoc_noninteractive(t_command *cmd, t_minishell *minishell, int *pipe_fd);
+void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
+					int write_fd);
+void			process_heredoc_noninteractive(t_command *cmd,
+					t_minishell *minishell, int *pipe_fd);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
