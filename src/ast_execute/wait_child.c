@@ -29,7 +29,11 @@ int	wait_for_children(pid_t last_pid)
 			if (WIFEXITED(status))
 				last_child_exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
+			{
+				if (WTERMSIG(status) == SIGINT)
+					write(1, "\n", 1);
 				last_child_exit_status = 128 + WTERMSIG(status);
+			}
 		}
 	}
 	return (last_child_exit_status);

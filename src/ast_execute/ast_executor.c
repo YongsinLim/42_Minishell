@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:57:22 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/07 17:11:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ if (!ast->command->argv[0])
 int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	pid_t	pid;
+	int		status;
 
 	if (!ast->command->argv[0])
 	{
@@ -68,13 +69,17 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 			pid = fork();
 			if (pid == 0)
 			{
+				init_signals_child();
 				if (redirect_input(ast->command) != SHELL_SUCCESS
 					|| redirect_output(ast->command) != SHELL_SUCCESS)
 					cleanup_and_exit(minishell, SHELL_FAILURE);
 				execute(ast->command->argv, minishell);
 				cleanup_and_exit(minishell, minishell->last_exit_status);
 			}
-			return (wait_for_children(pid));
+			init_signals_execution();
+			status = wait_for_children(pid);
+			init_signals_prompt();
+			return (status);
 		}
 		return (handle_builtin_execution(ast, minishell));
 	}
@@ -83,6 +88,7 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error");
 	if (pid == 0)
 	{
+		init_signals_child();
 		if (redirect_input(ast->command) != SHELL_SUCCESS
 			|| redirect_output(ast->command) != SHELL_SUCCESS)
 			cleanup_and_exit(minishell, SHELL_FAILURE);
@@ -90,12 +96,15 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		execute(ast->command->argv, minishell);
 		cleanup_and_exit(minishell, minishell->last_exit_status);
 	}
+	init_signals_execution();
 	if (ast->command->heredoc_fd != -1)
 	{
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
-	return (wait_for_children(pid));
+	status = wait_for_children(pid);
+	init_signals_prompt();
+	return (status);
 }
 
 int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
@@ -145,14 +154,23 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 		execute_pipe_right(ast, minishell, pipe_fd);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
+	init_signals_execution();
 	if (waitpid(pid_right, &right_status, 0) == -1)
+	{
+		init_signals_prompt();
 		return (SHELL_FAILURE);
+	}
 	while (waitpid(-1, &status, 0) != -1)
-		; // avoids zombie side effects that can look like shell “stuck” behavior in longer runs.
+		; // avoids zombie side effects that can look like shell "stuck" behavior in longer runs.
+	init_signals_prompt();
 	if (WIFEXITED(right_status))
 		return (WEXITSTATUS(right_status));
 	if (WIFSIGNALED(right_status))
+	{
+		if (WTERMSIG(right_status) == SIGINT)
+			write(1, "\n", 1);
 		return (128 + WTERMSIG(right_status));
+	}
 	return (SHELL_FAILURE);
 }
 
@@ -166,6 +184,7 @@ int	exec_subshell(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error for subshell");
 	if (pid == 0)
 	{
+		init_signals_child();
 		status = execute_ast(ast->left, minishell);
 		exit (status);
 	}
@@ -174,6 +193,8 @@ int	exec_subshell(t_ast_node *ast, t_minishell *minishell)
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
+	init_signals_execution();
 	status = wait_for_children(pid);
+	init_signals_prompt();
 	return (status);
 }

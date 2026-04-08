@@ -78,6 +78,7 @@ void	execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd)
 {
 	int	status;
 
+	init_signals_child();
 	close(pipe_fd[0]);
 	dup2(pipe_fd[1], STDOUT_FILENO);
 	close(pipe_fd[1]);
@@ -90,6 +91,7 @@ void	execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 {
 	int	status;
 
+	init_signals_child();
 	close(pipe_fd[1]);
 	dup2(pipe_fd[0], STDIN_FILENO);
 	close(pipe_fd[0]);
