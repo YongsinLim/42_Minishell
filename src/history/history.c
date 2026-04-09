@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 12:49:55 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/06 16:47:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 15:44:49 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,19 @@ void	add_to_history(char *command, t_history **history_list)
 		last->next = new_node;
 	}
 }
+
+
+// -----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 int	ft_history(char **argv, t_history *history_list)
 {

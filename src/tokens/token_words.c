@@ -3,42 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   token_words.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/06 12:47:56 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 19:25:38 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*init_word(char *line, int *i, t_minishell *minishell,
-	int disable_expand)
-{
-	char	*home;
-
-	if (!disable_expand && line[*i] == '~' && (is_separator(line[*i + 1])
-			|| line[*i + 1] == '/' || line[*i + 1] == '\0'))
-	{
-		home = get_var_value("HOME", minishell);
-		(*i)++;
-		if (!home || home[0] == '\0')
-		{
-			free(home);
-			return (ft_strdup("~"));
-		}
-		return (home);
-	}
-	return (ft_strdup(""));
-}
-
-// Check if char is a separator
-int	is_separator(char c)
-{
-	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>'
-		|| c == '&' || c == '(' || c == ')');
-}
-
+// expand $ sign only in double-quoted
 char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 		int disable_expand)
 {
@@ -46,7 +20,6 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	int		start_idx;
 	char	*quoted_str;
 	char	*expanded_str;
-	int		k;
 
 	quote_char = line[*i];
 	(*i)++;
@@ -56,7 +29,8 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	if (line[*i] == '\0')
 	{
 		ft_putstr_fd("minishell: syntax error: unclosed quote\n", 2);
-		return (minishell->last_exit_status = 2, NULL);
+		minishell->last_exit_status = SYNTAX_ERROR;
+		return (NULL);
 	}
 	quoted_str = ft_substr(line, start_idx, *i - start_idx);
 	(*i)++;
@@ -65,18 +39,25 @@ char	*handle_quoted_string(char *line, int *i, t_minishell *minishell,
 	else
 		expanded_str = ft_strdup(quoted_str);
 	free(quoted_str);
+	escape_whitespace(expanded_str);
+	return (expanded_str);
+}
+
+void	escape_whitespace(char *str)
+{
+	int	k;
+
 	k = 0;
-	while (expanded_str && expanded_str[k])
+	while (str && str[k])
 	{
-		if (expanded_str[k] == ' ')
-			expanded_str[k] = '\x1A';
-		else if (expanded_str[k] == '\t')
-			expanded_str[k] = '\x1B';
-		else if (expanded_str[k] == '\n')
-			expanded_str[k] = '\x1C';
+		if (str[k] == ' ')
+			str[k] = '\x1A';
+		else if (str[k] == '\t')
+			str[k] = '\x1B';
+		else if (str[k] == '\n')
+			str[k] = '\x1C';
 		k++;
 	}
-	return (expanded_str);
 }
 
 char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
@@ -112,4 +93,16 @@ char	*strjoin_free(char *full_word, char *segment)
 	free(full_word);
 	free(segment);
 	return (new);
+}
+
+void	create_and_add_word_token(char *full_word, int *flags, t_token **tokens)
+{
+	t_token	*new_node;
+
+	if (full_word && (full_word[0] != '\0' || flags[0]))
+	{
+		new_node = new_token(full_word, TOKEN_WORD, flags[0]);
+		new_node->has_wildcard = flags[1];
+		add_token(tokens, new_node);
+	}
 }

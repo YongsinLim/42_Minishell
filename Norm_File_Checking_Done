@@ -1,0 +1,14 @@
+init.c
+env_utils.c
+unclosed_quotes.c
+token_helper.c
+expansion.c
+token_words.c
+main_tokenising.c
+
+
+
+
+Pending to understand:
+know shell level for what?
+all signals

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/07 17:11:29 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 11:55:46 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,12 +146,17 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 	if (pid_left == -1)
 		error_exit("Fork Error for pipe_left");
 	if (pid_left == 0)
+	{
 		execute_pipe_left(ast, minishell, pipe_fd);
+		init_signals_child();
+	}
 	pid_right = fork();
 	if (pid_right == -1)
 		error_exit("Fork Error for pipe_right");
-	if (pid_right == 0)
+	if (pid_right == 0) {
 		execute_pipe_right(ast, minishell, pipe_fd);
+		init_signals_child();
+	}
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
 	init_signals_execution();
