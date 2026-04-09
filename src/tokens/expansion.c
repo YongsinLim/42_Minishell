@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/12 10:14:40 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/01 16:39:05 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/09 20:00:18 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
 	{
 		var_value = get_var_value(var_name, minishell);
 		old_final_str = final_str;
-		final_str = ft_strjoin(final_str, var_value);
-		free(old_final_str);
-		free(var_value);
+		final_str = ft_strjoin(old_final_str, var_value);
 		free(var_name);
+		free(var_value);
+		free(old_final_str);
 		*i_ptr += var_name_len + 1;
 	}
 	else
@@ -57,22 +57,6 @@ char	*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
 		(*i_ptr)++;
 	}
 	return (final_str);
-}
-
-char	*append_segment(char *final_str, char *str, int *i)
-{
-	char	*segment;
-	char	*new_str;
-	int		start;
-
-	start = *i;
-	while (str[*i] && str[*i] != '$')
-		(*i)++;
-	segment = ft_substr(str, start, *i - start);
-	new_str = ft_strjoin(final_str, segment);
-	free(final_str);
-	free(segment);
-	return (new_str);
 }
 
 int	get_var_name_len(char *str, char **var_name_ptr)
@@ -96,36 +80,30 @@ int	get_var_name_len(char *str, char **var_name_ptr)
 	return (i);
 }
 
-char	*get_var_value(char *var_name, t_minishell *minishell)
-{
-	t_env	*current;
-
-	if (!var_name)
-		return (ft_strdup(""));
-	if (ft_strncmp(var_name, "?", 2) == 0)
-		return (ft_itoa(minishell->last_exit_status));
-	current = minishell->env_list;
-	while (current)
-	{
-		if (ft_strncmp(current->key, var_name, ft_strlen(var_name) + 1) == 0)
-		{
-			if (current->value == NULL)
-				return (ft_strdup(""));
-			return (ft_strdup(current->value));
-		}
-		current = current->next;
-	}
-	return (ft_strdup(""));
-}
-
 char	*append_char(char *s1, char c)
 {
-	char	*new_str;
 	char	array[2];
+	char	*new_str;
 
 	array[0] = c;
 	array[1] = '\0';
 	new_str = ft_strjoin(s1, array);
 	free(s1);
+	return (new_str);
+}
+
+char	*append_segment(char *final_str, char *str, int *i)
+{
+	char	*segment;
+	char	*new_str;
+	int		start_idx;
+
+	start_idx = *i;
+	while (str[*i] && str[*i] != '$')
+		(*i)++;
+	segment = ft_substr(str, start_idx, *i - start_idx);
+	new_str = ft_strjoin(final_str, segment);
+	free(segment);
+	free(final_str);
 	return (new_str);
 }

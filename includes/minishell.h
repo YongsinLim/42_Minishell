@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/08 21:17:59 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 19:27:09 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,6 @@
 # define ACCESS_PERMITTED 0
 # define ERROR -1
 
-typedef struct s_history
-{
-	char				*command;
-	struct s_history	*next;
-}				t_history;
 
 typedef struct s_env
 {
@@ -60,6 +55,12 @@ typedef struct s_env
 	char			*value; // e.g., "me"
 	struct s_env	*next;
 }				t_env;
+
+typedef struct s_history
+{
+	char				*command;
+	struct s_history	*next;
+}				t_history;
 
 typedef enum e_token_type
 {
@@ -84,6 +85,15 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
+// ---------------------------------------------------------------------
+
+
+
+
+
+
+
+
 typedef enum e_ast_node_type
 {
 	NODE_COMMAND,
@@ -100,11 +110,6 @@ typedef struct s_redir
 	char			*file;
 	struct s_redir	*next;
 }				t_redir;
-
-
-
-
-
 
 typedef struct s_command
 {
@@ -125,13 +130,16 @@ typedef struct s_ast_node
 
 typedef struct s_minishell
 {
-	t_history	*history_list;
 	t_env		*env_list;
+	char		*input;
+	t_history	*history_list;
 	t_token		*tokens;
 	t_ast_node	*ast;
-	char		*input;
 	int			last_exit_status;
 }				t_minishell;
+
+// ----- Main Functions -----
+int				is_all_whitespace(char *str);
 
 // ----- Init Functions -----
 void			init_minishell(t_minishell *minishell, char **envp);
@@ -144,17 +152,67 @@ t_env			*new_env_node(char *key, char *value);
 void			update_env(char *key, char *value, t_minishell *minishell);
 
 // ----- Unclosed Quotes Functions -----
-char			*read_with_unclosed_quotes(char *input, int is_interactive);
+char			*check_unclosed_quotes(char *input, int is_interactive);
 int				has_unclosed_quotes(char *str);
 char			*strjoin_with_nextline(char *s1, char *s2);
+
+// ----- History Functions -----
+void			add_to_history(char *command, t_history **history_list);
+
+// ----- Token_Helper Functions -----
+void			add_token(t_token **head, t_token *new_token);
+t_token			*make_token(char *value, int *i);
+t_token			*new_token(char *value, t_token_type type, int has_quotes);
+
+// ----- Token Functions -----
+t_token			*tokenize(char *line, t_minishell *minishell);
+void			skip_invalid_char(char *line, int *i);
+void			add_redirection_token(char *line, int *i, t_token **tokens);
+
+// ----- Token_Words Functions -----
+char			*handle_quoted_string(char *line, int *i,
+					t_minishell *minishell, int disable_expand);
+void			escape_whitespace(char *str);
+char			*get_unquoted_segment(char *line, int *i,
+					t_minishell *minishell, int disable_expand);
+char			*strjoin_free(char *full_word, char *segment);
+void			create_and_add_word_token(char *full_word, int *flags,
+					t_token **tokens);
+
+// ----- Token_Words_Main Functions -----
+
+
+
+
+// ----- Expansion Functions -----
+char			*expand_variable(char *str, t_minishell *minishell);
+char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
+					t_minishell *minishell);
+int				get_var_name_len(char *str, char **var_name_ptr);
+char			*append_char(char *s1, char c);
+char			*append_segment(char *final_str, char *str, int *i);
+
+// ----- Free Functions -----
+void			free_tokens(t_token **tokens);
+
+
+
+
+
+
 
 // -------------------------------------------------------------------------------------
 
 
 
 
-
-
+int				handle_word(char *line, int *i, t_token **tokens,
+					t_minishell *minishell);
+int				previous_token_is_heredoc(t_token *tokens);
+char			*expand_tilde_prefix(char *line, int *i, t_minishell *minishell,
+					int disable_expand);
+int				is_separator(char c);
+char			*get_var_value(char *var_name, t_minishell *minishell);
 
 
 
@@ -163,10 +221,7 @@ char			*strjoin_with_nextline(char *s1, char *s2);
 void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
 
-
-
-// ----- Main Functions -----
-int				is_all_whitespace(char *str);
+// ----- Main
 void			execution(t_minishell *minishell);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
@@ -278,47 +333,15 @@ t_command		*init_cmd(void);
 void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
 					char *msg);
 
-// ----- Free Functions -----
-void			free_tokens(t_token **tokens);
+
 void			free_array_str(char **array);
 void			free_command(t_command *cmd);
 void			free_ast(t_ast_node **ast_ptr);
 void			free_env_list(t_env *env);
 
-// ----- History Functions -----
-void			add_to_history(char *command, t_history **history_list);
+// ----- History
 int				ft_history(char **argv, t_history *history_list);
 void			free_history(t_history **history_list);
-
-// ----- Expansion Functions -----
-char			*expand_variable(char *str, t_minishell *minishell);
-char			*handle_dollar_sign(char *str, int *i_ptr, char *final_str,
-					t_minishell *minishell);
-char			*append_segment(char *final_str, char *str, int *i);
-int				get_var_name_len(char *str, char **var_name_ptr);
-char			*get_var_value(char *var_name, t_minishell *minishell);
-char			*append_char(char *s1, char c);
-
-// ----- Token Functions -----
-void			skip_invalid_char(char *line, int *i);
-void			add_redirection_token(char *line, int *i, t_token **tokens);
-t_token			*tokenize(char *line, t_minishell *minishell);
-t_token			*new_token(char *value, t_token_type type, int has_quotes);
-t_token			*make_token(char *value, int *i);
-void			add_token(t_token **head, t_token *new_token);
-
-char			*init_word(char *line, int *i, t_minishell *minishell,
-					int disable_expand);
-int				is_separator(char c);
-char			*handle_quoted_string(char *line, int *i,
-					t_minishell *minishell, int disable_expand);
-char			*get_unquoted_segment(char *line, int *i,
-					t_minishell *minishell, int disable_expand);
-char			*strjoin_free(char *full_word, char *segment);
-void			create_and_add_token(char *full_word, int *flags,
-					t_token **tokens);
-int				handle_word(char *line, int *i, t_token **tokens,
-					t_minishell *minishell);
 
 // ----- Wildcard Functions -----
 int				match_pattern(char *pattern, char *filename);

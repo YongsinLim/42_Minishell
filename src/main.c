@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/08 21:19:58 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 18:49:25 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ standard input stream.
 readline:  readi a line (user input) from the terminal with interactive
 features like history and tab completion
 
-add_history(): allow users to press the Up / Down arrow to see previous commands
+add_history(str): allow users to press the Up / Down arrow to see previous commands
 
 Use readline for interactive :
 Requires a terminal (TTY) to work properly
@@ -42,6 +42,13 @@ Works with any file descriptor (stdin, pipes, files)
 No prompt support - just reads
 No interactive features
 Returns string WITH the newline character
+
+!minishell.input :
+User presses Ctrl+D (EOF signal) in interactive mode
+readline() returns NULL
+minishell.input becomes NULL
+Print "exit\n" to stderr
+Break out of the loop and exit the shell
 */
 
 int	main(int argc, char **argv, char **envp)
@@ -63,19 +70,8 @@ int	main(int argc, char **argv, char **envp)
 			raw_line = get_next_line(STDIN_FILENO);
 		if (raw_line)
 			minishell.input = ft_strtrim(raw_line, "\r\n");
-		else
-			minishell.input = NULL;
 		free(raw_line);
-		minishell.input = read_with_unclosed_quotes(minishell.input, interactive);
-
-	// -------------------------------------------------------------------------------------
-
-
-
-
-
-
-
+		minishell.input = check_unclosed_quotes(minishell.input, interactive);
 		if (!minishell.input)
 		{
 			if (interactive)
@@ -89,6 +85,21 @@ int	main(int argc, char **argv, char **envp)
 			add_to_history(minishell.input, &minishell.history_list);
 		}
 		minishell.tokens = tokenize(minishell.input, &minishell);
+		// ---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		if (!minishell.tokens)
 		{
 			free(minishell.input);
@@ -117,6 +128,14 @@ int	is_all_whitespace(char *str)
 	}
 	return (TRUE);
 }
+
+// ---------------------------------------------------------------------
+
+
+
+
+
+
 
 void	execution(t_minishell *minishell)
 {

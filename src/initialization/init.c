@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 16:24:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/08 17:00:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 15:51:46 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 void	init_minishell(t_minishell *minishell, char **envp)
 {
-	minishell->history_list = NULL;
 	minishell->env_list = init_env(envp);
+	minishell->input = NULL;
+	minishell->history_list = NULL;
 	minishell->tokens = NULL;
 	minishell->ast = NULL;
-	minishell->input = NULL;
 	minishell->last_exit_status = 0;
 	update_env("OLDPWD", NULL, minishell);
 	increment_shlvl(minishell);

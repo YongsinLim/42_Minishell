@@ -1,0 +1,19 @@
+Workflow :
+
+Initialization
+Check interactive
+Read line from user input
+Trim extra \n and \r
+Check whether input has unclosed quotes
+Handle user press Ctrl + D situation (when input == NULL)
+Add user input to history linked list
+
+Tokenization user input (cmd) into token linked list :
+&&, ||, |, (, )
+>>, >|, >, <<, <
+token_word :
+check whether is delimiter
+expand tilde '~'
+double-quote expand the $ sign variable
+single-quote didnt expand anything
+add to token_word

@@ -6,13 +6,13 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/08 21:14:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/08 21:23:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/08 21:30:33 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*read_with_unclosed_quotes(char *input, int is_interactive)
+char	*check_unclosed_quotes(char *input, int is_interactive)
 {
 	char	*next_line;
 	char	*trimmed_next;

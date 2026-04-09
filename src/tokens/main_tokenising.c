@@ -6,50 +6,11 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:18:29 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/01 18:54:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/09 16:34:09 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-void	skip_invalid_char(char *line, int *i)
-{
-	while (line[*i]
-		&& (line[*i] == ' ' || line[*i] == '\t'
-			|| (line[*i] == '$' && (line[*i + 1] == '"'
-					|| line[*i + 1] == '\''))))
-		(*i)++;
-}
-
-void	add_redirection_token(char *line, int *i, t_token **tokens)
-{
-	if (line[*i] == '>')
-	{
-		if (line[*i + 1] == '>')
-		{
-			add_token(tokens, new_token(">>", TOKEN_APPEND, FALSE));
-			(*i)++;
-		}
-		else if (line[*i + 1] == '|')
-		{
-			/* Treat >| like output redirection (force clobber in sh). */
-			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
-			(*i)++;
-		}
-		else
-			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
-	}
-	else if (line[*i] == '<')
-	{
-		if (line[*i + 1] == '<')
-		{
-			add_token(tokens, new_token("<<", TOKEN_HEREDOC, FALSE));
-			(*i)++;
-		}
-		else
-			add_token(tokens, new_token("<", TOKEN_REDIRECT_IN, FALSE));
-	}
-}
 
 t_token	*tokenize(char *line, t_minishell *minishell)
 {
@@ -76,4 +37,45 @@ t_token	*tokenize(char *line, t_minishell *minishell)
 		i++;
 	}
 	return (tokens);
+}
+
+void	skip_invalid_char(char *line, int *i)
+{
+	while (line[*i]
+		&& (line[*i] == ' ' || line[*i] == '\t'
+			|| (line[*i] == '$' && (line[*i + 1] == '"'
+					|| line[*i + 1] == '\''))))
+		(*i)++;
+}
+
+/* Treat >| like output redirection (force clobber in sh), used to
+	force-overwrite a file
+*/
+void	add_redirection_token(char *line, int *i, t_token **tokens)
+{
+	if (line[*i] == '>')
+	{
+		if (line[*i + 1] == '>')
+		{
+			add_token(tokens, new_token(">>", TOKEN_APPEND, FALSE));
+			(*i)++;
+		}
+		else if (line[*i + 1] == '|')
+		{
+			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
+			(*i)++;
+		}
+		else
+			add_token(tokens, new_token(">", TOKEN_REDIRECT_OUT, FALSE));
+	}
+	else if (line[*i] == '<')
+	{
+		if (line[*i + 1] == '<')
+		{
+			add_token(tokens, new_token("<<", TOKEN_HEREDOC, FALSE));
+			(*i)++;
+		}
+		else
+			add_token(tokens, new_token("<", TOKEN_REDIRECT_IN, FALSE));
+	}
 }
