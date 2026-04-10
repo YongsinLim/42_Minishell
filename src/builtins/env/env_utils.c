@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:49:03 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/08 16:45:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 16:14:25 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,26 @@ void	update_env(char *key, char *value, t_minishell *minishell)
 		minishell->env_list = new_env_node(key, value);
 	else
 		last->next = new_env_node(key, value);
+}
+
+char	*get_var_value(char *var_name, t_minishell *minishell)
+{
+	t_env	*current;
+
+	if (!var_name)
+		return (ft_strdup(""));
+	if (ft_strncmp(var_name, "?", 2) == 0)
+		return (ft_itoa(minishell->last_exit_status));
+	current = minishell->env_list;
+	while (current)
+	{
+		if (ft_strncmp(current->key, var_name, ft_strlen(var_name) + 1) == 0)
+		{
+			if (current->value == NULL)
+				return (ft_strdup(""));
+			return (ft_strdup(current->value));
+		}
+		current = current->next;
+	}
+	return (ft_strdup(""));
 }

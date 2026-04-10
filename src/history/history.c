@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 12:49:55 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/09 15:44:49 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 16:38:03 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,21 @@ void	add_to_history(char *command, t_history **history_list)
 	}
 }
 
+void	free_history(t_history **history_list)
+{
+	t_history	*current;
+	t_history	*next_node;
+
+	current = *history_list;
+	while (current != NULL)
+	{
+		next_node = current->next;
+		free(current->command);
+		free(current);
+		current = next_node;
+	}
+	*history_list = NULL;
+}
 
 // -----------------------------------------------------------------------------
 
@@ -68,20 +83,4 @@ int	ft_history(char **argv, t_history *history_list)
 		i++;
 	}
 	return (SHELL_SUCCESS);
-}
-
-void	free_history(t_history **history_list)
-{
-	t_history	*current;
-	t_history	*next_node;
-
-	current = *history_list;
-	while (current != NULL)
-	{
-		next_node = current->next;
-		free(current->command);
-		free(current);
-		current = next_node;
-	}
-	*history_list = NULL;
 }

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/30 12:31:16 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/09 19:10:28 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 16:34:44 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,38 +30,34 @@ void	free_tokens(t_token **tokens)
 	*tokens = NULL;
 }
 
-
-// ---------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void	free_array_str(char **array)
+void	free_env_list(t_env *env)
 {
-	int	i;
+	t_env	*temp;
 
-	if (!array)
-		return ;
-	i = 0;
-	while (array[i])
+	while (env)
 	{
-		free(array[i]);
-		i++;
+		temp = env;
+		env = env->next;
+		free(temp->key);
+		if (temp->value)
+			free(temp->value);
+		free(temp);
 	}
-	free(array);
+}
+
+void	free_ast(t_ast_node **ast_ptr)
+{
+	t_ast_node	*ast;
+
+	if (!ast_ptr || !*ast_ptr)
+		return ;
+	ast = *ast_ptr;
+	free_ast(&(ast->left));
+	free_ast(&(ast->right));
+	if (ast->type == NODE_COMMAND && ast->command)
+		free_command(ast->command);
+	free(ast);
+	*ast_ptr = NULL;
 }
 
 void	free_command(t_command *cmd)
@@ -86,32 +82,17 @@ void	free_command(t_command *cmd)
 	free(cmd);
 }
 
-void	free_ast(t_ast_node **ast_ptr)
+void	free_array_str(char **array)
 {
-	t_ast_node	*ast;
+	int	i;
 
-	if (!ast_ptr || !*ast_ptr)
+	if (!array)
 		return ;
-	ast = *ast_ptr;
-	free_ast(&(ast->left));
-	free_ast(&(ast->right));
-	if (ast->type == NODE_COMMAND && ast->command)
-		free_command(ast->command);
-	free(ast);
-	*ast_ptr = NULL;
-}
-
-void	free_env_list(t_env *env)
-{
-	t_env	*temp;
-
-	while (env)
+	i = 0;
+	while (array[i])
 	{
-		temp = env;
-		env = env->next;
-		free(temp->key);
-		if (temp->value)
-			free(temp->value);
-		free(temp);
+		free(array[i]);
+		i++;
 	}
+	free(array);
 }
