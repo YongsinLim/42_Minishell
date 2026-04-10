@@ -5,6 +5,8 @@ token_helper.c
 expansion.c
 token_words.c
 main_tokenising.c
+token_word_main.c
+free.c
 
 
 

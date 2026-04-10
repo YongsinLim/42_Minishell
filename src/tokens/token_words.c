@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/04 22:32:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/09 19:25:38 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 15:59:11 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,14 +95,15 @@ char	*strjoin_free(char *full_word, char *segment)
 	return (new);
 }
 
-void	create_and_add_word_token(char *full_word, int *flags, t_token **tokens)
+void	create_and_add_word_token(char *full_word, t_token_to_word *word,
+		t_token **tokens)
 {
 	t_token	*new_node;
 
-	if (full_word && (full_word[0] != '\0' || flags[0]))
+	if (full_word && (full_word[0] != '\0' || word->is_quoted_string))
 	{
-		new_node = new_token(full_word, TOKEN_WORD, flags[0]);
-		new_node->has_wildcard = flags[1];
+		new_node = new_token(full_word, TOKEN_WORD, word->is_quoted_string);
+		new_node->has_wildcard = word->is_contain_wildcard;
 		add_token(tokens, new_node);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/09 19:27:09 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 17:24:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,24 @@ typedef struct s_token
 	struct s_token	*next;
 }				t_token;
 
+typedef struct s_minishell
+{
+	t_env		*env_list;
+	char		*input;
+	t_history	*history_list;
+	t_token		*tokens;
+	t_ast_node	*ast;
+	int			last_exit_status;
+}				t_minishell;
+
+typedef struct s_token_to_word
+{
+	t_minishell	*minishell;
+	int			is_quoted_string;
+	int			is_contain_wildcard;
+	int			is_disabled_expand;
+}				t_token_to_word;
+
 // ---------------------------------------------------------------------
 
 
@@ -128,18 +146,14 @@ typedef struct s_ast_node
 	t_command			*command;
 }				t_ast_node;
 
-typedef struct s_minishell
-{
-	t_env		*env_list;
-	char		*input;
-	t_history	*history_list;
-	t_token		*tokens;
-	t_ast_node	*ast;
-	int			last_exit_status;
-}				t_minishell;
+
 
 // ----- Main Functions -----
+int				read_and_prepare_input(t_minishell *minishell, int interactive);
 int				is_all_whitespace(char *str);
+int				build_tokens(t_minishell *minishell);
+
+void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // ----- Init Functions -----
 void			init_minishell(t_minishell *minishell, char **envp);
@@ -150,6 +164,7 @@ void			increment_shlvl(t_minishell *minishell);
 t_env			*env_from_str(char *str);
 t_env			*new_env_node(char *key, char *value);
 void			update_env(char *key, char *value, t_minishell *minishell);
+char			*get_var_value(char *var_name, t_minishell *minishell);
 
 // ----- Unclosed Quotes Functions -----
 char			*check_unclosed_quotes(char *input, int is_interactive);
@@ -158,6 +173,7 @@ char			*strjoin_with_nextline(char *s1, char *s2);
 
 // ----- History Functions -----
 void			add_to_history(char *command, t_history **history_list);
+void			free_history(t_history **history_list);
 
 // ----- Token_Helper Functions -----
 void			add_token(t_token **head, t_token *new_token);
@@ -176,13 +192,18 @@ void			escape_whitespace(char *str);
 char			*get_unquoted_segment(char *line, int *i,
 					t_minishell *minishell, int disable_expand);
 char			*strjoin_free(char *full_word, char *segment);
-void			create_and_add_word_token(char *full_word, int *flags,
+void			create_and_add_word_token(char *full_word, t_token_to_word *word,
 					t_token **tokens);
 
 // ----- Token_Words_Main Functions -----
-
-
-
+int				handle_word(char *line, int *i, t_token **tokens,
+					t_minishell *minishell);
+int				previous_token_is_heredoc(t_token *tokens);
+char			*expand_tilde_prefix(char *line, int *i, t_minishell *minishell,
+					int disable_expand);
+int				is_separator(char c);
+char			*get_segment_check_wildcard(char *line, int *i,
+					t_token_to_word *word, char *full_word);
 
 // ----- Expansion Functions -----
 char			*expand_variable(char *str, t_minishell *minishell);
@@ -194,25 +215,16 @@ char			*append_segment(char *final_str, char *str, int *i);
 
 // ----- Free Functions -----
 void			free_tokens(t_token **tokens);
-
-
-
-
-
-
+void			free_env_list(t_env *env);
+void			free_ast(t_ast_node **ast_ptr);
+void			free_command(t_command *cmd);
+void			free_array_str(char **array);
 
 // -------------------------------------------------------------------------------------
 
 
 
 
-int				handle_word(char *line, int *i, t_token **tokens,
-					t_minishell *minishell);
-int				previous_token_is_heredoc(t_token *tokens);
-char			*expand_tilde_prefix(char *line, int *i, t_minishell *minishell,
-					int disable_expand);
-int				is_separator(char c);
-char			*get_var_value(char *var_name, t_minishell *minishell);
 
 
 
@@ -223,7 +235,6 @@ void			print_ast(t_ast_node *node, int level);
 
 // ----- Main
 void			execution(t_minishell *minishell);
-void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // ----- Env_Convert Functions -----
 int				count_env_nodes(t_env *env_list);
@@ -333,15 +344,8 @@ t_command		*init_cmd(void);
 void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
 					char *msg);
 
-
-void			free_array_str(char **array);
-void			free_command(t_command *cmd);
-void			free_ast(t_ast_node **ast_ptr);
-void			free_env_list(t_env *env);
-
 // ----- History
 int				ft_history(char **argv, t_history *history_list);
-void			free_history(t_history **history_list);
 
 // ----- Wildcard Functions -----
 int				match_pattern(char *pattern, char *filename);

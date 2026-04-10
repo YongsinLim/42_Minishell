@@ -16,4 +16,19 @@ check whether is delimiter
 expand tilde '~'
 double-quote expand the $ sign variable
 single-quote didnt expand anything
-add to token_word
+non-quote check wildcard exist
+final words add to token_word
+
+
+
+
+
+// execution :
+
+
+
+
+
+
+
+Cleanup memory & exit with last_exit_status

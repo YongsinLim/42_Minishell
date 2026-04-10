@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/09 18:49:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 17:22:41 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ standard input stream.
 readline:  readi a line (user input) from the terminal with interactive
 features like history and tab completion
 
-add_history(str): allow users to press the Up / Down arrow to see previous commands
+add_history(str): allow users to press the Up / Down arrow to see previous
+commands
 
 Use readline for interactive :
 Requires a terminal (TTY) to work properly
@@ -55,7 +56,6 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_minishell	minishell;
 	int			interactive;
-	char		*raw_line;
 
 	(void)argc;
 	(void)argv;
@@ -64,55 +64,48 @@ int	main(int argc, char **argv, char **envp)
 	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{
-		if (interactive)
-			raw_line = readline("Minishell > ");
-		else
-			raw_line = get_next_line(STDIN_FILENO);
-		if (raw_line)
-			minishell.input = ft_strtrim(raw_line, "\r\n");
-		free(raw_line);
-		minishell.input = check_unclosed_quotes(minishell.input, interactive);
-		if (!minishell.input)
-		{
-			if (interactive)
-				ft_putstr_fd("exit\n", 2); // on EOF or Ctrl + D
+		if (!read_and_prepare_input(&minishell, interactive))
 			break ;
-		}
-		if (!is_all_whitespace(minishell.input))
+		if (!build_tokens(&minishell))
 		{
-			if (interactive)
-				add_history(minishell.input);
-			add_to_history(minishell.input, &minishell.history_list);
-		}
-		minishell.tokens = tokenize(minishell.input, &minishell);
-		// ---------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		if (!minishell.tokens)
-		{
-			free(minishell.input);
-			minishell.input = NULL;
 			if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
 				break ;
 			continue ;
 		}
-		execution(&minishell);
+			execution(&minishell);
 		if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
 			break ;
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
+}
+
+//ft_putstr_fd("exit\n", 2) on EOF or Ctrl + D in interactive mode
+int	read_and_prepare_input(t_minishell *minishell, int interactive)
+{
+	char	*raw_line;
+
+	if (interactive)
+		raw_line = readline("Minishell > ");
+	else
+		raw_line = get_next_line(STDIN_FILENO);
+	if (!raw_line)
+	{
+		if (interactive)
+			ft_putstr_fd("exit\n", 2);
+		return (FALSE);
+	}
+	minishell->input = ft_strtrim(raw_line, "\r\n");
+	free(raw_line);
+	minishell->input = check_unclosed_quotes(minishell->input, interactive);
+	if (!minishell->input)
+		return (FALSE);
+	if (!is_all_whitespace(minishell->input))
+	{
+		if (interactive)
+			add_history(minishell->input);
+		add_to_history(minishell->input, &minishell->history_list);
+	}
+	return (TRUE);
 }
 
 int	is_all_whitespace(char *str)
@@ -129,7 +122,47 @@ int	is_all_whitespace(char *str)
 	return (TRUE);
 }
 
+int	build_tokens(t_minishell *minishell)
+{
+	minishell->tokens = tokenize(minishell->input, minishell);
+	if (minishell->tokens)
+		return (TRUE);
+	free(minishell->input);
+	minishell->input = NULL;
+	return (FALSE);
+}
+
+
+
+
+
+/*
+rl_clear_history() is used to completely clear the command history list and
+free the memory associated with its entries
+*/
+void	cleanup_and_exit(t_minishell *minishell, int exit_status)
+{
+	free_env_list(minishell->env_list);
+	free(minishell->input);
+	free_history(&minishell->history_list);
+	free_tokens(&minishell->tokens);
+	free_ast(&minishell->ast);
+	rl_clear_history();
+	exit(exit_status);
+}
+
 // ---------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -151,15 +184,4 @@ void	execution(t_minishell *minishell)
 	minishell->input = NULL;
 	free_tokens(&minishell->tokens);
 	free_ast(&minishell->ast);
-}
-
-void	cleanup_and_exit(t_minishell *minishell, int exit_status)
-{
-	free_env_list(minishell->env_list);
-	free_history(&minishell->history_list);
-	free(minishell->input);
-	free_tokens(&minishell->tokens);
-	free_ast(&minishell->ast);
-	rl_clear_history(); // TODO : check what function do
-	exit(exit_status);
 }

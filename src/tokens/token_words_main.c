@@ -6,58 +6,37 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/09 19:40:53 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 16:13:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 /*
-flags[0] = has_quotes, flags[1] = has_wildcard
-
 Delimiter is never expanded because:
 It's a pattern to match against input lines
 Must be literally preserved as the user typed it
 Otherwise the heredoc can't find where the content ends
-
  */
-int	handle_word(char *line, int *i, t_token **tokens,
-			t_minishell *minishell)
+int	handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell)
 {
-	int		flags[2];
-	int		disable_expand;
-	char	*full_word;
-	char	*segment;
+	t_token_to_word	*word;
+	char			*full_word;
 
-	flags[0] = FALSE;
-	flags[1] = FALSE;
-	disable_expand = previous_token_is_heredoc(*tokens);
-	full_word = expand_tilde_prefix(line, i, minishell, disable_expand);
+	word = malloc(sizeof(t_token_to_word));
+	word->minishell = minishell;
+	word->is_quoted_string = FALSE;
+	word->is_contain_wildcard = FALSE;
+	word->is_disabled_expand = previous_token_is_heredoc(*tokens);
+	full_word = expand_tilde_prefix(line, i, minishell,
+			word->is_disabled_expand);
 	while (line[*i] && !is_separator(line[*i]))
 	{
-		if (line[*i] == '"' || line[*i] == '\'')
-		{
-			flags[0] = TRUE;
-			segment = handle_quoted_string(line, i, minishell, disable_expand);
-		}
-		else if (!disable_expand && line[*i] == '$'
-			&& (line[*i + 1] == '"' || line[*i + 1] == '\''))
-		{
-			(*i)++;
-			continue ;
-		}
-		else
-		{
-			segment = get_unquoted_segment(line, i, minishell, disable_expand);
-			if (!disable_expand && segment && (ft_strchr(segment, '*')
-					|| ft_strchr(segment, '?')))
-				flags[1] = TRUE;
-		}
-		full_word = strjoin_free(full_word, segment);
+		full_word = get_segment_check_wildcard(line, i, word, full_word);
 		if (!full_word)
 			return (FALSE);
 	}
-	create_and_add_word_token(full_word, flags, tokens);
+	create_and_add_word_token(full_word, word, tokens);
 	free(full_word);
 	(*i)--;
 	return (TRUE);
@@ -108,26 +87,27 @@ int	is_separator(char c)
 		|| c == '&' || c == '(' || c == ')');
 }
 
-char	*get_var_value(char *var_name, t_minishell *minishell)
+char	*get_segment_check_wildcard(char *line, int *i, t_token_to_word *word,
+	char *full_word)
 {
-	t_env	*current;
+	char	*segment;
 
-	if (!var_name)
-		return (ft_strdup(""));
-	if (ft_strncmp(var_name, "?", 2) == 0)
-		return (ft_itoa(minishell->last_exit_status));
-	current = minishell->env_list;
-	while (current)
+	while (!word->is_disabled_expand && line[*i] == '$'
+		&& (line[*i + 1] == '"' || line[*i + 1] == '\''))
+		(*i)++;
+	if (line[*i] == '"' || line[*i] == '\'')
 	{
-		if (ft_strncmp(current->key, var_name, ft_strlen(var_name) + 1) == 0)
-		{
-			if (current->value == NULL)
-				return (ft_strdup(""));
-			return (ft_strdup(current->value));
-		}
-		current = current->next;
+		word->is_quoted_string = TRUE;
+		segment = handle_quoted_string(line, i, word->minishell,
+				word->is_disabled_expand);
 	}
-	return (ft_strdup(""));
+	else
+	{
+		segment = get_unquoted_segment(line, i, word->minishell,
+				word->is_disabled_expand);
+		if (!word->is_disabled_expand && segment && (ft_strchr(segment, '*')
+				|| ft_strchr(segment, '?')))
+			word->is_contain_wildcard = TRUE;
+	}
+	return (strjoin_free(full_word, segment));
 }
-
-
