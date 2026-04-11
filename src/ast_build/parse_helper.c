@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 12:43:13 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/31 22:45:47 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/11 21:59:33 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ t_command	*init_cmd(void)
 	command->argv = NULL;
 	command->redirs = NULL;
 	command->heredoc_delimiter = NULL;
-	command->heredoc_is_quoted = 0;
+	command->heredoc_is_quoted = FALSE;
 	command->heredoc_fd = -1;
 	return (command);
 }

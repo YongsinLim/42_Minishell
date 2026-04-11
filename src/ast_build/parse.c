@@ -64,20 +64,6 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 	return (left_cmd);
 }
 
-t_ast_node	*create_new_ast_node(t_ast_node_type type)
-{
-	t_ast_node	*node;
-
-	node = malloc (sizeof(t_ast_node));
-	if (!node)
-		return (NULL);
-	node->type = type;
-	node->left = NULL;
-	node->right = NULL;
-	node->command = NULL;
-	return (node);
-}
-
 t_ast_node_type	set_operator_type(t_token **tokens)
 {
 	t_ast_node_type	operation_type;
