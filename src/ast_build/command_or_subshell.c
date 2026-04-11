@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 16:39:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:43:41 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/11 21:35:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,19 @@ t_ast_node	*parse_command_or_subshell(t_token **tokens)
 	if ((*tokens)->type == TOKEN_L_PAREN)
 		return (parse_subshell(tokens));
 	else
-		return (parse_simple_command(tokens));
+		return (parse_command(tokens));
 }
 
+/*
+*tokens = (*tokens)->next;
+1st : consume '('
+2nd : consume ')'
+ */
 t_ast_node	*parse_subshell(t_token **tokens)
 {
-	t_ast_node	*node;
-	t_ast_node	*inner_ast;
 	t_token		*current_token;
+	t_ast_node	*inner_ast;
+	t_ast_node	*node;
 
 	current_token = *tokens;
 	*tokens = (*tokens)->next;
@@ -51,7 +56,7 @@ t_ast_node	*parse_subshell(t_token **tokens)
 	return (node);
 }
 
-t_ast_node	*parse_simple_command(t_token **tokens)
+t_ast_node	*parse_command(t_token **tokens)
 {
 	t_ast_node	*node;
 
@@ -75,5 +80,19 @@ t_ast_node	*parse_simple_command(t_token **tokens)
 		free_ast(&node);
 		return (NULL);
 	}
+	return (node);
+}
+
+t_ast_node	*create_new_ast_node(t_ast_node_type type)
+{
+	t_ast_node	*node;
+
+	node = malloc (sizeof(t_ast_node));
+	if (!node)
+		return (NULL);
+	node->type = type;
+	node->left = NULL;
+	node->right = NULL;
+	node->command = NULL;
 	return (node);
 }

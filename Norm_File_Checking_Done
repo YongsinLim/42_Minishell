@@ -7,6 +7,7 @@ token_words.c
 main_tokenising.c
 token_word_main.c
 free.c
+command_or_subshell.c
 
 
 

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/10 17:24:54 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/11 22:08:08 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@
 
 
 
-# include <signal.h>
 # include <sys/stat.h>
 # include <string.h>
 # include <sys/ioctl.h>
@@ -66,12 +65,12 @@ typedef enum e_token_type
 {
 	TOKEN_WORD,
 	TOKEN_PIPE,
+	TOKEN_AND,
+	TOKEN_OR,
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_APPEND,
 	TOKEN_HEREDOC,
-	TOKEN_AND,
-	TOKEN_OR,
 	TOKEN_L_PAREN,
 	TOKEN_R_PAREN
 }			t_token_type;
@@ -84,33 +83,6 @@ typedef struct s_token
 	int				has_wildcard;
 	struct s_token	*next;
 }				t_token;
-
-typedef struct s_minishell
-{
-	t_env		*env_list;
-	char		*input;
-	t_history	*history_list;
-	t_token		*tokens;
-	t_ast_node	*ast;
-	int			last_exit_status;
-}				t_minishell;
-
-typedef struct s_token_to_word
-{
-	t_minishell	*minishell;
-	int			is_quoted_string;
-	int			is_contain_wildcard;
-	int			is_disabled_expand;
-}				t_token_to_word;
-
-// ---------------------------------------------------------------------
-
-
-
-
-
-
-
 
 typedef enum e_ast_node_type
 {
@@ -146,7 +118,23 @@ typedef struct s_ast_node
 	t_command			*command;
 }				t_ast_node;
 
+typedef struct s_minishell
+{
+	t_env		*env_list;
+	char		*input;
+	t_history	*history_list;
+	t_token		*tokens;
+	t_ast_node	*ast;
+	int			last_exit_status;
+}				t_minishell;
 
+typedef struct s_token_to_word
+{
+	t_minishell	*minishell;
+	int			is_quoted_string;
+	int			is_contain_wildcard;
+	int			is_disabled_expand;
+}				t_token_to_word;
 
 // ----- Main Functions -----
 int				read_and_prepare_input(t_minishell *minishell, int interactive);
@@ -220,6 +208,12 @@ void			free_ast(t_ast_node **ast_ptr);
 void			free_command(t_command *cmd);
 void			free_array_str(char **array);
 
+// ----- Parse Subshell Or Command Functions -----
+t_ast_node		*parse_command_or_subshell(t_token **tokens);
+t_ast_node		*parse_subshell(t_token **tokens);
+t_ast_node		*parse_command(t_token **tokens);
+t_ast_node		*create_new_ast_node(t_ast_node_type type);
+
 // -------------------------------------------------------------------------------------
 
 
@@ -277,13 +271,19 @@ int				ft_is_numeric(char *str);
 int				ft_exit(char **argv, t_minishell *minishell);
 
 // ----- Heredoc Functions -----
-void			heredocs(t_ast_node *ast, t_minishell *minishell);
-void			process_heredoc(t_command *cmd, t_minishell *minishell);
-char			*read_heredoc_line_simple(void);
-void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
-					int write_fd);
-void			process_heredoc_noninteractive(t_command *cmd,
-					t_minishell *minishell, int *pipe_fd);
+int				heredocs(t_ast_node *ast, t_minishell *minishell);
+void			heredoc_read_loop(t_command *cmd, t_minishell *minishell, int write_fd);
+int				process_heredoc(t_command *cmd, t_minishell *minishell);
+
+
+
+// void			heredocs(t_ast_node *ast, t_minishell *minishell);
+// void			process_heredoc(t_command *cmd, t_minishell *minishell);
+// char			*read_heredoc_line_simple(void);
+// void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
+// 					int write_fd);
+// void			process_heredoc_noninteractive(t_command *cmd,
+// 					t_minishell *minishell, int *pipe_fd);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
@@ -322,18 +322,15 @@ void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 // ----- Parse Functions -----
 t_ast_node		*parse(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
-t_ast_node		*create_new_ast_node(t_ast_node_type type);
 t_ast_node_type	set_operator_type(t_token **tokens);
 
-t_ast_node		*parse_command_or_subshell(t_token **tokens);
-t_ast_node		*parse_subshell(t_token **tokens);
-t_ast_node		*parse_simple_command(t_token **tokens);
+
 
 t_command		*parse_one_command(t_token **tokens_ptr);
 int				add_argv_value(t_list **argv_list, char *value);
 int				is_whitespace(char c);
 int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
-int				tokens_to_cmd(t_token **token_ptr, t_command *cmd,
+int				tokens_to_cmd(t_token **token, t_command *cmd,
 					t_list **argv_list);
 int				parse_redirection(t_token **tokens, t_command *cmd);
 t_token			*token_redirection(t_token *token, t_command *command);

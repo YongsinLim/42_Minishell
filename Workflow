@@ -25,6 +25,13 @@ final words add to token_word
 
 // execution :
 
+- Parse -
+
+Pipeline's Left
+1. Subshell ( ) or
+2. Simple Command
+
+
 
 
 
