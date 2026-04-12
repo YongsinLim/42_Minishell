@@ -29,7 +29,7 @@ final words add to token_word
 
 Pipeline's Left
 1. Subshell ( ) or
-2. Simple Command
+2. Simple Command : set outfile if got redirection token, then create token_word (if got wildcard, expand too)
 
 
 
