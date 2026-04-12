@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_one_command.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/12 12:44:51 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 16:22:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ typedef struct s_command
 	int					heredoc_fd = -1
 }			t_command;
 */
-
 t_command	*parse_one_command(t_token **tokens_ptr)
 {
 	t_token		*token;
@@ -39,21 +38,16 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	if (!cmd)
 		return (NULL);
 	argv_list = NULL;
-	while (token && token->type != TOKEN_PIPE && token->type != TOKEN_AND
-		&& token->type != TOKEN_OR)
+	while (is_not_logical_operator(token))
 	{
-		status = tokens_to_cmd(&token, cmd, &argv_list);
+		if (is_redirection_token(token))
+			status = parse_redirection(&token, cmd);
+		else
+			status = tokens_to_cmd(&token, &argv_list);
 		if (status == SHELL_FAILURE)
 			return (parse_error_cleanup(&argv_list, cmd, NULL));
 	}
-
-
-	// ---------------------------------------------------------------------
-
-
-
-
-	cmd->argv = to_str_array(argv_list);
+	cmd->argv = convert_list_to_str_array(argv_list);
 	if (!cmd->argv)
 		return (parse_error_cleanup(&argv_list, cmd,
 				"minishell: malloc error\n"));
@@ -61,42 +55,27 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	return (cmd);
 }
 
+/*
+Quoted empty tokens must be kept as real argv entries.
+echo "" -> argv includes empty string
+echo $EMPTY (unquoted, empty var) -> no empty arg added
+echo "$EMPTY" -> empty arg preserved
 
-
-
-
-
-
-
-int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
+Why wildcard need iteration, non-wildcard no need :
+Non-wildcard: data already final -> attach whole linked-list once.
+Wildcard: each node is a pattern needing its own transform -> must visit
+each node (current = current->next).
+ */
+int	tokens_to_cmd(t_token **token_ptr, t_list **argv_list)
 {
 	t_list	*temp_split;
 	t_list	*current;
 	t_list	*expanded;
 
-	if (is_redirection_token(*token_ptr))
-		return (parse_redirection(token_ptr, cmd));
-
-	// ---------------------------------------------------------------------
-
-
 	if ((*token_ptr)->type == TOKEN_WORD)
 	{
-		temp_split = NULL;
-		if (ft_strchr((*token_ptr)->value, ' ')
-			|| ft_strchr((*token_ptr)->value, '\t')
-			|| ft_strchr((*token_ptr)->value, '\n'))
-		{
-			if (split_unquoted_word_to_argv((*token_ptr)->value,
-					&temp_split) == SHELL_FAILURE)
-				return (SHELL_FAILURE);
-		}
-		else
-		{
-			if (add_argv_value(&temp_split,
-					(*token_ptr)->value) == SHELL_FAILURE)
-				return (SHELL_FAILURE);
-		}
+		if (build_word_field(&temp_split, *token_ptr) == SHELL_FAILURE)
+			return (SHELL_FAILURE);
 		if ((*token_ptr)->has_wildcard)
 		{
 			current = temp_split;
@@ -104,37 +83,28 @@ int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
 			{
 				expanded = NULL;
 				expand_wildcard((char *)current->content, &expanded);
-				if (!*argv_list)
-					*argv_list = expanded;
-				else
-					ft_lstlast(*argv_list)->next = expanded;
+				ft_lstadd_back(argv_list, expanded);
 				current = current->next;
 			}
 			ft_lstclear(&temp_split, free);
 		}
 		else
-		{
-			if (!*argv_list)
-				*argv_list = temp_split;
-			else
-				ft_lstlast(*argv_list)->next = temp_split;
-		}
+			ft_lstadd_back(argv_list, temp_split);
 		(*token_ptr) = (*token_ptr)->next;
 	}
 	return (SHELL_SUCCESS);
 }
 
-
-
-
-
-
-
-
-
-
-
-
+int	build_word_field(t_list	**temp_split, t_token *token)
+{
+	*temp_split = NULL;
+	if (token->value[0] == '\0' && token->has_quotes)
+	{
+		if (add_argv_value(temp_split, "") == SHELL_FAILURE)
+			return (SHELL_FAILURE);
+	}
+	return (split_unquoted_word_to_argv(token->value, temp_split));
+}
 
 int	add_argv_value(t_list **argv_list, char *value)
 {
@@ -155,15 +125,14 @@ int	add_argv_value(t_list **argv_list, char *value)
 	return (SHELL_SUCCESS);
 }
 
-int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\n' || c == '\t');
-}
-
+/*
+Restore whitespace after field splitting bcos quoted spaces could get split
+incorrectly.
+*/
 int	split_unquoted_word_to_argv(char *value, t_list **argv_list)
 {
 	int		i;
-	int		start;
+	int		start_idx;
 	char	*field;
 
 	i = 0;
@@ -173,10 +142,10 @@ int	split_unquoted_word_to_argv(char *value, t_list **argv_list)
 			i++;
 		if (!value[i])
 			break ;
-		start = i;
+		start_idx = i;
 		while (value[i] && !is_whitespace(value[i]))
 			i++;
-		field = ft_substr(value, start, i - start);
+		field = ft_substr(value, start_idx, i - start_idx);
 		if (!field || add_argv_value(argv_list, field) == SHELL_FAILURE)
 		{
 			free(field);
@@ -185,32 +154,4 @@ int	split_unquoted_word_to_argv(char *value, t_list **argv_list)
 		free(field);
 	}
 	return (SHELL_SUCCESS);
-}
-
-
-
-
-
-
-
-char	**to_str_array(t_list *argv_list)
-{
-	char	**argv;
-	int		i;
-	t_list	*current;
-
-	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(argv_list) + 1));
-	if (!argv)
-		return (NULL);
-	i = 0;
-	current = argv_list;
-	while (current != NULL)
-	{
-		argv[i] = (char *)current->content;
-		i++;
-		current = current->next;
-	}
-	argv[i] = NULL;
-	ft_lstclear(&argv_list, NULL);
-	return (argv);
 }

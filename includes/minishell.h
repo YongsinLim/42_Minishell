@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/12 12:43:10 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 16:24:00 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,7 +216,9 @@ t_ast_node		*create_new_ast_node(t_ast_node_type type);
 
 // ----- Parse_Helper Functions -----
 t_command		*init_cmd(void);
+int				is_not_logical_operator(t_token *token);
 int				is_redirection_token(t_token *token);
+int				is_whitespace(char c);
 void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
 					char *msg);
 
@@ -227,7 +229,16 @@ int				get_redirection_file(t_token **target, t_token *token);
 void			restore_quoted_whitespaces(char *str);
 int				add_redir(t_command *cmd, t_token_type type, char *file);
 
+// ----- General_Helper Functions -----
+char			**convert_list_to_str_array(t_list *argv_list);
 
+// ----- Parse_One_Command Functions -----
+t_command		*parse_one_command(t_token **tokens_ptr);
+int				tokens_to_cmd(t_token **token,
+				                 t_list **argv_list);
+int				build_word_field(t_list	**temp_split, t_token *token);
+int				add_argv_value(t_list **argv_list, char *value);
+int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
 // -------------------------------------------------------------------------------------
 
 
@@ -235,13 +246,16 @@ int				add_redir(t_command *cmd, t_token_type type, char *file);
 
 
 
-t_command		*parse_one_command(t_token **tokens_ptr);
-int				add_argv_value(t_list **argv_list, char *value);
-int				is_whitespace(char c);
-int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
-int				tokens_to_cmd(t_token **token, t_command *cmd,
-					t_list **argv_list);
-char			**to_str_array(t_list *argv_list);
+
+
+
+// ----- Wildcard Functions -----
+int				match_pattern(char *pattern, char *filename);
+int				compare_filename(char *a, char *b);
+void			sort_argv_list(t_list **argv_list);
+void			expand_wildcard(char *pattern, t_list **argv_list);
+
+
 
 // ----- Debug Functions -----
 void			print_indent(int level);
@@ -344,11 +358,5 @@ t_ast_node_type	set_operator_type(t_token **tokens);
 
 // ----- History
 int				ft_history(char **argv, t_history *history_list);
-
-// ----- Wildcard Functions -----
-int				match_pattern(char *pattern, char *filename);
-int				compare_filename(char *a, char *b);
-void			sort_argv_list(t_list **argv_list);
-void			expand_wildcard(char *pattern, t_list **argv_list);
 
 #endif
