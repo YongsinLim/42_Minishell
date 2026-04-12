@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:02:43 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:44:07 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 00:29:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ t_ast_node	*parse(t_token **tokens)
 
 t_ast_node	*parse_pipeline(t_token **tokens)
 {
-	t_ast_node	*left_cmd;
+	t_ast_node	*left_node;
 	t_ast_node	*pipe_node;
 	t_token		*current_token;
 
-	left_cmd = parse_command_or_subshell(tokens);
-	if (!left_cmd)
+	left_node = parse_command_or_subshell(tokens);
+	if (!left_node)
 		return (NULL);
 	while (*tokens && (*tokens)->type == TOKEN_PIPE)
 	{
@@ -54,14 +54,14 @@ t_ast_node	*parse_pipeline(t_token **tokens)
 		free(current_token);
 		pipe_node = create_new_ast_node(NODE_PIPE);
 		if (!pipe_node)
-			return (free_ast(&left_cmd), NULL);
-		pipe_node->left = left_cmd;
+			return (free_ast(&left_node), NULL);
+		pipe_node->left = left_node;
 		pipe_node->right = parse_command_or_subshell(tokens);
 		if (!pipe_node->right)
 			return (free_ast(&pipe_node), NULL);
-		left_cmd = pipe_node;
+		left_node = pipe_node;
 	}
-	return (left_cmd);
+	return (left_node);
 }
 
 t_ast_node_type	set_operator_type(t_token **tokens)

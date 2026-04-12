@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2026/03/07 14:17:33 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/10 17:42:59 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,11 @@ int	wait_for_children(pid_t last_pid)
 				last_child_exit_status = WEXITSTATUS(status);
 			else if (WIFSIGNALED(status))
 			{
-				if (WTERMSIG(status) == SIGINT)
-					write(1, "\n", 1);
 				last_child_exit_status = 128 + WTERMSIG(status);
+				if (WTERMSIG(status) == SIGQUIT)
+					ft_putstr_fd("Quit (core dumped)\n", 2);
+				else if (WTERMSIG(status) == SIGINT)
+					ft_putstr_fd("\n", 2);
 			}
 		}
 	}
