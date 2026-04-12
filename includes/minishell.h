@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/12 16:24:00 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 19:03:26 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -239,6 +239,14 @@ int				tokens_to_cmd(t_token **token,
 int				build_word_field(t_list	**temp_split, t_token *token);
 int				add_argv_value(t_list **argv_list, char *value);
 int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
+
+// ----- Wildcard Functions -----
+void			expand_wildcard(char *pattern, t_list **argv_list);
+int				match_pattern(char *pattern, char *filename);
+int				add_arg_node(t_list **argv_list, char *value);
+void			sort_argv_list(t_list **argv_list);
+int				compare_filename(char *a, char *b);
+
 // -------------------------------------------------------------------------------------
 
 
@@ -249,13 +257,11 @@ int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
 
 
 
-// ----- Wildcard Functions -----
-int				match_pattern(char *pattern, char *filename);
-int				compare_filename(char *a, char *b);
-void			sort_argv_list(t_list **argv_list);
-void			expand_wildcard(char *pattern, t_list **argv_list);
 
-
+// ----- Parse Functions -----
+t_ast_node		*parse(t_token **tokens);
+t_ast_node		*parse_pipeline(t_token **tokens);
+t_ast_node_type	set_operator_type(t_token **tokens);
 
 // ----- Debug Functions -----
 void			print_indent(int level);
@@ -350,11 +356,6 @@ void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
 void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
-
-// ----- Parse Functions -----
-t_ast_node		*parse(t_token **tokens);
-t_ast_node		*parse_pipeline(t_token **tokens);
-t_ast_node_type	set_operator_type(t_token **tokens);
 
 // ----- History
 int				ft_history(char **argv, t_history *history_list);
