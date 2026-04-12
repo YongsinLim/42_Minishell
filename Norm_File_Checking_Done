@@ -12,6 +12,7 @@ parse_helper.c
 parse_redirection.c
 general_helper.c
 parse_one_command.c
+wildcard.c
 
 
 
