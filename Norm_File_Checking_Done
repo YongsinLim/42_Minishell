@@ -8,6 +8,8 @@ main_tokenising.c
 token_word_main.c
 free.c
 command_or_subshell.c
+parse_helper.c
+parse_redirection.c
 
 
 

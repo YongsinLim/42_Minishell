@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/11 22:08:08 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 12:43:10 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,20 @@ t_ast_node		*parse_subshell(t_token **tokens);
 t_ast_node		*parse_command(t_token **tokens);
 t_ast_node		*create_new_ast_node(t_ast_node_type type);
 
+// ----- Parse_Helper Functions -----
+t_command		*init_cmd(void);
+int				is_redirection_token(t_token *token);
+void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
+					char *msg);
+
+// ----- Parse_Redirection Functions -----
+int				parse_redirection(t_token **tokens, t_command *cmd);
+int				set_redirection_file(t_token *token, t_command *command);
+int				get_redirection_file(t_token **target, t_token *token);
+void			restore_quoted_whitespaces(char *str);
+int				add_redir(t_command *cmd, t_token_type type, char *file);
+
+
 // -------------------------------------------------------------------------------------
 
 
@@ -221,7 +235,13 @@ t_ast_node		*create_new_ast_node(t_ast_node_type type);
 
 
 
-
+t_command		*parse_one_command(t_token **tokens_ptr);
+int				add_argv_value(t_list **argv_list, char *value);
+int				is_whitespace(char c);
+int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
+int				tokens_to_cmd(t_token **token, t_command *cmd,
+					t_list **argv_list);
+char			**to_str_array(t_list *argv_list);
 
 // ----- Debug Functions -----
 void			print_indent(int level);
@@ -271,19 +291,17 @@ int				ft_is_numeric(char *str);
 int				ft_exit(char **argv, t_minishell *minishell);
 
 // ----- Heredoc Functions -----
-int				heredocs(t_ast_node *ast, t_minishell *minishell);
-void			heredoc_read_loop(t_command *cmd, t_minishell *minishell, int write_fd);
-int				process_heredoc(t_command *cmd, t_minishell *minishell);
+// int				heredocs(t_ast_node *ast, t_minishell *minishell);
+// void			heredoc_read_loop(t_command *cmd, t_minishell *minishell, int write_fd);
+// int				process_heredoc(t_command *cmd, t_minishell *minishell);
 
-
-
-// void			heredocs(t_ast_node *ast, t_minishell *minishell);
-// void			process_heredoc(t_command *cmd, t_minishell *minishell);
-// char			*read_heredoc_line_simple(void);
-// void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
-// 					int write_fd);
-// void			process_heredoc_noninteractive(t_command *cmd,
-// 					t_minishell *minishell, int *pipe_fd);
+void			heredocs(t_ast_node *ast, t_minishell *minishell);
+void			process_heredoc(t_command *cmd, t_minishell *minishell);
+char			*read_heredoc_line_simple(void);
+void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
+					int write_fd);
+void			process_heredoc_noninteractive(t_command *cmd,
+					t_minishell *minishell, int *pipe_fd);
 
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
@@ -323,23 +341,6 @@ void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 t_ast_node		*parse(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
 t_ast_node_type	set_operator_type(t_token **tokens);
-
-
-
-t_command		*parse_one_command(t_token **tokens_ptr);
-int				add_argv_value(t_list **argv_list, char *value);
-int				is_whitespace(char c);
-int				split_unquoted_word_to_argv(char *value, t_list **argv_list);
-int				tokens_to_cmd(t_token **token, t_command *cmd,
-					t_list **argv_list);
-int				parse_redirection(t_token **tokens, t_command *cmd);
-t_token			*token_redirection(t_token *token, t_command *command);
-char			**to_str_array(t_list *argv_list);
-
-// ----- Parse_Helper Functions -----
-t_command		*init_cmd(void);
-void			*parse_error_cleanup(t_list **argv_list, t_command *cmd,
-					char *msg);
 
 // ----- History
 int				ft_history(char **argv, t_history *history_list);

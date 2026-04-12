@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:42:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 12:44:51 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ output =
 typedef struct s_command
 {
 	char				**argv; = [echo, hello]
-	t_redir				*redirs = NULL
+	t_redir				*redirs = type (>), file (outfile)
 	char				*heredoc_delimiter; = NULL
 	int					heredoc_is_quoted; = 0
 	int					heredoc_fd = -1
@@ -46,6 +46,13 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 		if (status == SHELL_FAILURE)
 			return (parse_error_cleanup(&argv_list, cmd, NULL));
 	}
+
+
+	// ---------------------------------------------------------------------
+
+
+
+
 	cmd->argv = to_str_array(argv_list);
 	if (!cmd->argv)
 		return (parse_error_cleanup(&argv_list, cmd,
@@ -54,22 +61,80 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	return (cmd);
 }
 
-void	restore_quoted_whitespaces(char *str)
-{
-	int	i;
 
-	i = 0;
-	while (str && str[i])
+
+
+
+
+
+
+int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
+{
+	t_list	*temp_split;
+	t_list	*current;
+	t_list	*expanded;
+
+	if (is_redirection_token(*token_ptr))
+		return (parse_redirection(token_ptr, cmd));
+
+	// ---------------------------------------------------------------------
+
+
+	if ((*token_ptr)->type == TOKEN_WORD)
 	{
-		if (str[i] == '\x1A')
-			str[i] = ' ';
-		else if (str[i] == '\x1B')
-			str[i] = '\t';
-		else if (str[i] == '\x1C')
-			str[i] = '\n';
-		i++;
+		temp_split = NULL;
+		if (ft_strchr((*token_ptr)->value, ' ')
+			|| ft_strchr((*token_ptr)->value, '\t')
+			|| ft_strchr((*token_ptr)->value, '\n'))
+		{
+			if (split_unquoted_word_to_argv((*token_ptr)->value,
+					&temp_split) == SHELL_FAILURE)
+				return (SHELL_FAILURE);
+		}
+		else
+		{
+			if (add_argv_value(&temp_split,
+					(*token_ptr)->value) == SHELL_FAILURE)
+				return (SHELL_FAILURE);
+		}
+		if ((*token_ptr)->has_wildcard)
+		{
+			current = temp_split;
+			while (current)
+			{
+				expanded = NULL;
+				expand_wildcard((char *)current->content, &expanded);
+				if (!*argv_list)
+					*argv_list = expanded;
+				else
+					ft_lstlast(*argv_list)->next = expanded;
+				current = current->next;
+			}
+			ft_lstclear(&temp_split, free);
+		}
+		else
+		{
+			if (!*argv_list)
+				*argv_list = temp_split;
+			else
+				ft_lstlast(*argv_list)->next = temp_split;
+		}
+		(*token_ptr) = (*token_ptr)->next;
 	}
+	return (SHELL_SUCCESS);
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 int	add_argv_value(t_list **argv_list, char *value)
 {
@@ -122,133 +187,11 @@ int	split_unquoted_word_to_argv(char *value, t_list **argv_list)
 	return (SHELL_SUCCESS);
 }
 
-int	tokens_to_cmd(t_token **token_ptr, t_command *cmd, t_list **argv_list)
-{
-	t_list	*temp_split;
-	t_list	*current;
-	t_list	*expanded;
 
-	if ((*token_ptr)->type == TOKEN_REDIRECT_OUT
-		|| (*token_ptr)->type == TOKEN_REDIRECT_IN
-		|| (*token_ptr)->type == TOKEN_HEREDOC
-		|| (*token_ptr)->type == TOKEN_APPEND)
-		return (parse_redirection(token_ptr, cmd));
-	if ((*token_ptr)->type == TOKEN_WORD)
-	{
-		temp_split = NULL;
-		if (ft_strchr((*token_ptr)->value, ' ')
-			|| ft_strchr((*token_ptr)->value, '\t')
-			|| ft_strchr((*token_ptr)->value, '\n'))
-		{
-			if (split_unquoted_word_to_argv((*token_ptr)->value,
-					&temp_split) == SHELL_FAILURE)
-				return (SHELL_FAILURE);
-		}
-		else
-		{
-			if (add_argv_value(&temp_split,
-					(*token_ptr)->value) == SHELL_FAILURE)
-				return (SHELL_FAILURE);
-		}
-		if ((*token_ptr)->has_wildcard)
-		{
-			current = temp_split;
-			while (current)
-			{
-				expanded = NULL;
-				expand_wildcard((char *)current->content, &expanded);
-				if (!*argv_list)
-					*argv_list = expanded;
-				else
-					ft_lstlast(*argv_list)->next = expanded;
-				current = current->next;
-			}
-			ft_lstclear(&temp_split, free);
-		}
-		else
-		{
-			if (!*argv_list)
-				*argv_list = temp_split;
-			else
-				ft_lstlast(*argv_list)->next = temp_split;
-		}
-		(*token_ptr) = (*token_ptr)->next;
-	}
-	return (SHELL_SUCCESS);
-}
 
-int	parse_redirection(t_token **tokens, t_command *cmd)
-{
-	t_token	*current_token;
-	t_token	*token_filename;
 
-	current_token = *tokens;
-	while (current_token && (current_token->type == TOKEN_REDIRECT_IN
-			|| current_token->type == TOKEN_REDIRECT_OUT
-			|| current_token->type == TOKEN_HEREDOC
-			|| current_token->type == TOKEN_APPEND))
-	{
-		token_filename = token_redirection(current_token, cmd);
-		if (token_filename == NULL)
-			return (SHELL_FAILURE);
-		current_token = token_filename->next;
-	}
-	*tokens = current_token;
-	return (SHELL_SUCCESS);
-}
 
-void	add_redir(t_command *cmd, t_token_type type, char *file)
-{
-	t_redir	*new_node;
-	t_redir	*current;
 
-	new_node = malloc(sizeof(t_redir));
-	if (!new_node)
-		return ;
-	new_node->type = type;
-	new_node->file = ft_strdup(file);
-	new_node->next = NULL;
-	if (!cmd->redirs)
-		cmd->redirs = new_node;
-	else
-	{
-		current = cmd->redirs;
-		while (current->next)
-			current = current->next;
-		current->next = new_node;
-	}
-}
-
-t_token	*token_redirection(t_token *token, t_command *command)
-{
-	t_token_type	type;
-
-	type = token->type;
-	token = token->next;
-	if (token == NULL)
-	{
-		ft_putstr_fd("minishell : syntax error near unexpected token "
-			"'newline'\n", 2);
-		return (NULL);
-	}
-	if (token->type != TOKEN_WORD)
-	{
-		ft_putstr_fd("minishell : syntax error near unexpected token '", 2);
-		ft_putstr_fd(token->value, 2);
-		ft_putstr_fd("'\n", 2);
-		return (NULL);
-	}
-	restore_quoted_whitespaces(token->value);
-	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND
-		|| type == TOKEN_REDIRECT_IN)
-		add_redir(command, type, token->value);
-	else if (type == TOKEN_HEREDOC)
-	{
-		command->heredoc_delimiter = ft_strdup(token->value);
-		command->heredoc_is_quoted = token->has_quotes;
-	}
-	return (token);
-}
 
 char	**to_str_array(t_list *argv_list)
 {
