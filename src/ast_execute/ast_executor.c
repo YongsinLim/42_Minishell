@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/09 11:55:46 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 19:51:34 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,7 +153,8 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 	pid_right = fork();
 	if (pid_right == -1)
 		error_exit("Fork Error for pipe_right");
-	if (pid_right == 0) {
+	if (pid_right == 0)
+	{
 		execute_pipe_right(ast, minishell, pipe_fd);
 		init_signals_child();
 	}
@@ -166,7 +167,8 @@ int	exec_pipe(t_ast_node *ast, t_minishell *minishell)
 		return (SHELL_FAILURE);
 	}
 	while (waitpid(-1, &status, 0) != -1)
-		; // avoids zombie side effects that can look like shell "stuck" behavior in longer runs.
+		; // avoids zombie side effects that can look like shell "stuck"
+			// behavior in longer runs.
 	init_signals_prompt();
 	if (WIFEXITED(right_status))
 		return (WEXITSTATUS(right_status));

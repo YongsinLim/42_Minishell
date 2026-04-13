@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:02:43 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/12 00:29:58 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/13 11:35:07 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ t_ast_node	*parse(t_token **tokens)
 	return (left_node);
 }
 
+// Set pipe_node's left and right node
 t_ast_node	*parse_pipeline(t_token **tokens)
 {
 	t_ast_node	*left_node;

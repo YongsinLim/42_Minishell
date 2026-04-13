@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/31 11:40:26 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/06 12:54:23 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/12 19:52:30 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	if (access(cmd, F_OK) == ACCESS_PERMITTED)
 	{
 		if (access(cmd, X_OK) == ACCESS_PERMITTED)
-			return (cmd);	// Command exists and is executable in current dir
+			return (cmd); // Command exists and is executable in current dir
 		// PATH doesn't exist, and it is not a executable return 126
 		if (path_dir == NULL)
 			return (exit_status(minishell, cmd, "permission denied", 126));
