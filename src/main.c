@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/10 17:22:41 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/13 11:39:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,6 +173,8 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
+
+
 	if (minishell->ast != NULL)
 	{
 		heredocs(minishell->ast, minishell);

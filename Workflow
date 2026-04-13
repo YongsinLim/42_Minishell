@@ -27,10 +27,17 @@ final words add to token_word
 
 - Parse -
 
-Pipeline's Left
+Left node could be
 1. Subshell ( ) or
-2. Simple Command : set outfile if got redirection token, then create token_word (if got wildcard, expand too)
+2. Command : set outfile if got redirection token, then create token_word (if got wildcard, expand too)
 
+Assign left_node into pipe_node->left_node, then continue pipe_node->right_node
+
+Pipeline's Right node
+1. Subshell ( ) or
+2. Command : set outfile if got redirection token, then create token_word (if got wildcard, expand too)
+
+there is precedence in AST need to follow
 
 
 
@@ -39,3 +46,26 @@ Pipeline's Left
 
 
 Cleanup memory & exit with last_exit_status
+
+
+
+
+
+Note :
+In C programming, an Abstract Syntax Tree (AST) is a simplified,
+tree-based representation of the source code's structure. During parsing,
+the compiler uses operator precedence and associativity to determine how to
+nest operations within this tree.
+
+Key C Precedence Levels (Highest to Lowest)
+The C Operator Precedence Table defines the binding strength that shapes the AST:
+1. Primary/Postfix (Highest): (), [], ->, . and ++/–- (postfix).
+2. Unary: ++/–- (prefix), !, ~, (typecast), * (dereference), &, and sizeof.
+3. Multiplicative: *, /, and %.
+4. Additive: + and -.
+5. Shift: << and >>.
+6. Relational/Equality: <, >, <=, >=, ==, and !=.
+7. Logical: && followed by ||.
+8. Conditional: ?: (ternary).
+9. Assignment: =, +=, -=, *=, etc.
+10. Comma (Lowest): ,.
