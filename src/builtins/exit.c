@@ -6,11 +6,49 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/26 11:10:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/03 19:09:49 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 20:07:12 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+int	ft_exit(char **argv, t_minishell *minishell)
+{
+	int	interactive;
+
+	interactive = isatty(STDIN_FILENO);
+	if (argv[1] && !ft_is_numeric(argv[1]))
+	{
+		if (interactive)
+			ft_putstr_fd("exit\n", 2);
+		ft_putstr_fd("minishell: exit: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putstr_fd(": numeric argument required\n", 2);
+		cleanup_and_exit(minishell, SYNTAX_ERROR);
+	}
+	if (argv[1] && argv[2])
+	{
+		if (interactive)
+			ft_putstr_fd("exit\n", 2);
+		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
+		minishell->last_exit_status = SHELL_FAILURE;
+		return (minishell->last_exit_status);
+	}
+	if (interactive)
+		ft_putstr_fd("exit\n", 2);
+	if (!argv[1])
+		cleanup_and_exit(minishell, minishell->last_exit_status);
+	return (cleanup_and_exit(minishell, ft_atoi(argv[1]) % 256), SHELL_SUCCESS);
+}
+
+/*
+exit code % 256 bcos :
+operating system truncates any exit code you provide to exit() to its least
+significant 8 bits.
+       * 0 typically indicates success.
+       * Any value from 1 to 255 typically indicates an error or a specific
+	     status.
+*/
 
 int	ft_is_numeric(char *str)
 {
@@ -31,40 +69,3 @@ int	ft_is_numeric(char *str)
 	}
 	return (TRUE);
 }
-
-int	ft_exit(char **argv, t_minishell *minishell)
-{
-	int	interactive;
-
-	interactive = isatty(STDIN_FILENO);
-	if (argv[1] && !ft_is_numeric(argv[1]))
-	{
-		if (interactive)
-			ft_putstr_fd("exit\n", 2);
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(argv[1], 2);
-		ft_putstr_fd(": numeric argument required\n", 2);
-		cleanup_and_exit(minishell, 2);
-	}
-	if (argv[1] && argv[2])
-	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
-		minishell->last_exit_status = 1;
-		return (minishell->last_exit_status);
-	}
-	if (interactive)
-		ft_putstr_fd("exit\n", 2);
-	if (!argv[1])
-		cleanup_and_exit(minishell, minishell->last_exit_status);
-	cleanup_and_exit(minishell, ft_atoi(argv[1]) % 256);
-	return (0);
-}
-
-/*
-exit code % 256 bcos :
-operating system truncates any exit code you provide to exit() to its least
-significant 8 bits.
-       * 0 typically indicates success.
-       * Any value from 1 to 255 typically indicates an error or a specific
-	     status.
-*/

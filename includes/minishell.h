@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/14 17:56:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 20:17:51 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,6 +163,7 @@ char			*strjoin_with_nextline(char *s1, char *s2);
 // ----- History Functions -----
 void			add_to_history(char *command, t_history **history_list);
 void			free_history(t_history **history_list);
+int				ft_history(t_history *history_list);
 
 // ----- Token_Helper Functions -----
 void			add_token(t_token **head, t_token *new_token);
@@ -293,9 +294,19 @@ void			process_export_arg(char *arg, t_minishell *minishell);
 void			set_export_value(char *key, char *clean_value, int append,
 					t_minishell *minishell);
 
+// ----- Builtin - Unset -----
+int				ft_unset(char **argv, t_minishell *minishell);
+void			report_unset_error(char **argv, int i, char *msg);
+int				check_valid_unset_identifier(char *arg);
+void			remove_env_node(t_env **env_head, char *key);
 
+// ----- Builtin - Env -----
+int				ft_env(char **argv, t_minishell *minishell);
+
+// ----- Builtin - Exit -----
+int				ft_exit(char **argv, t_minishell *minishell);
+int				ft_is_numeric(char *str);
 // -----------------------------------------------------------------------------
-
 
 
 
@@ -322,18 +333,6 @@ void			execution(t_minishell *minishell);
 // ----- Env_Convert Functions -----
 char			**env_list_to_array(t_env *env_list);
 
-// ----- Builtin - Unset -----
-int				check_valid_unset_identifier(char *arg);
-void			remove_env_node(t_env **env_head, char *key);
-int				ft_unset(char **argv, t_minishell *minishell);
-
-// ----- Builtin - Env -----
-int				ft_env(char **argv, t_minishell *minishell);
-
-// ----- Builtin - Exit -----
-int				ft_is_numeric(char *str);
-int				ft_exit(char **argv, t_minishell *minishell);
-
 // ----- Heredoc Functions -----
 // int				heredocs(t_ast_node *ast, t_minishell *minishell);
 // void			heredoc_read_loop(t_command *cmd, t_minishell *minishell,
@@ -351,7 +350,6 @@ void			process_heredoc_noninteractive(t_command *cmd,
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
 int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
-
 int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
 int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
 
@@ -366,19 +364,13 @@ char			*search_path(char **path_dir, char *command);
 // ----- Wait Child Functions -----
 int				wait_for_children(pid_t last_pid);
 
-
 void			error_exit(char *error_msg);
 char			*exit_status(t_minishell *minishell, char *cmd_name,
 					char *message, int exit_status);
-
-
 
 void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
 void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
-
-// ----- History
-int				ft_history(char **argv, t_history *history_list);
 
 #endif
