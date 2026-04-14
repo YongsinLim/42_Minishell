@@ -19,6 +19,7 @@ echo.c
 cd.c
 pwd.c
 env_sort.c
+export.c
 
 
 
