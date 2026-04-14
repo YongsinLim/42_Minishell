@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 12:49:55 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/10 16:38:03 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 20:17:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,31 +56,18 @@ void	free_history(t_history **history_list)
 	*history_list = NULL;
 }
 
-// -----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-int	ft_history(char **argv, t_history *history_list)
+int	ft_history(t_history *history_list)
 {
 	t_history	*current;
 	int			i;
 
-	(void)argv;
 	current = history_list;
 	i = 1;
 	while (current != NULL)
 	{
 		printf(" %d  %s\n", i, current->command);
-		current = current->next;
 		i++;
+		current = current->next;
 	}
 	return (SHELL_SUCCESS);
 }
