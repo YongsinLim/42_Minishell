@@ -339,7 +339,7 @@ char			**env_list_to_array(t_env *env_list);
 //					int write_fd);
 // int				process_heredoc(t_command *cmd, t_minishell *minishell);
 
-void			heredocs(t_ast_node *ast, t_minishell *minishell);
+int				heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
 char			*read_heredoc_line_simple(void);
 void			heredoc_child_process(t_command *cmd, t_minishell *minishell,

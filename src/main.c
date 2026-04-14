@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/13 22:23:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:35:42 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,15 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 		raw_line = readline("Minishell > ");
 	else
 		raw_line = get_next_line(STDIN_FILENO);
+	// ---------------------------------------------------------------------
+
+		if (g_signal == SIGINT)
+		{
+			minishell -> last_exit_status = 130;
+			g_signal = 0; //Reset signal after receiving;
+		}
+	// ---------------------------------------------------------------------
+
 	if (!raw_line)
 	{
 		if (interactive)
