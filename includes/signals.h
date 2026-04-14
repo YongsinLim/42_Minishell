@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signals.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 22:07:49 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/08 14:05:50 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:28:29 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include "minishell.h"
 
 /* ---- Global Variables ---- */
-extern volatile sig_atomic_t g_heredoc_interrupted;
+extern volatile sig_atomic_t g_signal;
 
 /* ---- Signal Initializers ---- */
 void	init_signals_prompt(void);

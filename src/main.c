@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/13 11:39:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:35:42 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,11 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 		raw_line = readline("Minishell > ");
 	else
 		raw_line = get_next_line(STDIN_FILENO);
+	if (g_signal == SIGINT)
+	{
+		minishell -> last_exit_status = 130;
+		g_signal = 0; //Reset signal after receiving;
+	}
 	if (!raw_line)
 	{
 		if (interactive)
@@ -173,12 +178,11 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
-
-
 	if (minishell->ast != NULL)
 	{
-		heredocs(minishell->ast, minishell);
-		minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+		// Only execute the AST if heredocs were NOT interrupted
+		if (heredocs(minishell->ast, minishell) != 130)
+			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
 	}
 	else
 		minishell->last_exit_status = SYNTAX_ERROR;

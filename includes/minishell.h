@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/13 11:40:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:37:39 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,7 +316,7 @@ int				ft_exit(char **argv, t_minishell *minishell);
 //					int write_fd);
 // int				process_heredoc(t_command *cmd, t_minishell *minishell);
 
-void			heredocs(t_ast_node *ast, t_minishell *minishell);
+int				heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
 char			*read_heredoc_line_simple(void);
 void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
