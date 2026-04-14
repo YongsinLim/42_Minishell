@@ -39,7 +39,15 @@ Pipeline's Right node
 
 there is precedence in AST need to follow
 
+- Execution -
+Simple Command :
 
+Without command before < or << or > :
+Duplicate heredoc_fd or infile_fd to STDIN_FILENO
+Duplicate outfile_fd (append or trunc) to STDOUT_FILENO
+
+Have command before < or << or > :
+Check whether is builtin command been called
 
 
 

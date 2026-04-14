@@ -88,11 +88,15 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 		raw_line = readline("Minishell > ");
 	else
 		raw_line = get_next_line(STDIN_FILENO);
-	if (g_signal == SIGINT)
-	{
-		minishell -> last_exit_status = 130;
-		g_signal = 0; //Reset signal after receiving;
-	}
+	// ---------------------------------------------------------------------
+
+		if (g_signal == SIGINT)
+		{
+			minishell -> last_exit_status = 130;
+			g_signal = 0; //Reset signal after receiving;
+		}
+	// ---------------------------------------------------------------------
+
 	if (!raw_line)
 	{
 		if (interactive)
@@ -163,26 +167,23 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 
 
 
+/*
+Execution is called every loop iteration (every command).
+Cleanup is needed to clean memory from the current command
+before reading the next one.
 
-
-
-
-
-
-
-
-
-
-
-
+So, execution() cleanup = end of one command lifecycle
+cleanup_and_exit() cleanup = end of whole shell lifecycle
+ */
 void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
+
+
 	if (minishell->ast != NULL)
 	{
-		// Only execute the AST if heredocs were NOT interrupted
-		if (heredocs(minishell->ast, minishell) != 130)
-			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+		heredocs(minishell->ast, minishell);
+		minishell->last_exit_status = execute_ast(minishell->ast, minishell);
 	}
 	else
 		minishell->last_exit_status = SYNTAX_ERROR;

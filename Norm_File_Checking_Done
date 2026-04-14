@@ -14,7 +14,16 @@ general_helper.c
 parse_one_command.c
 wildcard.c
 parse.c
-
+builtin.c
+echo.c
+cd.c
+pwd.c
+env_sort.c
+export.c
+unset.c
+env.c
+exit.c
+history.c
 
 
 
