@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 17:54:54 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/14 20:54:30 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,20 @@ int	heredocs(t_ast_node *ast, t_minishell *minishell)
 		return (0);
 	if (ast->type == NODE_PIPE || ast->type == NODE_AND || ast->type == NODE_OR)
 	{
-		if (heredocs(ast->left, minishell) == 130) return (130);
-		if (heredocs(ast->right, minishell) == 130) return (130);
+		if (heredocs(ast->left, minishell) == 130)
+			return (130);
+		if (heredocs(ast->right, minishell) == 130)
+			return (130);
 	}
 	else if (ast->type == NODE_SUBSHELL)
 	{
-		if (heredocs(ast->left, minishell) == 130) return (130);
+		if (heredocs(ast->left, minishell) == 130)
+			return (130);
 		if (ast->command && ast->command->heredoc_delimiter != NULL)
 		{
 			process_heredoc(ast->command, minishell);
-			if (minishell->last_exit_status == 130) return (130);
+			if (minishell->last_exit_status == 130)
+				return (130);
 		}
 	}
 	else if (ast->type == NODE_COMMAND)
@@ -35,7 +39,8 @@ int	heredocs(t_ast_node *ast, t_minishell *minishell)
 		if (ast->command && ast->command->heredoc_delimiter != NULL)
 		{
 			process_heredoc(ast->command, minishell);
-			if (minishell->last_exit_status == 130) return (130);
+			if (minishell->last_exit_status == 130)
+				return (130);
 		}
 	}
 	return (0);
@@ -123,7 +128,7 @@ void	heredoc_child_process(t_command *cmd, t_minishell *minishell,
 		}
 		if (!input_line) // EOF, error, or interrupted
 		{
-			if (g_signal != SIGINT) 
+			if (g_signal != SIGINT)
 			{
 				ft_putstr_fd("bash: warning: here-document delimited by end-of-file (wanted `", 2);
 				ft_putstr_fd(cmd->heredoc_delimiter, 2);
@@ -223,8 +228,8 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 			init_signals_prompt();
 			return ;
 		}
-		if ((WIFEXITED(status) && WEXITSTATUS(status) == 130) || 
-			(WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
+		if ((WIFEXITED(status) && WEXITSTATUS(status) == 130)
+			|| (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
 		{
 			close(pipe_fd[0]);
 			cmd->heredoc_fd = -1;
