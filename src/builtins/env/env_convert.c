@@ -6,24 +6,11 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:51:40 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/01 16:38:37 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/14 16:50:14 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/minishell.h"
-
-int	count_env_nodes(t_env *env_list)
-{
-	int	count;
-
-	count = 0;
-	while (env_list)
-	{
-		count++;
-		env_list = env_list->next;
-	}
-	return (count);
-}
 
 char	**env_list_to_array(t_env *env_list)
 {

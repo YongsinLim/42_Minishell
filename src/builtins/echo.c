@@ -6,25 +6,13 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:40:55 by jenlee            #+#    #+#             */
-/*   Updated: 2026/03/06 16:48:53 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 14:15:10 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	print_arguments(char **argv, int i, int n_flag)
-{
-	while (argv[i])
-	{
-		ft_putstr_fd(argv[i], 1);
-		if (argv[i + 1])
-			ft_putchar_fd(' ', 1);
-		i++;
-	}
-	if (!n_flag)
-		ft_putstr_fd("\n", 1);
-}
-
+// Option -n mean do not output the trailing newline
 int	ft_echo(char **argv)
 {
 	int	i;
@@ -48,4 +36,17 @@ int	ft_echo(char **argv)
 	}
 	print_arguments(argv, i, n_flag);
 	return (SHELL_SUCCESS);
+}
+
+void	print_arguments(char **argv, int i, int n_flag)
+{
+	while (argv[i])
+	{
+		ft_putstr_fd(argv[i], 1);
+		if (argv[i + 1])
+			ft_putchar_fd(' ', 1);
+		i++;
+	}
+	if (!n_flag)
+		ft_putstr_fd("\n", 1);
 }

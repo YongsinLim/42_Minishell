@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/13 11:40:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:03:45 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ typedef struct s_redir
 
 typedef struct s_command
 {
-	char		**argv;
+	char		**argv;	// Hold command (eg. echo)
 	t_redir		*redirs;
 	char		*heredoc_delimiter;
 	int			heredoc_is_quoted;
@@ -251,6 +251,37 @@ t_ast_node		*parse(t_token **tokens);
 t_ast_node		*parse_pipeline(t_token **tokens);
 t_ast_node_type	set_operator_type(t_token **tokens);
 
+// ----- Redirection Functions -----
+int				redirect_input(t_command *cmd);
+int				redirect_open_error(char *file);
+int				redirect_output(t_command *cmd);
+
+// ----- Builtins Functions -----
+int				is_builtin(char *cmd);
+int				handle_builtin_execution(t_ast_node *ast,
+					t_minishell *minishell);
+int				execute_builtin(char **argv, t_minishell *minishell);
+
+// ----- Builtin - Echo -----
+int				ft_echo(char **argv);
+void			print_arguments(char **argv, int i, int n_flag);
+
+// ----- Builtin - Cd -----
+int				ft_cd(char **argv, t_minishell *minishell);
+char			*get_target_path(char **argv, t_minishell *minishell);
+
+// ----- Report Error Functions -----
+void			report_error(char *msg, char *param);
+void			report_chdir_error(char *path);
+
+// ----- Builtin - Pwd -----
+int				ft_pwd(void);
+
+// ----- Builtin - Export (Env Sort) -----
+int				count_env_nodes(t_env *env_list);
+void			sort_env_parts(t_env **arr, int count);
+int				env_key_cmp(t_env *a, t_env *b);
+void			swap_env_ptr(t_env **a, t_env **b);
 // -----------------------------------------------------------------------------
 
 
@@ -262,6 +293,14 @@ t_ast_node_type	set_operator_type(t_token **tokens);
 
 
 
+void			print_export_node(t_env *node);
+
+// ----- Builtin - Export -----
+int				ft_export(char **argv, t_minishell *minishell);
+int				print_export(t_env *env);
+int				export_invalid_option(char *arg);
+int				check_valid_identifier(char *arg);
+void			process_export_arg(char *arg, t_minishell *minishell);
 
 // ----- Debug Functions -----
 void			print_indent(int level);
@@ -271,37 +310,12 @@ void			print_ast(t_ast_node *node, int level);
 void			execution(t_minishell *minishell);
 
 // ----- Env_Convert Functions -----
-int				count_env_nodes(t_env *env_list);
 char			**env_list_to_array(t_env *env_list);
-
-// ----- Builtins Functions -----
-int				is_builtin(char *cmd);
-int				execute_builtin(char **argv, t_minishell *minishell);
-
-// ----- Builtin - Export -----
-int				env_key_cmp(t_env *a, t_env *b);
-void			swap_env_ptr(t_env **a, t_env **b);
-void			sort_env_parts(t_env **arr, int count);
-int				print_export(t_env *env);
-int				check_valid_identifier(char *arg);
-void			process_export_arg(char *arg, t_minishell *minishell);
-int				ft_export(char **argv, t_minishell *minishell);
-
-// ----- Builtin - Cd -----
-char			*get_target_path(char **argv, t_minishell *minishell);
-int				ft_cd(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Unset -----
 int				check_valid_unset_identifier(char *arg);
 void			remove_env_node(t_env **env_head, char *key);
 int				ft_unset(char **argv, t_minishell *minishell);
-
-// ----- Builtin - Echo -----
-void			print_arguments(char **argv, int i, int n_flag);
-int				ft_echo(char **argv);
-
-// ----- Builtin - Pwd -----
-int				ft_pwd(void);
 
 // ----- Builtin - Env -----
 int				ft_env(char **argv, t_minishell *minishell);
@@ -327,10 +341,9 @@ void			process_heredoc_noninteractive(t_command *cmd,
 // ----- Execute Functions -----
 int				execute_ast(t_ast_node *ast, t_minishell *minishell);
 int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
-int				handle_builtin_execution(t_ast_node *ast,
-					t_minishell *minishell);
-int				exec_pipe(t_ast_node *ast, t_minishell *minishell);
-int				exec_subshell(t_ast_node *ast, t_minishell *minishell);
+
+int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
+int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Execute Path Functions -----
 void			execute(char **cmd_array, t_minishell *minishell);
@@ -343,16 +356,13 @@ char			*search_path(char **path_dir, char *command);
 // ----- Wait Child Functions -----
 int				wait_for_children(pid_t last_pid);
 
-// ----- Error Handling Functions -----
+
 void			error_exit(char *error_msg);
-void			report_error(char *msg, char *param);
 char			*exit_status(t_minishell *minishell, char *cmd_name,
 					char *message, int exit_status);
 
-// ----- Redirection Functions -----
-int				redirect_open_error(char *file);
-int				redirect_input(t_command *cmd);
-int				redirect_output(t_command *cmd);
+
+
 void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
 void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
