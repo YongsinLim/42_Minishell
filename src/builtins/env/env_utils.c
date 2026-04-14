@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:49:03 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/10 16:14:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:54:45 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,4 +97,30 @@ char	*get_var_value(char *var_name, t_minishell *minishell)
 		current = current->next;
 	}
 	return (ft_strdup(""));
+}
+
+/*
+identifier = the name of an environment variable
+Bash identifier naming rules :
+1st Character: Must be a letter (a-z, A-Z) or an underscore (_), cannot be a
+number.
+The Rest of the Characters: Can be letters, numbers, or underscores.
+ */
+int	check_valid_env_identifier(char *arg)
+{
+	int	i;
+
+	if (!arg || !arg[0] || arg[0] == '='
+		|| (!ft_isalpha(arg[0]) && arg[0] != '_'))
+		return (FALSE);
+	i = 1;
+	while (arg[i] && arg[i] != '=')
+	{
+		if (arg[i] == '+' && arg[i + 1] == '=')
+			return (TRUE);
+		if (!ft_isalnum(arg[i]) && arg[i] != '_')
+			return (FALSE);
+		i++;
+	}
+	return (TRUE);
 }

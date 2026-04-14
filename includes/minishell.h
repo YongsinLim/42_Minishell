@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/14 17:03:45 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:56:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,6 +153,7 @@ t_env			*env_from_str(char *str);
 t_env			*new_env_node(char *key, char *value);
 void			update_env(char *key, char *value, t_minishell *minishell);
 char			*get_var_value(char *var_name, t_minishell *minishell);
+int				check_valid_env_identifier(char *arg);
 
 // ----- Unclosed Quotes Functions -----
 char			*check_unclosed_quotes(char *input, int is_interactive);
@@ -273,6 +274,7 @@ char			*get_target_path(char **argv, t_minishell *minishell);
 // ----- Report Error Functions -----
 void			report_error(char *msg, char *param);
 void			report_chdir_error(char *path);
+int				report_invalid_export_option(char *arg);
 
 // ----- Builtin - Pwd -----
 int				ft_pwd(void);
@@ -282,6 +284,16 @@ int				count_env_nodes(t_env *env_list);
 void			sort_env_parts(t_env **arr, int count);
 int				env_key_cmp(t_env *a, t_env *b);
 void			swap_env_ptr(t_env **a, t_env **b);
+
+// ----- Builtin - Export -----
+int				ft_export(char **argv, t_minishell *minishell);
+int				print_export(t_env *env);
+void			print_export_node(t_env *node);
+void			process_export_arg(char *arg, t_minishell *minishell);
+void			set_export_value(char *key, char *clean_value, int append,
+					t_minishell *minishell);
+
+
 // -----------------------------------------------------------------------------
 
 
@@ -293,14 +305,12 @@ void			swap_env_ptr(t_env **a, t_env **b);
 
 
 
-void			print_export_node(t_env *node);
 
-// ----- Builtin - Export -----
-int				ft_export(char **argv, t_minishell *minishell);
-int				print_export(t_env *env);
-int				export_invalid_option(char *arg);
-int				check_valid_identifier(char *arg);
-void			process_export_arg(char *arg, t_minishell *minishell);
+
+
+
+
+
 
 // ----- Debug Functions -----
 void			print_indent(int level);

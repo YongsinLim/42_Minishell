@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/11 17:41:28 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/14 16:12:26 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:56:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,10 @@ int	execute_builtin(char **argv, t_minishell *minishell)
 		return (ft_cd(argv, minishell));
 	if (ft_strncmp(argv[0], "pwd", 4) == 0)
 		return (ft_pwd());
-
-
-
 	if (ft_strncmp(argv[0], "export", 7) == 0)
 		return (ft_export(argv, minishell));
+
+
 
 
 	if (ft_strncmp(argv[0], "unset", 6) == 0)
