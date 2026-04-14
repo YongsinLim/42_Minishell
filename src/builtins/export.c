@@ -6,57 +6,54 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/19 23:47:51 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/06 12:36:48 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/14 17:09:15 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	env_key_cmp(t_env *a, t_env *b)
-{
-	size_t	len_a;
-	size_t	len_b;
-	size_t	n;
-
-	len_a = ft_strlen(a->key);
-	len_b = ft_strlen(b->key);
-	n = len_a + len_b + 1;
-	return (ft_strncmp(a->key, b->key, n));
-}
-
-void	swap_env_ptr(t_env **a, t_env **b)
-{
-	t_env	*temp;
-
-	temp = *a;
-	*a = *b;
-	*b = temp;
-}
-
-void	sort_env_parts(t_env **arr, int count)
+int	ft_export(char **argv, t_minishell *minishell)
 {
 	int	i;
-	int	j;
+	int	status;
 
-	i = 0;
-	while (i < count - 1)
+	if (!argv[1])
+		return (print_export(minishell->env_list));
+	i = 1;
+	status = SHELL_SUCCESS;
+
+
+
+	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0')
 	{
-		j = 0;
-		while (j < count - i - 1)
-		{
-			if (env_key_cmp(arr[j], arr[j + 1]) > 0)
-				swap_env_ptr(&arr[j], &arr[j + 1]);
-			j++;
-		}
+		if (ft_strncmp(argv[i], "--", 3) != 0)
+			return (export_invalid_option(argv[i]));
 		i++;
 	}
+
+
+	while (argv[i])
+	{
+		if (!check_valid_identifier(argv[i]))
+		{
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(argv[i], 2);
+			ft_putstr_fd("': not a valid identifier\n", 2);
+			status = SHELL_FAILURE;
+		}
+		else
+			process_export_arg(argv[i], minishell);
+		i++;
+	}
+	return (status);
 }
 
+// if (ft_strncmp(arr[i]->key, "_", 2) != 0) to skip _=/usr/bin/env item
 int	print_export(t_env *env)
 {
+	int		count;
 	t_env	**arr;
 	t_env	*current;
-	int		count;
 	int		i;
 
 	count = count_env_nodes(env);
@@ -74,18 +71,27 @@ int	print_export(t_env *env)
 	i = 0;
 	while (i < count)
 	{
-		if (ft_strncmp(arr[i]->key, "_", 2) != 0)
-		{
-			if (arr[i]->value)
-				printf("declare -x %s=\"%s\"\n", arr[i]->key, arr[i]->value);
-			else
-				printf("declare -x %s\n", arr[i]->key);
-		}
+		print_export_node(arr[i]);
 		i++;
 	}
 	free(arr);
 	return (SHELL_SUCCESS);
 }
+
+void	print_export_node(t_env *node)
+{
+	if (ft_strncmp(node->key, "_", 2) == 0)
+		return ;
+	if (node->value)
+		printf("declare -x %s=\"%s\"\n", node->key, node->value);
+	else
+		printf("declare -x %s\n", node->key);
+}
+
+
+
+
+
 
 int	export_invalid_option(char *arg)
 {
@@ -166,35 +172,4 @@ void	process_export_arg(char *arg, t_minishell *minishell)
 	free(key);
 	free(value);
 	free(clean_value);
-}
-
-int	ft_export(char **argv, t_minishell *minishell)
-{
-	int	i;
-	int	status;
-
-	if (!argv[1])
-		return (print_export(minishell->env_list));
-	i = 1;
-	status = SHELL_SUCCESS;
-	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0')
-	{
-		if (ft_strncmp(argv[i], "--", 3) != 0)
-			return (export_invalid_option(argv[i]));
-		i++;
-	}
-	while (argv[i])
-	{
-		if (!check_valid_identifier(argv[i]))
-		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(argv[i], 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			status = SHELL_FAILURE;
-		}
-		else
-			process_export_arg(argv[i], minishell);
-		i++;
-	}
-	return (status);
 }

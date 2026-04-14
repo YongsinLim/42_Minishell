@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/13 11:39:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/13 22:23:19 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,18 +158,14 @@ void	cleanup_and_exit(t_minishell *minishell, int exit_status)
 
 
 
+/*
+Execution is called every loop iteration (every command).
+Cleanup is needed to clean memory from the current command
+before reading the next one.
 
-
-
-
-
-
-
-
-
-
-
-
+So, execution() cleanup = end of one command lifecycle
+cleanup_and_exit() cleanup = end of whole shell lifecycle
+ */
 void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
