@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/14 20:17:51 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/15 18:05:39 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,11 @@
 
 
 
-# include <sys/stat.h>
-# include <string.h>
-# include <sys/ioctl.h>
-# include <termios.h>
-# include <term.h>
+// # include <sys/stat.h>
+// # include <string.h>
+// # include <sys/ioctl.h>
+// # include <termios.h>
+// # include <term.h>
 
 # define SHELL_SUCCESS 0
 # define SHELL_FAILURE 1
@@ -44,9 +44,9 @@
 # define TRUE 1
 # define FALSE 0
 # define CMD_NOT_FOUND 127
+# define CMD_NOT_EXECUTABLE 126
 # define ACCESS_PERMITTED 0
 # define ERROR -1
-
 
 typedef struct s_env
 {
@@ -276,6 +276,9 @@ char			*get_target_path(char **argv, t_minishell *minishell);
 void			report_error(char *msg, char *param);
 void			report_chdir_error(char *path);
 int				report_invalid_export_option(char *arg);
+char			*report_error_exit_status(t_minishell *minishell,
+					char *cmd_name, char *message, int exit_status);
+void			error_exit(char *error_msg);
 
 // ----- Builtin - Pwd -----
 int				ft_pwd(void);
@@ -306,6 +309,23 @@ int				ft_env(char **argv, t_minishell *minishell);
 // ----- Builtin - Exit -----
 int				ft_exit(char **argv, t_minishell *minishell);
 int				ft_is_numeric(char *str);
+
+// ----- Build_Path Functions -----
+char			*build_path(char *cmd, t_minishell *minishell);
+char			*validate_cmd_path(char *cmd, t_minishell *minishell);
+char			**get_path(t_env *env_list);
+char			*search_path(char **path_dir, char *command);
+
+// ----- Directory Functions -----
+int				is_directory(char *path);
+char			*cmd_is_dir(char *cmd, t_minishell *minishell);
+
+// ----- Execute Functions -----
+void			execute(char **cmd_array, t_minishell *minishell);
+char			**prepare_execute_env(char *path, char **cmd_array,
+					t_minishell *minishell);
+char			**env_list_to_array(t_env *env_list);
+
 // -----------------------------------------------------------------------------
 
 
@@ -314,14 +334,14 @@ int				ft_is_numeric(char *str);
 
 
 
+// ----- Wait Child Functions -----
+int				wait_for_children(pid_t last_pid);
 
-
-
-
-
-
-
-
+// ----- Execute_Ast Functions -----
+int				execute_ast(t_ast_node *ast, t_minishell *minishell);
+int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
+int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
+int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Debug Functions -----
 void			print_indent(int level);
@@ -330,15 +350,7 @@ void			print_ast(t_ast_node *node, int level);
 // ----- Main
 void			execution(t_minishell *minishell);
 
-// ----- Env_Convert Functions -----
-char			**env_list_to_array(t_env *env_list);
-
 // ----- Heredoc Functions -----
-// int				heredocs(t_ast_node *ast, t_minishell *minishell);
-// void			heredoc_read_loop(t_command *cmd, t_minishell *minishell,
-//					int write_fd);
-// int				process_heredoc(t_command *cmd, t_minishell *minishell);
-
 int				heredocs(t_ast_node *ast, t_minishell *minishell);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
 char			*read_heredoc_line_simple(void);
@@ -346,27 +358,6 @@ void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
 					int write_fd);
 void			process_heredoc_noninteractive(t_command *cmd,
 					t_minishell *minishell, int *pipe_fd);
-
-// ----- Execute Functions -----
-int				execute_ast(t_ast_node *ast, t_minishell *minishell);
-int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
-int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
-int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
-
-// ----- Execute Path Functions -----
-void			execute(char **cmd_array, t_minishell *minishell);
-char			*build_path(char *cmd, t_minishell *minishell);
-char			*construct_full_path(t_env *env_list, char *command);
-char			**get_path(t_env *env_list);
-int				is_directory_path(char *path);
-char			*search_path(char **path_dir, char *command);
-
-// ----- Wait Child Functions -----
-int				wait_for_children(pid_t last_pid);
-
-void			error_exit(char *error_msg);
-char			*exit_status(t_minishell *minishell, char *cmd_name,
-					char *message, int exit_status);
 
 void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
