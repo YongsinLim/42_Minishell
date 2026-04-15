@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 17:35:42 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/15 20:46:05 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,14 +179,15 @@ void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
 
-
 	if (minishell->ast != NULL)
 	{
-		heredocs(minishell->ast, minishell);
-		minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+		// Only execute the AST if heredocs were NOT interrupted
+		if (heredocs(minishell->ast, minishell) != 130)
+			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
 	}
 	else
 		minishell->last_exit_status = SYNTAX_ERROR;
+		
 	free(minishell->input);
 	minishell->input = NULL;
 	free_tokens(&minishell->tokens);
