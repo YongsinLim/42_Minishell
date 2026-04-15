@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/15 17:56:56 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/15 18:25:42 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ int	execute_pipe(t_ast_node *ast, t_minishell *minishell)
 	if (pid_left == 0)
 	{
 		execute_pipe_left(ast, minishell, pipe_fd);
-		init_signals_child();
+			init_signals_child();
 	}
 	pid_right = fork();
 	if (pid_right == -1)
@@ -146,20 +146,20 @@ int	execute_pipe(t_ast_node *ast, t_minishell *minishell)
 	if (pid_right == 0)
 	{
 		execute_pipe_right(ast, minishell, pipe_fd);
-		init_signals_child();
+			init_signals_child();
 	}
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	init_signals_execution();
+		init_signals_execution();
 	if (waitpid(pid_right, &right_status, 0) == -1)
 	{
-		init_signals_prompt();
+			init_signals_prompt();
 		return (SHELL_FAILURE);
 	}
 	while (waitpid(-1, &status, 0) != -1)
 		; // avoids zombie side effects that can look like shell "stuck"
 			// behavior in longer runs.
-	init_signals_prompt();
+		init_signals_prompt();
 	if (WIFEXITED(right_status))
 		return (WEXITSTATUS(right_status));
 	if (WIFSIGNALED(right_status))
@@ -181,7 +181,7 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error for subshell");
 	if (pid == 0)
 	{
-		init_signals_child();
+			init_signals_child();
 		status = execute_ast(ast->left, minishell);
 		exit (status);
 	}
@@ -190,8 +190,8 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
-	init_signals_execution();
+		init_signals_execution();
 	status = wait_for_children(pid);
-	init_signals_prompt();
+		init_signals_prompt();
 	return (status);
 }
