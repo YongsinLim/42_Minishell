@@ -24,9 +24,12 @@ unset.c
 env.c
 exit.c
 history.c
+build_path.c
+directory.c
+execution.c
+error.c
 
 
 
 Pending to understand:
-know shell level for what?
 all signals

@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/07 14:20:02 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 17:25:42 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/15 18:04:06 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,28 +50,16 @@ int	report_invalid_export_option(char *arg)
 	return (SYNTAX_ERROR);
 }
 
-// ---------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
+char	*report_error_exit_status(t_minishell *minishell, char *cmd_name,
+	char *message, int exit_status)
+{
+	report_error(cmd_name, message);
+	minishell->last_exit_status = exit_status;
+	return (NULL);
+}
 
 void	error_exit(char *error_msg)
 {
 	perror(error_msg);
 	exit (SHELL_FAILURE);
-}
-
-char	*exit_status(t_minishell *minishell, char *cmd_name, char *message,
-	int exit_status)
-{
-	report_error(cmd_name, message);
-	minishell->last_exit_status = exit_status;
-	return (NULL);
 }

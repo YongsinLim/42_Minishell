@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 13:58:46 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/15 17:56:56 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,26 +78,32 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 			pid = fork();
 			if (pid == 0)
 			{
-				init_signals_child();
+					init_signals_child();
 				if (redirect_input(ast->command) != SHELL_SUCCESS
 					|| redirect_output(ast->command) != SHELL_SUCCESS)
 					cleanup_and_exit(minishell, SHELL_FAILURE);
 				execute(ast->command->argv, minishell);
 				cleanup_and_exit(minishell, minishell->last_exit_status);
 			}
-			init_signals_execution();
+				init_signals_execution();
 			status = wait_for_children(pid);
-			init_signals_prompt();
+				init_signals_prompt();
 			return (status);
 		}
 		return (handle_builtin_execution(ast, minishell));
 	}
+
+
+
+
+
+
 	pid = fork();
 	if (pid == -1)
 		error_exit("Fork Error");
 	if (pid == 0)
 	{
-		init_signals_child();
+			init_signals_child();
 		if (redirect_input(ast->command) != SHELL_SUCCESS
 			|| redirect_output(ast->command) != SHELL_SUCCESS)
 			cleanup_and_exit(minishell, SHELL_FAILURE);
@@ -105,14 +111,14 @@ int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 		execute(ast->command->argv, minishell);
 		cleanup_and_exit(minishell, minishell->last_exit_status);
 	}
-	init_signals_execution();
+		init_signals_execution();
 	if (ast->command->heredoc_fd != -1)
 	{
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
 	status = wait_for_children(pid);
-	init_signals_prompt();
+		init_signals_prompt();
 	return (status);
 }
 
