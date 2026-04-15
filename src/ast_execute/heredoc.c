@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 20:54:30 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/15 18:31:58 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,17 +93,11 @@ char	*read_heredoc_line_simple(void)
 	return (line);
 }
 
-void	heredoc_sigint_handler(int sig)
-{
-	g_signal = sig;
-	write(1, "\n", 1);
-}
-
 void	setup_heredoc_signals(void)
 {
 	struct sigaction	sa;
 
-	sa.sa_handler = heredoc_sigint_handler;
+	sa.sa_handler = sigint_handler_heredoc;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = 0;
 	// No SA_RESTART - ensure read() doesn't restart after signal
@@ -236,13 +230,9 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 			minishell->last_exit_status = 130;
 		}
 		else
-		{
 			cmd->heredoc_fd = pipe_fd[0];
-		}
 		init_signals_prompt();
 	}
 	else
-	{
 		process_heredoc_noninteractive(cmd, minishell, pipe_fd);
-	}
 }
