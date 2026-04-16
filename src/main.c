@@ -88,13 +88,11 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 		raw_line = readline("Minishell > ");
 	else
 		raw_line = get_next_line(STDIN_FILENO);
-	// ---------------------------------------------------------------------
 	if (g_signal == SIGINT)
 	{
 		minishell -> last_exit_status = 130;
 		g_signal = 0; //Reset signal after receiving;
 	}
-	// ---------------------------------------------------------------------
 	if (!raw_line)
 	{
 		if (interactive)
@@ -106,12 +104,7 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 	minishell->input = check_unclosed_quotes(minishell->input, interactive);
 	if (!minishell->input)
 		return (FALSE);
-	if (!is_all_whitespace(minishell->input))
-	{
-		if (interactive)
-			add_history(minishell->input);
-		add_to_history(minishell->input, &minishell->history_list);
-	}
+	save_input_to_history(minishell, interactive);
 	return (TRUE);
 }
 

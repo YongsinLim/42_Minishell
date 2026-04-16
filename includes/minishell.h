@@ -149,7 +149,8 @@ int				has_unclosed_quotes(char *str);
 char			*strjoin_with_nextline(char *s1, char *s2);
 
 // ----- History Functions -----
-void			add_to_history(char *command, t_history **history_list);
+void			save_input_to_history(t_minishell* minishell, int interactive);
+void			append_node_to_history_list(t_minishell* minishell, t_history* new_node);
 void			free_history(t_history **history_list);
 int				ft_history(t_history *history_list);
 

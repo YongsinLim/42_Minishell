@@ -12,28 +12,39 @@
 
 #include "../../includes/minishell.h"
 
-void	add_to_history(char *command, t_history **history_list)
+void	save_input_to_history(t_minishell *minishell, int interactive)
 {
 	t_history	*new_node;
+
+	if (!is_all_whitespace(minishell->input))
+	{
+		if (interactive)
+			add_history(minishell->input);
+		if (!minishell->input || minishell->input[0] == '\0')
+			return ;
+		new_node = malloc(sizeof(t_history));
+		if (!new_node)
+			return ;
+		new_node->command = ft_strdup(minishell->input);
+		if (!new_node->command)
+		{
+			free(new_node);
+			return ;
+		}
+		new_node->next = NULL;
+		append_node_to_history_list(minishell, new_node);
+	}
+}
+
+void	append_node_to_history_list(t_minishell *minishell, t_history *new_node)
+{
 	t_history	*last;
 
-	if (!command || command[0] == '\0')
-		return ;
-	new_node = malloc(sizeof(t_history));
-	if (!new_node)
-		return ;
-	new_node->command = ft_strdup(command);
-	if (!new_node->command)
-	{
-		free(new_node);
-		return ;
-	}
-	new_node->next = NULL;
-	if (*history_list == NULL)
-		*history_list = new_node;
+	if (minishell->history_list == NULL)
+		minishell->history_list = new_node;
 	else
 	{
-		last = *history_list;
+		last = minishell->history_list;
 		while (last->next != NULL)
 			last = last->next;
 		last->next = new_node;
