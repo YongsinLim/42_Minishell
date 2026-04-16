@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/16 14:28:21 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:24:17 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 		error_exit("Fork Error for subshell");
 	if (pid == 0)
 	{
-			init_signals_child();
+		init_signals_child();
 		status = execute_ast(ast->left, minishell);
 		cleanup_and_exit(minishell, status);
 	}
@@ -108,8 +108,8 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 		close(ast->command->heredoc_fd);
 		ast->command->heredoc_fd = -1;
 	}
-		init_signals_execution();
+	init_signals_execution();
 	status = wait_for_children(pid);
-		init_signals_prompt();
+	init_signals_prompt();
 	return (status);
 }

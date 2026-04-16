@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/16 14:45:31 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:23:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_minishell(&minishell, envp);
-		init_signals_prompt();
+	init_signals_prompt();
 	interactive = isatty(STDIN_FILENO);
 	while (1)
 	{
@@ -144,12 +144,16 @@ cleanup_and_exit() cleanup = end of whole shell lifecycle
  */
 void	execution(t_minishell *minishell)
 {
+	int	heredoc_status;
+
 	minishell->ast = parse(&minishell->tokens);
 	if (minishell->ast != NULL)
 	{
-		if (heredocs(minishell->ast, minishell) != 130) // todo why??
-			minishell->last_exit_status = execute_ast(minishell->ast,
-					minishell);
+		heredoc_status = heredocs(minishell->ast, minishell);
+		if (heredoc_status == SHELL_SUCCESS)
+			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+		else
+			minishell->last_exit_status = heredoc_status;
 	}
 	else
 		minishell->last_exit_status = SYNTAX_ERROR;
