@@ -26,10 +26,10 @@ exit.c
 history.c
 build_path.c
 directory.c
-execution.c
+execute_simple_command.c
 error.c
+wait_child.c
+redirection.c
+ast_executor.c
+cleanup_exit.c
 
-
-
-Pending to understand:
-all signals

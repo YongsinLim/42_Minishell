@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/14 16:56:04 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/16 11:13:54 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,21 +74,17 @@ int	redirect_output(t_command *cmd)
 	return (SHELL_SUCCESS);
 }
 
-// ---------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
+/*
+pipe(pipe_fd[2])
+pipe_fd[0]: The read end of the pipe.
+pipe_fd[1]: The write end of the pipe.
+Return Value: Returns 0 on success and -1 on error.
+*/
 void	execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd)
 {
 	int	status;
 
-	init_signals_child();
+		init_signals_child();
 	close(pipe_fd[0]);
 	dup2(pipe_fd[1], STDOUT_FILENO);
 	close(pipe_fd[1]);
@@ -101,7 +97,7 @@ void	execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 {
 	int	status;
 
-	init_signals_child();
+		init_signals_child();
 	close(pipe_fd[1]);
 	dup2(pipe_fd[0], STDIN_FILENO);
 	close(pipe_fd[0]);

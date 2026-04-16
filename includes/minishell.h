@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/15 18:33:11 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/16 14:48:35 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "../Libft/libft.h"
 # include "signals.h"
 # include <readline/readline.h> // for readline
-# include <readline/history.h> // for readline, add_history
+# include <readline/history.h> // for readline, add_history, rl_clear_history
 # include <stdlib.h> // for malloc, free, exit
 # include <stdio.h> // for printf, perror
 # include <unistd.h> // for access, write, execve, close, fork, dup, dup2, pipe,
@@ -26,17 +26,6 @@
 # include <limits.h> // for PATH_MAX
 # include <dirent.h> // for opendir, readdir, closedir
 # include <errno.h> // for errno
-
-
-
-
-
-
-// # include <sys/stat.h>
-// # include <string.h>
-// # include <sys/ioctl.h>
-// # include <termios.h>
-// # include <term.h>
 
 # define SHELL_SUCCESS 0
 # define SHELL_FAILURE 1
@@ -140,8 +129,7 @@ typedef struct s_token_to_word
 int				read_and_prepare_input(t_minishell *minishell, int interactive);
 int				is_all_whitespace(char *str);
 int				build_tokens(t_minishell *minishell);
-
-void			cleanup_and_exit(t_minishell *minishell, int exit_status);
+void			execution(t_minishell *minishell);
 
 // ----- Init Functions -----
 void			init_minishell(t_minishell *minishell, char **envp);
@@ -257,6 +245,10 @@ t_ast_node_type	set_operator_type(t_token **tokens);
 int				redirect_input(t_command *cmd);
 int				redirect_open_error(char *file);
 int				redirect_output(t_command *cmd);
+void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
+					int *pipe_fd);
+void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
+					int *pipe_fd);
 
 // ----- Builtins Functions -----
 int				is_builtin(char *cmd);
@@ -320,11 +312,25 @@ char			*search_path(char **path_dir, char *command);
 int				is_directory(char *path);
 char			*cmd_is_dir(char *cmd, t_minishell *minishell);
 
-// ----- Execute Functions -----
+// ----- Execute_Simple_Command Functions -----
+int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
+int				run_bash_cmd(t_ast_node *ast, t_minishell *minishell);
 void			execute(char **cmd_array, t_minishell *minishell);
 char			**prepare_execute_env(char *path, char **cmd_array,
 					t_minishell *minishell);
 char			**env_list_to_array(t_env *env_list);
+
+// ----- Wait Child Functions -----
+int				wait_for_children(pid_t last_pid);
+
+// ----- Execute_Ast Functions -----
+int				execute_ast(t_ast_node *ast, t_minishell *minishell);
+int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
+int				wait_pipeline_status(pid_t pid_right);
+int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
+
+// ----- Cleanup_Exit Functions -----
+void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // -----------------------------------------------------------------------------
 
@@ -334,21 +340,12 @@ char			**env_list_to_array(t_env *env_list);
 
 
 
-// ----- Wait Child Functions -----
-int				wait_for_children(pid_t last_pid);
 
-// ----- Execute_Ast Functions -----
-int				execute_ast(t_ast_node *ast, t_minishell *minishell);
-int				execute_simple_command(t_ast_node *ast, t_minishell *minishell);
-int				execute_pipe(t_ast_node *ast, t_minishell *minishell);
-int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
+
 
 // ----- Debug Functions -----
 void			print_indent(int level);
 void			print_ast(t_ast_node *node, int level);
-
-// ----- Main
-void			execution(t_minishell *minishell);
 
 // ----- Heredoc Functions -----
 int				heredocs(t_ast_node *ast, t_minishell *minishell);
@@ -359,10 +356,5 @@ void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
 void			process_heredoc_noninteractive(t_command *cmd,
 					t_minishell *minishell, int *pipe_fd);
 void			process_heredoc(t_command *cmd, t_minishell *minishell);
-
-void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
-					int *pipe_fd);
-void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
-					int *pipe_fd);
 
 #endif

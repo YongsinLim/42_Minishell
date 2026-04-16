@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/15 20:46:05 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/16 14:45:31 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	main(int argc, char **argv, char **envp)
 				break ;
 			continue ;
 		}
-			execution(&minishell);
+		execution(&minishell);
 		if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
 			break ;
 	}
@@ -89,14 +89,12 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 	else
 		raw_line = get_next_line(STDIN_FILENO);
 	// ---------------------------------------------------------------------
-
-		if (g_signal == SIGINT)
-		{
-			minishell -> last_exit_status = 130;
-			g_signal = 0; //Reset signal after receiving;
-		}
+	if (g_signal == SIGINT)
+	{
+		minishell -> last_exit_status = 130;
+		g_signal = 0; //Reset signal after receiving;
+	}
 	// ---------------------------------------------------------------------
-
 	if (!raw_line)
 	{
 		if (interactive)
@@ -141,33 +139,9 @@ int	build_tokens(t_minishell *minishell)
 	return (FALSE);
 }
 
-
-
-
-
 /*
-rl_clear_history() is used to completely clear the command history list and
-free the memory associated with its entries
-*/
-void	cleanup_and_exit(t_minishell *minishell, int exit_status)
-{
-	free_env_list(minishell->env_list);
-	free(minishell->input);
-	free_history(&minishell->history_list);
-	free_tokens(&minishell->tokens);
-	free_ast(&minishell->ast);
-	rl_clear_history();
-	exit(exit_status);
-}
+Only run execution of AST if heredoc were NOT interrupted
 
-// ---------------------------------------------------------------------
-
-
-
-
-
-
-/*
 Execution is called every loop iteration (every command).
 Cleanup is needed to clean memory from the current command
 before reading the next one.
@@ -178,16 +152,14 @@ cleanup_and_exit() cleanup = end of whole shell lifecycle
 void	execution(t_minishell *minishell)
 {
 	minishell->ast = parse(&minishell->tokens);
-
 	if (minishell->ast != NULL)
 	{
-		// Only execute the AST if heredocs were NOT interrupted
-		if (heredocs(minishell->ast, minishell) != 130)
-			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+		if (heredocs(minishell->ast, minishell) != 130) // todo why??
+			minishell->last_exit_status = execute_ast(minishell->ast,
+					minishell);
 	}
 	else
 		minishell->last_exit_status = SYNTAX_ERROR;
-		
 	free(minishell->input);
 	minishell->input = NULL;
 	free_tokens(&minishell->tokens);

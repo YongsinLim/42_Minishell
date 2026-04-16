@@ -1,16 +1,75 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execution.c                                        :+:      :+:    :+:   */
+/*   execute_simple_cmd.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/04/15 14:00:48 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/15 17:50:54 by yolim            ###   ########.fr       */
+/*   Created: 2026/04/15 18:50:18 by yolim             #+#    #+#             */
+/*   Updated: 2026/04/16 14:29:29 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+/*
+fork() :
+-1: The creation of the child process was unsuccessful due to an error
+0: The code is executing within the child process.
+Positive value (the child's PID): The code is executing within the parent process
+
+To check edge case : < file or > file (without command to run)
+if (!ast->command->argv[0])
+
+Only treat 'env' as builtin command if it has NO arguments,
+if env with arguments -> execute as external command
+*/
+int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
+{
+	if (!ast->command->argv[0])
+	{
+		if (redirect_input(ast->command) != SHELL_SUCCESS
+			|| redirect_output(ast->command) != SHELL_SUCCESS)
+			return (SHELL_FAILURE);
+		return (SHELL_SUCCESS);
+	}
+	if (is_builtin(ast->command->argv[0]))
+	{
+		if (ft_strncmp(ast->command->argv[0], "env", 4) == 0
+			&& ast->command->argv[1] != NULL)
+			return (run_bash_cmd(ast, minishell));
+		return (handle_builtin_execution(ast, minishell));
+	}
+	return (run_bash_cmd(ast, minishell));
+}
+
+int	run_bash_cmd(t_ast_node *ast, t_minishell *minishell)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid == -1)
+		error_exit("Fork Error");
+	if (pid == 0)
+	{
+		init_signals_child();
+		if (redirect_input(ast->command) != SHELL_SUCCESS
+			|| redirect_output(ast->command) != SHELL_SUCCESS)
+			cleanup_and_exit(minishell, SHELL_FAILURE);
+		execute(ast->command->argv, minishell);
+		cleanup_and_exit(minishell, minishell->last_exit_status);
+	}
+	init_signals_execution();
+	if (ast->command->heredoc_fd != -1)
+	{
+		close(ast->command->heredoc_fd);
+		ast->command->heredoc_fd = -1;
+	}
+	status = wait_for_children(pid);
+	init_signals_prompt();
+	return (status);
+}
 
 void	execute(char **cmd_array, t_minishell *minishell)
 {
