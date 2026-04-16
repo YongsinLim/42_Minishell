@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/27 11:46:24 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/10 17:42:59 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/16 10:33:11 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 int	wait_for_children(pid_t last_pid)
 {
-	int		status;
 	int		last_child_exit_status;
 	pid_t	terminated_pid;
+	int		status;
 
 	last_child_exit_status = 0;
 	while (1)

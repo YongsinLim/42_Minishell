@@ -50,6 +50,15 @@ Pending to do:
 2. Fix Norm
 3. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
 4. signal issue
+5. Readme need to follow requirement
+6. // # include <sys/stat.h>
+   // # include <string.h>
+   // # include <sys/ioctl.h>
+   // # include <termios.h>
+   // # include <term.h>
 
 
-
+Issue havent solved:
+1. case - cmd <infile <<EOF (real shell final stdin should be heredoc, but redirect_input tends to end with infile)
+2. heredoc need to 2 times ctrl+c only exit cat << end , but bash 1 times only
+3. heredoc ctrl+D exit code 130, should be 0
