@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+         #
+#    By: marvin <marvin@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/14 16:21:19 by yolim             #+#    #+#              #
-#    Updated: 2026/01/31 11:30:04 by yolim            ###   ########.fr        #
+#    Updated: 2026/04/17 02:25:49 by marvin           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,6 +31,7 @@ SRC = src/main.c \
 	src/ast_build/parse_helper.c \
 	src/ast_build/parse_one_command.c \
 	src/ast_build/parse_redirection.c \
+	src/ast_build/tokens_to_cmd.c \
 	src/ast_execute/ast_executor.c \
 	src/ast_execute/build_path.c \
 	src/ast_execute/directory.c \

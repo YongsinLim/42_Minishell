@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_words_main.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/09 16:24:57 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/10 16:13:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 02:11:26 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,22 @@ Otherwise the heredoc can't find where the content ends
  */
 int	handle_word(char *line, int *i, t_token **tokens, t_minishell *minishell)
 {
-	t_token_to_word	*word;
+	t_token_to_word	word;
 	char			*full_word;
 
-	word = malloc(sizeof(t_token_to_word));
-	word->minishell = minishell;
-	word->is_quoted_string = FALSE;
-	word->is_contain_wildcard = FALSE;
-	word->is_disabled_expand = previous_token_is_heredoc(*tokens);
+	word.minishell = minishell;
+	word.is_quoted_string = FALSE;
+	word.is_contain_wildcard = FALSE;
+	word.is_disabled_expand = previous_token_is_heredoc(*tokens);
 	full_word = expand_tilde_prefix(line, i, minishell,
-			word->is_disabled_expand);
+			word.is_disabled_expand);
 	while (line[*i] && !is_separator(line[*i]))
 	{
-		full_word = get_segment_check_wildcard(line, i, word, full_word);
+		full_word = get_segment_check_wildcard(line, i, &word, full_word);
 		if (!full_word)
 			return (FALSE);
 	}
-	create_and_add_word_token(full_word, word, tokens);
+	create_and_add_word_token(full_word, &word, tokens);
 	free(full_word);
 	(*i)--;
 	return (TRUE);

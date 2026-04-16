@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_one_command.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/12 16:22:19 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 02:24:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,71 +28,27 @@ typedef struct s_command
 */
 t_command	*parse_one_command(t_token **tokens_ptr)
 {
-	t_token		*token;
 	t_command	*cmd;
 	t_list		*argv_list;
 	int			status;
 
-	token = *tokens_ptr;
 	cmd = init_cmd();
 	if (!cmd)
 		return (NULL);
 	argv_list = NULL;
-	while (is_not_logical_operator(token))
+	while (*tokens_ptr && is_not_logical_operator(*tokens_ptr))
 	{
-		if (is_redirection_token(token))
-			status = parse_redirection(&token, cmd);
+		if (is_redirection_token(*tokens_ptr))
+			status = parse_redirection(tokens_ptr, cmd);
 		else
-			status = tokens_to_cmd(&token, &argv_list);
+			status = tokens_to_cmd(tokens_ptr, &argv_list);
 		if (status == SHELL_FAILURE)
 			return (parse_error_cleanup(&argv_list, cmd, NULL));
 	}
 	cmd->argv = convert_list_to_str_array(argv_list);
 	if (!cmd->argv)
-		return (parse_error_cleanup(&argv_list, cmd,
-				"minishell: malloc error\n"));
-	*tokens_ptr = token;
+		return (parse_error_cleanup(&argv_list, cmd, "minishell: malloc error\n"));
 	return (cmd);
-}
-
-/*
-Quoted empty tokens must be kept as real argv entries.
-echo "" -> argv includes empty string
-echo $EMPTY (unquoted, empty var) -> no empty arg added
-echo "$EMPTY" -> empty arg preserved
-
-Why wildcard need iteration, non-wildcard no need :
-Non-wildcard: data already final -> attach whole linked-list once.
-Wildcard: each node is a pattern needing its own transform -> must visit
-each node (current = current->next).
- */
-int	tokens_to_cmd(t_token **token_ptr, t_list **argv_list)
-{
-	t_list	*temp_split;
-	t_list	*current;
-	t_list	*expanded;
-
-	if ((*token_ptr)->type == TOKEN_WORD)
-	{
-		if (build_word_field(&temp_split, *token_ptr) == SHELL_FAILURE)
-			return (SHELL_FAILURE);
-		if ((*token_ptr)->has_wildcard)
-		{
-			current = temp_split;
-			while (current)
-			{
-				expanded = NULL;
-				expand_wildcard((char *)current->content, &expanded);
-				ft_lstadd_back(argv_list, expanded);
-				current = current->next;
-			}
-			ft_lstclear(&temp_split, free);
-		}
-		else
-			ft_lstadd_back(argv_list, temp_split);
-		(*token_ptr) = (*token_ptr)->next;
-	}
-	return (SHELL_SUCCESS);
 }
 
 int	build_word_field(t_list	**temp_split, t_token *token)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_redirection.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/12 11:39:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/12 12:35:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 02:23:02 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,21 @@
 int	parse_redirection(t_token **tokens, t_command *cmd)
 {
 	t_token	*current_token;
+	t_token	*op_token;
+	t_token	*file_token;
 
 	current_token = *tokens;
-	while (is_redirection_token(current_token))
+	while (current_token && is_redirection_token(current_token))
 	{
 		if (set_redirection_file(current_token, cmd) == SHELL_FAILURE)
 			return (SHELL_FAILURE);
-		current_token = current_token->next->next;
+		op_token = current_token;
+		file_token = current_token->next;
+		current_token = file_token->next;
+		free(op_token->value);
+		free(op_token);
+		free(file_token->value);
+		free(file_token);
 	}
 	*tokens = current_token;
 	return (SHELL_SUCCESS);
