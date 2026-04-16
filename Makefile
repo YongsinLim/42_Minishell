@@ -24,9 +24,48 @@ RM = rm -f
 HEADER_DIR = ./includes
 HEADER_LIB = $(HEADER_DIR)/minishell.h
 
-# ----- Source Files ----- 
-SRC = $(wildcard src/*.c src/**/*.c src/**/**/*.c)
-## change to wildcard to real src file name!!!!!src/main.c src/history/history.c
+# ----- Source Files -----
+SRC = src/main.c \
+	src/ast_build/command_or_subshell.c \
+	src/ast_build/parse.c \
+	src/ast_build/parse_helper.c \
+	src/ast_build/parse_one_command.c \
+	src/ast_build/parse_redirection.c \
+	src/ast_execute/ast_executor.c \
+	src/ast_execute/build_path.c \
+	src/ast_execute/directory.c \
+	src/ast_execute/execute_simple_cmd.c \
+	src/ast_execute/heredoc.c \
+	src/ast_execute/heredoc_interactive.c \
+	src/ast_execute/heredoc_noninteractive.c \
+	src/ast_execute/redirection.c \
+	src/ast_execute/wait_child.c \
+	src/builtins/builtins.c \
+	src/builtins/cd.c \
+	src/builtins/echo.c \
+	src/builtins/exit.c \
+	src/builtins/export.c \
+	src/builtins/pwd.c \
+	src/builtins/unset.c \
+	src/builtins/env/env.c \
+	src/builtins/env/env_sort.c \
+	src/builtins/env/env_utils.c \
+	src/error_handling/error.c \
+	src/free_memory/cleanup_exit.c \
+	src/free_memory/free.c \
+	src/general/general_helper.c \
+	src/history/history.c \
+	src/initialization/init.c \
+	src/signals/signal_init.c \
+	src/signals/signal_sets.c \
+	src/tokens/expansion.c \
+	src/tokens/main_tokenising.c \
+	src/tokens/token_helper.c \
+	src/tokens/token_words.c \
+	src/tokens/token_words_main.c \
+	src/unclosed_quotes/unclosed_quotes.c \
+	src/wildcard/wildcard.c
+
 OBJS := $(SRC:%.c=%.o)
 
 # ----- Libft ----- 
