@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_redirection.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/12 11:39:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/17 02:23:02 by marvin           ###   ########.fr       */
+/*   Updated: 2026/04/17 02:54:30 by jenlee           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,22 @@
 
 int	parse_redirection(t_token **tokens, t_command *cmd)
 {
-	t_token	*current_token;
 	t_token	*op_token;
 	t_token	*file_token;
 
-	current_token = *tokens;
-	while (current_token && is_redirection_token(current_token))
+	// Use *tokens directly instead of a local current_token
+	while (*tokens && is_redirection_token(*tokens))
 	{
-		if (set_redirection_file(current_token, cmd) == SHELL_FAILURE)
+		if (set_redirection_file(*tokens, cmd) == SHELL_FAILURE)
 			return (SHELL_FAILURE);
-		op_token = current_token;
-		file_token = current_token->next;
-		current_token = file_token->next;
+		op_token = *tokens;
+		file_token = (*tokens)->next;
+		*tokens = file_token->next;
 		free(op_token->value);
 		free(op_token);
 		free(file_token->value);
 		free(file_token);
 	}
-	*tokens = current_token;
 	return (SHELL_SUCCESS);
 }
 
