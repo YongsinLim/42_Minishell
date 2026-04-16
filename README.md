@@ -1,5 +1,6 @@
 # Welcome to Minishell
 
+This project has been created as part of the 42 curriculum by jenlee and yolim
 A 42 school team project implementing a basic POSIX-compliant shell in C, mimicking Bash Version 5.1.16.
 
 **Developed in collaboration with [ABCSoup](https://github.com/DaSoupOfABC)**
