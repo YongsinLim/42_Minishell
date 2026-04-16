@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
+/*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/17 00:23:16 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:44:27 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,8 +152,9 @@ int				has_unclosed_quotes(char *str);
 char			*strjoin_with_nextline(char *s1, char *s2);
 
 // ----- History Functions -----
-void			save_input_to_history(t_minishell* minishell, int interactive);
-void			append_node_to_history_list(t_minishell* minishell, t_history* new_node);
+void			save_input_to_history(t_minishell *minishell, int interactive);
+void			append_node_to_history_list(t_minishell *minishell,
+					t_history *new_node);
 void			free_history(t_history **history_list);
 int				ft_history(t_history *history_list);
 

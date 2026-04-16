@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 10:26:41 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/17 00:23:40 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:43:36 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,8 @@ int	main(int argc, char **argv, char **envp)
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
 }
 
-//ft_putstr_fd("exit\n", 2) on EOF or Ctrl + D in interactive mode
+// ft_putstr_fd("exit\n", 2) on EOF or Ctrl + D in interactive mode
+// g_signal = 0; //Reset signal after receiving;
 int	read_and_prepare_input(t_minishell *minishell, int interactive)
 {
 	char	*raw_line;
@@ -91,7 +92,7 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 	if (g_signal == SIGINT)
 	{
 		minishell -> last_exit_status = 130;
-		g_signal = 0; //Reset signal after receiving;
+		g_signal = 0;
 	}
 	if (!raw_line)
 	{
@@ -151,7 +152,8 @@ void	execution(t_minishell *minishell)
 	{
 		heredoc_status = heredocs(minishell->ast, minishell);
 		if (heredoc_status == SHELL_SUCCESS)
-			minishell->last_exit_status = execute_ast(minishell->ast, minishell);
+			minishell->last_exit_status = execute_ast(minishell->ast,
+					minishell);
 		else
 			minishell->last_exit_status = heredoc_status;
 	}
