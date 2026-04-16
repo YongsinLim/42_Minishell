@@ -6,11 +6,17 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/16 14:38:17 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/16 14:41:25 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/16 23:57:23 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+void	close_fd_exit(int write_fd, int exit_code)
+{
+	close(write_fd);
+	exit(exit_code);
+}
 
 /*
 rl_clear_history() is used to completely clear the command history list and

@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/27 16:37:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/16 11:13:54 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:23:49 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ void	execute_pipe_left(t_ast_node *ast, t_minishell *minishell, int *pipe_fd)
 {
 	int	status;
 
-		init_signals_child();
+	init_signals_child();
 	close(pipe_fd[0]);
 	dup2(pipe_fd[1], STDOUT_FILENO);
 	close(pipe_fd[1]);
@@ -97,7 +97,7 @@ void	execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 {
 	int	status;
 
-		init_signals_child();
+	init_signals_child();
 	close(pipe_fd[1]);
 	dup2(pipe_fd[0], STDIN_FILENO);
 	close(pipe_fd[0]);

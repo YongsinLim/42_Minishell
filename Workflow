@@ -8,6 +8,8 @@ Check whether input has unclosed quotes
 Handle user press Ctrl + D situation (when input == NULL)
 Add user input to history linked list
 
+----------------------------------------------------------------------------------
+
 Tokenization user input (cmd) into token linked list :
 &&, ||, |, (, )
 >>, >|, >, <<, <
@@ -19,11 +21,7 @@ single-quote didnt expand anything
 non-quote check wildcard exist
 final words add to token_word
 
-
-
-
-
-// execution :
+----------------------------------------------------------------------------------
 
 - Parse -
 
@@ -39,6 +37,8 @@ Pipeline's Right node
 
 there is precedence in AST need to follow
 
+----------------------------------------------------------------------------------
+
 - Execution -
 Simple Command :
 
@@ -48,15 +48,29 @@ Duplicate outfile_fd (append or trunc) to STDOUT_FILENO
 
 Have command before < or << or > :
 Check whether is builtin command been called
+yes : execute builtin command
+no : execute bash command
 
+Pipe :
+Fork
+Execute pipe_left then execute pipe_right
+Wait for all child
+return exit status
 
+And / Or :
+Execute ast->left
+Only execute ast->right when the case is AND or the condition for 1st OR case failed
 
+Subshell :
+Execute ast->left since when parsing store the inner_ast at ast->left,
+nothing store at ast->right
 
+----------------------------------------------------------------------------------
 
 Cleanup memory & exit with last_exit_status
 
-
-
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 
 
 Note :

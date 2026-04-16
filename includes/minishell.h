@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 21:34:29 by jenjunn           #+#    #+#             */
-/*   Updated: 2026/04/16 14:48:35 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:23:16 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,9 @@
 # define CMD_NOT_EXECUTABLE 126
 # define ACCESS_PERMITTED 0
 # define ERROR -1
+# define HEREDOC_CONTINUE 0
+# define HEREDOC_HIT_DELIMITER 1
+# define HEREDOC_ERROR 2
 
 typedef struct s_env
 {
@@ -330,31 +333,33 @@ int				wait_pipeline_status(pid_t pid_right);
 int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Cleanup_Exit Functions -----
+void			close_fd_exit(int write_fd, int exit_code);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // -----------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-// ----- Debug Functions -----
-void			print_indent(int level);
-void			print_ast(t_ast_node *node, int level);
-
 // ----- Heredoc Functions -----
 int				heredocs(t_ast_node *ast, t_minishell *minishell);
-char			*read_heredoc_line_simple(void);
-void			setup_heredoc_signals(void);
+int				heredocs_command_node(t_ast_node *ast, t_minishell *minishell);
+void			process_heredoc(t_command *cmd, t_minishell *minishell);
+int				process_heredoc_line(char **input_line, t_command *cmd,
+					t_minishell *minishell, int write_fd);
+int				handle_read_result(ssize_t read_bytes, int i);
+
+// ----- Heredoc_Interactive Functions -----
+void			process_heredoc_interactive(t_command *cmd,
+					t_minishell *minishell, int *pipe_fd);
 void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
 					int write_fd);
+void			setup_heredoc_signals(void);
+char			*read_heredoc_line(void);
+void			set_heredoc_exit_status(t_command *cmd, t_minishell *minishell,
+					int status, int read_fd);
+
+// ----- Heredoc_NonInteractive Functions -----
 void			process_heredoc_noninteractive(t_command *cmd,
 					t_minishell *minishell, int *pipe_fd);
-void			process_heredoc(t_command *cmd, t_minishell *minishell);
+void			print_heredoc_eof_warning(t_command *cmd);
+void			close_heredoc_pipe_fail(t_command *cmd, int *pipe_fd);
 
 #endif

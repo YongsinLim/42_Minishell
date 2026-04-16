@@ -6,233 +6,116 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/29 16:41:50 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/15 18:31:58 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 00:15:22 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
+/*
+exit code 130 : process was terminated via a SIGINT (Interrupt) signal (Ctrl+C)
+
+if ast->type == NODE_SUBSHELL, only execute ast->left,
+bcos node_subshell only store at ast->left, ast->right = NULL (no use).
+ */
 int	heredocs(t_ast_node *ast, t_minishell *minishell)
 {
+	int	status;
+
 	if (!ast)
-		return (0);
+		return (SHELL_SUCCESS);
 	if (ast->type == NODE_PIPE || ast->type == NODE_AND || ast->type == NODE_OR)
 	{
-		if (heredocs(ast->left, minishell) == 130)
-			return (130);
-		if (heredocs(ast->right, minishell) == 130)
-			return (130);
+		status = heredocs(ast->left, minishell);
+		if (status != SHELL_SUCCESS)
+			return (status);
+		status = heredocs(ast->right, minishell);
+		if (status != SHELL_SUCCESS)
+			return (status);
 	}
 	else if (ast->type == NODE_SUBSHELL)
 	{
-		if (heredocs(ast->left, minishell) == 130)
-			return (130);
-		if (ast->command && ast->command->heredoc_delimiter != NULL)
-		{
-			process_heredoc(ast->command, minishell);
-			if (minishell->last_exit_status == 130)
-				return (130);
-		}
+		status = heredocs(ast->left, minishell);
+		if (status != SHELL_SUCCESS)
+			return (status);
 	}
 	else if (ast->type == NODE_COMMAND)
-	{
-		if (ast->command && ast->command->heredoc_delimiter != NULL)
-		{
-			process_heredoc(ast->command, minishell);
-			if (minishell->last_exit_status == 130)
-				return (130);
-		}
-	}
-	return (0);
+		return (heredocs_command_node(ast, minishell));
+	return (SHELL_SUCCESS);
 }
 
-char	*read_heredoc_line_simple(void)
+int	heredocs_command_node(t_ast_node *ast, t_minishell *minishell)
 {
-	char	*line;
-	char	buffer[1];
-	int		i;
-	int		ret;
-
-	line = malloc(1000);
-	if (!line)
-		return (NULL);
-	i = 0;
-	write(1, "heredoc> ", 9);
-	while (i < 999)
+	if (ast->command && ast->command->heredoc_delimiter)
 	{
-		ret = read(0, buffer, 1);
-		if (ret == -1)
-		{
-			if (errno == EINTR) // Interrupted by signal (Ctrl+C)
-			{
-				if (g_signal == SIGINT)
-				{
-					free(line);
-					return (NULL);
-				}
-			}
-			// Other error, continue or break depending on needs
-			break ;
-		}
-		if (ret == 0) // EOF (Ctrl+D)
-		{
-			if (i == 0)
-			{
-				write(1, "\n", 1);
-				// Add newline before exiting heredoc
-				free(line);
-				return (NULL);
-			}
-			break ;
-		}
-		if (buffer[0] == '\n')
-			break ;
-		line[i++] = buffer[0];
+		process_heredoc(ast->command, minishell);
+		if (ast->command->heredoc_fd == -1)
+			return (minishell->last_exit_status);
 	}
-	line[i] = '\0';
-	return (line);
-}
-
-void	setup_heredoc_signals(void)
-{
-	struct sigaction	sa;
-
-	sa.sa_handler = sigint_handler_heredoc;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags = 0;
-	// No SA_RESTART - ensure read() doesn't restart after signal
-	sigaction(SIGINT, &sa, NULL);
-	signal(SIGQUIT, SIG_IGN);
-}
-
-void	heredoc_child_process(t_command *cmd, t_minishell *minishell,
-	int write_fd)
-{
-	char	*input_line;
-	char	*expanded_result;
-
-	setup_heredoc_signals();
-	while (1)
-	{
-		input_line = read_heredoc_line_simple();
-		if (g_signal == SIGINT)
-		{
-			close(write_fd);
-			exit(130);
-		}
-		if (!input_line) // EOF, error, or interrupted
-		{
-			if (g_signal != SIGINT)
-			{
-				ft_putstr_fd("bash: warning: here-document delimited by end-of-file (wanted `", 2);
-				ft_putstr_fd(cmd->heredoc_delimiter, 2);
-				ft_putstr_fd("')\n", 2);
-			}
-			break ;
-		}
-		if (ft_strncmp(input_line, cmd->heredoc_delimiter,
-				ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
-		{
-			free(input_line);
-			break ;
-		}
-		if (cmd->heredoc_is_quoted == 0)
-		{
-			expanded_result = expand_variable(input_line, minishell);
-			free(input_line);
-			input_line = expanded_result;
-			if (!input_line)
-				break ;
-		}
-		ft_putstr_fd(input_line, write_fd);
-		ft_putstr_fd("\n", write_fd);
-		free(input_line);
-	}
-	close(write_fd);
-}
-
-void	process_heredoc_noninteractive(t_command *cmd, t_minishell *minishell,
-	int *pipe_fd)
-{
-	char	*input_line;
-	char	*line;
-	char	*expanded_result;
-
-	while (1)
-	{
-		line = get_next_line(STDIN_FILENO);
-		if (line)
-		{
-			input_line = ft_strtrim(line, "\r\n");
-			free(line);
-		}
-		else
-			input_line = NULL;
-		if (!input_line)
-			break ;
-		if (ft_strncmp(input_line, cmd->heredoc_delimiter,
-				ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
-		{
-			free(input_line);
-			break ;
-		}
-		if (cmd->heredoc_is_quoted == 0)
-		{
-			expanded_result = expand_variable(input_line, minishell);
-			free(input_line);
-			input_line = expanded_result;
-			if (!input_line)
-				break ;
-		}
-		ft_putstr_fd(input_line, pipe_fd[1]);
-		ft_putstr_fd("\n", pipe_fd[1]);
-		free(input_line);
-	}
-	close(pipe_fd[1]);
-	cmd->heredoc_fd = pipe_fd[0];
+	return (SHELL_SUCCESS);
 }
 
 void	process_heredoc(t_command *cmd, t_minishell *minishell)
 {
 	int		pipe_fd[2];
-	pid_t	pid;
-	int		status;
 	int		interactive;
 
 	if (pipe(pipe_fd) == -1)
 		error_exit("Heredoc pipe failed");
 	interactive = isatty(STDIN_FILENO);
-	if (interactive)
+	if (!interactive)
+		return (process_heredoc_noninteractive(cmd, minishell, pipe_fd));
+	process_heredoc_interactive(cmd, minishell, pipe_fd);
+}
+
+int	process_heredoc_line(char **input_line, t_command *cmd,
+	t_minishell *minishell, int write_fd)
+{
+	char	*expanded_result;
+
+	if (ft_strncmp(*input_line, cmd->heredoc_delimiter,
+			ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
 	{
-		pid = fork();
-		if (pid == -1)
-			error_exit("Heredoc fork failed");
-		if (pid == 0)
-		{
-			close(pipe_fd[0]);
-			heredoc_child_process(cmd, minishell, pipe_fd[1]);
-			exit(0);
-		}
-		close(pipe_fd[1]);
-		init_signals_execution();
-		if (waitpid(pid, &status, 0) == -1)
-		{
-			close(pipe_fd[0]);
-			cmd->heredoc_fd = -1;
-			init_signals_prompt();
-			return ;
-		}
-		if ((WIFEXITED(status) && WEXITSTATUS(status) == 130)
-			|| (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
-		{
-			close(pipe_fd[0]);
-			cmd->heredoc_fd = -1;
-			minishell->last_exit_status = 130;
-		}
-		else
-			cmd->heredoc_fd = pipe_fd[0];
-		init_signals_prompt();
+		free(*input_line);
+		*input_line = NULL;
+		return (HEREDOC_HIT_DELIMITER);
 	}
-	else
-		process_heredoc_noninteractive(cmd, minishell, pipe_fd);
+	if (cmd->heredoc_is_quoted == 0)
+	{
+		expanded_result = expand_variable(*input_line, minishell);
+		free(*input_line);
+		*input_line = expanded_result;
+		if (!*input_line)
+		{
+			ft_putstr_fd("minishell: heredoc: expansion failed\n", 2);
+			return (minishell->last_exit_status = SHELL_FAILURE, HEREDOC_ERROR);
+		}
+	}
+	ft_putstr_fd(*input_line, write_fd);
+	ft_putstr_fd("\n", write_fd);
+	free(*input_line);
+	*input_line = NULL;
+	return (HEREDOC_CONTINUE);
+}
+
+// EINTR : read was interrupted by signal (Ctrl+C)
+int	handle_read_result(ssize_t read_bytes, int i)
+{
+	if (read_bytes > 0)
+		return (0);
+	if (read_bytes == -1)
+	{
+		if (errno == EINTR && g_signal == SIGINT)
+			return (-1);
+		return (-2);
+	}
+	if (read_bytes == 0)
+	{
+		if (i == 0)
+		{
+			write(1, "\n", 1);
+			return (-1);
+		}
+	}
+	return (1);
 }
