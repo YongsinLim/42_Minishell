@@ -6,7 +6,7 @@
 /*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/02 19:11:31 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/17 02:24:46 by marvin           ###   ########.fr       */
+/*   Updated: 2026/04/17 11:24:21 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ t_command	*parse_one_command(t_token **tokens_ptr)
 	}
 	cmd->argv = convert_list_to_str_array(argv_list);
 	if (!cmd->argv)
-		return (parse_error_cleanup(&argv_list, cmd, "minishell: malloc error\n"));
+		return (parse_error_cleanup(&argv_list, cmd,
+				"minishell: malloc error\n"));
 	return (cmd);
 }
 

@@ -6,13 +6,11 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 22:09:35 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/14 20:52:06 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:35:10 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/signals.h"
-
-volatile sig_atomic_t	g_signal = 0;
 
 void	sigint_handler_prompt(int sig)
 {

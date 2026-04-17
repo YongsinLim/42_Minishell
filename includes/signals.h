@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/11/01 22:07:49 by jenlee            #+#    #+#             */
-/*   Updated: 2026/04/14 20:51:31 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/17 11:35:07 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 # include "minishell.h"
 
 /* ---- Global Variables ---- */
-extern volatile sig_atomic_t	g_signal;
+volatile sig_atomic_t	g_signal;
 
 /* ---- Signal Initializers ---- */
 void	init_signals_prompt(void);
