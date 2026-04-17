@@ -6,7 +6,7 @@
 /*   By: jenlee <jenlee@student.42kl.edu.my>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/12 11:39:19 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/17 02:54:30 by jenlee           ###   ########.fr       */
+/*   Updated: 2026/04/17 11:23:50 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int	parse_redirection(t_token **tokens, t_command *cmd)
 	t_token	*op_token;
 	t_token	*file_token;
 
-	// Use *tokens directly instead of a local current_token
 	while (*tokens && is_redirection_token(*tokens))
 	{
 		if (set_redirection_file(*tokens, cmd) == SHELL_FAILURE)
