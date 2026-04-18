@@ -32,7 +32,9 @@ int	is_not_logical_operator(t_token *token)
 	return (token
 		&& token->type != TOKEN_PIPE
 		&& token->type != TOKEN_AND
-		&& token->type != TOKEN_OR);
+		&& token->type != TOKEN_OR
+		&& token->type != TOKEN_L_PAREN
+		&& token->type != TOKEN_R_PAREN);
 }
 
 int	is_redirection_token(t_token *token)

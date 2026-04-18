@@ -19,6 +19,7 @@ CCFLAGS = -Wall -Wextra -Werror -g
 LDFLAGS = -lreadline -lhistory -L/opt/homebrew/opt/readline/lib
 CPPFLAGS = -I/opt/homebrew/opt/readline/include
 RM = rm -f
+# in linux, no need -L/opt/homebrew/opt/readline/lib and -I/opt/homebrew/opt/readline/include
 
 # ----- Header file ----- 
 HEADER_DIR = ./includes

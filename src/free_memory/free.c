@@ -54,7 +54,7 @@ void	free_ast(t_ast_node **ast_ptr)
 	ast = *ast_ptr;
 	free_ast(&(ast->left));
 	free_ast(&(ast->right));
-	if (ast->type == NODE_COMMAND && ast->command)
+	if (ast->command)
 		free_command(ast->command);
 	free(ast);
 	*ast_ptr = NULL;

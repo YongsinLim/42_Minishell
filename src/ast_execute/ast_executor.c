@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/20 10:04:14 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/17 00:24:17 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/18 13:42:30 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,12 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 	if (pid == 0)
 	{
 		init_signals_child();
+		if (ast->command)
+		{
+			if (redirect_input(ast->command) != SHELL_SUCCESS
+				|| redirect_output(ast->command) != SHELL_SUCCESS)
+				cleanup_and_exit(minishell, SHELL_FAILURE);
+		}
 		status = execute_ast(ast->left, minishell);
 		cleanup_and_exit(minishell, status);
 	}

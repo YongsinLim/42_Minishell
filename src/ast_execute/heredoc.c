@@ -38,6 +38,7 @@ int	heredocs(t_ast_node *ast, t_minishell *minishell)
 		status = heredocs(ast->left, minishell);
 		if (status != SHELL_SUCCESS)
 			return (status);
+		return (heredocs_command_node(ast, minishell));
 	}
 	else if (ast->type == NODE_COMMAND)
 		return (heredocs_command_node(ast, minishell));

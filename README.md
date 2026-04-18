@@ -1,6 +1,6 @@
 # Welcome to Minishell
 
-This project has been created as part of the 42 curriculum by jenlee and yolim
+_This project has been created as part of the 42 curriculum by jenlee and yolim_
 
 A 42-school team project implementing a basic POSIX-compliant shell in C, mimicking Bash Version 5.1.16.
 

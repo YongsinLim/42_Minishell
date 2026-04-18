@@ -6,7 +6,7 @@
 /*   By: yolim <yolim@student.42kl.edu.my>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/06 16:39:54 by yolim             #+#    #+#             */
-/*   Updated: 2026/04/11 21:35:58 by yolim            ###   ########.fr       */
+/*   Updated: 2026/04/18 13:31:40 by yolim            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ t_ast_node	*parse_subshell(t_token **tokens)
 	*tokens = (*tokens)->next;
 	free(current_token->value);
 	free(current_token);
-	inner_ast = parse_pipeline(tokens);
+	inner_ast = parse(tokens);
 	if (!inner_ast)
 		return (printf("minishell :  syntax error near '('\n"), NULL);
 	current_token = *tokens;
@@ -53,6 +53,11 @@ t_ast_node	*parse_subshell(t_token **tokens)
 	if (!node)
 		return (free_ast(&inner_ast), NULL);
 	node->left = inner_ast;
+	node->command = init_cmd();
+	if (!node->command)
+		return (free_ast(&node), NULL);
+	if (parse_redirection(tokens, node->command) == SHELL_FAILURE)
+		return (free_ast(&node), NULL);
 	return (node);
 }
 
