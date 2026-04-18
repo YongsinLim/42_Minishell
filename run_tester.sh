@@ -16,4 +16,4 @@ cp minishell ~/Desktop/42KL/tester/42_minishell_tester/
 cd ~/Desktop/42KL/tester/42_minishell_tester
 
 # Run the tester script
-./tester.sh m
+./tester.sh a

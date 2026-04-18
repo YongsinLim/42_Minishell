@@ -27,38 +27,32 @@ Builtin
 
 
 Pending to fix:
-Signal issue all correct??
-
 67:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  .//cmds/mand/10_parsing_hell.sh:189 (ENV) - totally same order and same output
 
 81:   STD_OUT: ❌  STD_ERR: ✅  EXIT_CODE: ✅  /home/wk/minishell-test/tester/cmds/mand/2_correction.sh:171 (env | grep $USER) - both same output, not sure why stdout wrong
-
-
-
-
-	Issue Lists (discovered and unfixed)
-```
-	   	1. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
-	   	2. running echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
-	   	3. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
-```
+        Bcos in Bash's env list, _=/usr/bin/env when key in env as input, but minishell show _=/Users/yongsin/Desktop/42KL/Core Code/42_Minishell/./minishell
 
 
 
 Pending to do:
-1. Makefile : change wildcard, add individual file (mandatory)
-2. Fix Norm
-3. tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs
-4. signal issue
-5. Readme need to follow requirement
-6. // # include <sys/stat.h>
+1. Fix Norm (Left 2 new added function)
+2. Pending to understand : tcsetattr, tcgetattr, tgetent, tgetflag, tgetnum, tgetstr, tgoto, tputs, stat, lstat, fstat, unlink, signal, sigaction, sigemptyset, sigaddset, kill, rl_on_new_line, rl_replace_line, rl_redisplay
+3. signal issue
+4. Readme need to follow requirement
+5. // # include <sys/stat.h>
    // # include <string.h>
    // # include <sys/ioctl.h>
    // # include <termios.h>
    // # include <term.h>
 
 
+
 Issue havent solved:
 1. case - cmd <infile <<EOF (real shell final stdin should be heredoc, but redirect_input tends to end with infile)
 2. heredoc need to 2 times ctrl+c only exit cat << end , but bash 1 times only
 3. heredoc ctrl+D exit code 130, should be 0
+4. bonus in tester havent fix
+5. Ctrl + C while in cat heredoc mode ends the entire shell, not just the cat. THeoretically this should be handled with enviroment variable shell level, or signal issue
+6. running echo with only one " at the start still deletes the ", while it should enter heredoc and wait for next " to display. Might be tokenising or heredoc in parser
+7. Same issue for single " after string. It simply deletes the ", while it should also enter heredoc.
+
