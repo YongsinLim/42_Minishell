@@ -1,3 +1,4 @@
+![img.png](img.png)
 # Welcome to Minishell
 
 _This project has been created as part of the 42 curriculum by jenlee and yolim_
