@@ -82,9 +82,9 @@ make re         # Rebuild everything
 
 ## Status
 
-Validated: xx/04/2026.
+Validated: 19/04/2026.
 
-Grade: ?/125.
+Grade: 120/125.
 
 ---
 
