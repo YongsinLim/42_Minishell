@@ -107,6 +107,8 @@ void	create_and_add_word_token(char *full_word, t_token_to_word *word,
 	if (full_word && (full_word[0] != '\0' || word->is_quoted_string))
 	{
 		new_node = new_token(full_word, TOKEN_WORD, word->is_quoted_string);
+		if (!new_node)
+			return ;
 		new_node->has_wildcard = word->is_contain_wildcard;
 		add_token(tokens, new_node);
 	}

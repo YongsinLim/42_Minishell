@@ -14,21 +14,9 @@
 
 static void	restore_quoted_wildcards(t_list *list)
 {
-	char	*str;
-	int		i;
-
 	while (list)
 	{
-		str = (char *)list->content;
-		i = 0;
-		while (str && str[i])
-		{
-			if (str[i] == '\x1D')
-				str[i] = '*';
-			else if (str[i] == '\x1E')
-				str[i] = '?';
-			i++;
-		}
+		restore_wildcards_str((char *)list->content);
 		list = list->next;
 	}
 }

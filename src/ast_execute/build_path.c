@@ -50,7 +50,15 @@ char	*build_path(char *cmd, t_minishell *minishell)
 		free_array_str(path_dir);
 	}
 	if (full_path)
+	{
+		if (access(full_path, X_OK) != ACCESS_PERMITTED)
+		{
+			free(full_path);
+			return (report_error_exit_status(minishell, cmd,
+					"permission denied", CMD_NOT_EXECUTABLE));
+		}
 		return (full_path);
+	}
 	if (path_dir == NULL)
 		return (check_cwd_cmd(cmd, minishell));
 	return (report_error_exit_status(minishell, cmd, "command not found", 127));
@@ -105,18 +113,24 @@ char	*search_path(char **path_dir, char *command)
 	int		i;
 	char	*temp_path;
 	char	*full_path;
+	char	*denied_path;
 
 	i = 0;
+	denied_path = NULL;
 	while (path_dir[i])
 	{
-		temp_path = ft_strjoin(path_dir[i], "/");
+		temp_path = ft_strjoin(path_dir[i++], "/");
 		full_path = ft_strjoin(temp_path, command);
 		free(temp_path);
-		if (access(full_path, X_OK) == ACCESS_PERMITTED
+		if (full_path && access(full_path, X_OK) == ACCESS_PERMITTED
 			&& !is_directory(full_path))
-			return (full_path);
-		free(full_path);
-		i++;
+			return (free(denied_path), full_path);
+		if (full_path && !denied_path
+			&& access(full_path, F_OK) == ACCESS_PERMITTED
+			&& !is_directory(full_path))
+			denied_path = full_path;
+		else
+			free(full_path);
 	}
-	return (NULL);
+	return (denied_path);
 }

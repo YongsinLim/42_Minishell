@@ -44,6 +44,21 @@ char	**convert_list_to_str_array(t_list *argv_list)
 	return (argv);
 }
 
+void	restore_wildcards_str(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str && str[i])
+	{
+		if (str[i] == '\x1D')
+			str[i] = '*';
+		else if (str[i] == '\x1E')
+			str[i] = '?';
+		i++;
+	}
+}
+
 void	close_cmd_heredocs(t_command *cmd)
 {
 	t_redir	*current;

@@ -22,20 +22,19 @@ int	wait_for_children(pid_t last_pid)
 	while (1)
 	{
 		terminated_pid = waitpid(-1, &status, 0);
+		if (terminated_pid == -1 && errno == EINTR)
+			continue ;
 		if (terminated_pid == -1)
 			break ;
-		if (terminated_pid == last_pid)
+		if (terminated_pid == last_pid && WIFEXITED(status))
+			last_child_exit_status = WEXITSTATUS(status);
+		else if (terminated_pid == last_pid && WIFSIGNALED(status))
 		{
-			if (WIFEXITED(status))
-				last_child_exit_status = WEXITSTATUS(status);
-			else if (WIFSIGNALED(status))
-			{
-				last_child_exit_status = 128 + WTERMSIG(status);
-				if (WTERMSIG(status) == SIGQUIT)
-					ft_putstr_fd("Quit (core dumped)\n", 2);
-				else if (WTERMSIG(status) == SIGINT)
-					ft_putstr_fd("\n", 2);
-			}
+			last_child_exit_status = 128 + WTERMSIG(status);
+			if (WTERMSIG(status) == SIGQUIT)
+				ft_putstr_fd("Quit (core dumped)\n", 2);
+			else if (WTERMSIG(status) == SIGINT)
+				ft_putstr_fd("\n", 2);
 		}
 	}
 	return (last_child_exit_status);

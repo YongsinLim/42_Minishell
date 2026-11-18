@@ -23,6 +23,7 @@
 					//	getcwd, chdir, isatty
 # include <fcntl.h> // for open, O_RDONLY & O_WRONLY & O_TRUNC
 # include <sys/wait.h> // for wait, waitpid
+# include <sys/stat.h> // for stat, S_ISDIR
 # include <limits.h> // for PATH_MAX
 # include <dirent.h> // for opendir, readdir, closedir
 # include <errno.h> // for errno
@@ -131,7 +132,7 @@ typedef struct s_token_to_word
 int				read_and_prepare_input(t_minishell *minishell, int interactive);
 int				is_all_whitespace(char *str);
 int				build_tokens(t_minishell *minishell);
-void			execution(t_minishell *minishell);
+int				execution(t_minishell *minishell);
 
 // ----- Init Functions -----
 void			init_minishell(t_minishell *minishell, char **envp);
@@ -225,6 +226,7 @@ int				add_redir(t_command *cmd, t_token_type type, char *file);
 
 // ----- General_Helper Functions -----
 char			**convert_list_to_str_array(t_list *argv_list);
+void			restore_wildcards_str(char *str);
 
 // ----- Parse_One_Command Functions -----
 t_command		*parse_one_command(t_token **tokens_ptr);
@@ -363,6 +365,8 @@ void			set_heredoc_exit_status(t_redir *redir, t_minishell *minishell,
 void			process_heredoc_noninteractive(t_redir *redir,
 					t_minishell *minishell, int *pipe_fd);
 void			print_heredoc_eof_warning(t_redir *redir);
-void			close_heredoc_pipe_fail(t_redir *redir, int *pipe_fd);
+void			close_heredoc_pipe_fail(t_minishell *minishell, t_redir *redir,
+					int *pipe_fd);
+int				open_heredoc_tmp(int *fds);
 
 #endif

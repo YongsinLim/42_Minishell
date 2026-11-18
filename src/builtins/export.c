@@ -75,10 +75,16 @@ void	print_export_node(t_env *node)
 {
 	if (ft_strncmp(node->key, "_", 2) == 0)
 		return ;
+	ft_putstr_fd("declare -x ", 1);
+	ft_putstr_fd(node->key, 1);
 	if (node->value)
-		printf("declare -x %s=\"%s\"\n", node->key, node->value);
+	{
+		ft_putstr_fd("=\"", 1);
+		ft_putstr_fd(node->value, 1);
+		ft_putendl_fd("\"", 1);
+	}
 	else
-		printf("declare -x %s\n", node->key);
+		ft_putchar_fd('\n', 1);
 }
 
 // += mean append new value into existing env key's value
@@ -88,7 +94,6 @@ void	process_export_arg(char *arg, t_minishell *minishell)
 	int		append;
 	char	*key;
 	char	*value;
-	char	*clean_value;
 
 	equal_pos = ft_strchr(arg, '=');
 	if (!equal_pos)
@@ -101,13 +106,9 @@ void	process_export_arg(char *arg, t_minishell *minishell)
 	value = ft_strdup(equal_pos + 1);
 	if (!key || !value)
 		return (free(key), free(value));
-	clean_value = ft_strtrim(value, "\r\n");
-	if (!clean_value)
-		return (free(key), free(value));
-	set_export_value(key, clean_value, append, minishell);
+	set_export_value(key, value, append, minishell);
 	free(key);
 	free(value);
-	free(clean_value);
 }
 
 void	set_export_value(char *key, char *clean_value, int append,

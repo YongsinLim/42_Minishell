@@ -76,7 +76,10 @@ int	ft_history(t_history *history_list)
 	i = 1;
 	while (current != NULL)
 	{
-		printf(" %d  %s\n", i, current->command);
+		ft_putchar_fd(' ', 1);
+		ft_putnbr_fd(i, 1);
+		ft_putstr_fd("  ", 1);
+		ft_putendl_fd(current->command, 1);
 		i++;
 		current = current->next;
 	}

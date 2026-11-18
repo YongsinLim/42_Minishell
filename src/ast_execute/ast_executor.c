@@ -70,12 +70,12 @@ int	wait_pipeline_status(pid_t pid_right)
 	int		status;
 
 	init_signals_execution();
-	if (waitpid(pid_right, &right_status, 0) == -1)
+	while (waitpid(pid_right, &right_status, 0) == -1)
 	{
-		init_signals_prompt();
-		return (SHELL_FAILURE);
+		if (errno != EINTR)
+			return (init_signals_prompt(), SHELL_FAILURE);
 	}
-	while (waitpid(-1, &status, 0) != -1)
+	while (waitpid(-1, &status, 0) != -1 || errno == EINTR)
 		;
 	init_signals_prompt();
 	if (WIFEXITED(right_status))

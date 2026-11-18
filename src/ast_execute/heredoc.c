@@ -67,15 +67,15 @@ int	heredocs_command_node(t_ast_node *ast, t_minishell *minishell)
 
 void	process_heredoc(t_redir *redir, t_minishell *minishell)
 {
-	int		pipe_fd[2];
+	int		fds[2];
 	int		interactive;
 
-	if (pipe(pipe_fd) == -1)
-		error_exit("Heredoc pipe failed");
+	if (open_heredoc_tmp(fds) != SHELL_SUCCESS)
+		error_exit("Heredoc tmp file failed");
 	interactive = isatty(STDIN_FILENO);
 	if (!interactive)
-		return (process_heredoc_noninteractive(redir, minishell, pipe_fd));
-	process_heredoc_interactive(redir, minishell, pipe_fd);
+		return (process_heredoc_noninteractive(redir, minishell, fds));
+	process_heredoc_interactive(redir, minishell, fds);
 }
 
 int	process_heredoc_line(char **input_line, t_redir *redir,

@@ -56,6 +56,8 @@ void	increment_shlvl(t_minishell *minishell)
 	char	*new_shlvl_str;
 
 	shlvl_str = get_var_value("SHLVL", minishell);
+	if (!shlvl_str)
+		return ;
 	if (shlvl_str[0] == '\0')
 		update_env("SHLVL", "1", minishell);
 	else

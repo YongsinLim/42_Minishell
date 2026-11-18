@@ -40,6 +40,7 @@ int	set_redirection_file(t_token *token, t_command *command)
 	if (get_redirection_file(&target, token) == SHELL_FAILURE)
 		return (SHELL_FAILURE);
 	restore_quoted_whitespaces(target->value);
+	restore_wildcards_str(target->value);
 	if (add_redir(command, token->type, target->value) == SHELL_FAILURE)
 		return (SHELL_FAILURE);
 	if (token->type == TOKEN_HEREDOC)

@@ -14,14 +14,10 @@
 
 int	is_directory(char *path)
 {
-	DIR	*dir;
+	struct stat	st;
 
-	dir = opendir(path);
-	if (dir)
-	{
-		closedir(dir);
+	if (stat(path, &st) == 0 && S_ISDIR(st.st_mode))
 		return (TRUE);
-	}
 	return (FALSE);
 }
 

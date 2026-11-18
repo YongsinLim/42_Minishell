@@ -74,8 +74,7 @@ int	main(int argc, char **argv, char **envp)
 				break ;
 			continue ;
 		}
-		execution(&minishell);
-		if (!interactive && minishell.last_exit_status == SYNTAX_ERROR)
+		if (!execution(&minishell) && !interactive)
 			break ;
 	}
 	cleanup_and_exit(&minishell, minishell.last_exit_status);
@@ -144,31 +143,30 @@ before reading the next one.
 So, execution() cleanup = end of one command lifecycle
 cleanup_and_exit() cleanup = end of whole shell lifecycle
  */
-void	execution(t_minishell *minishell)
+int	execution(t_minishell *minishell)
 {
-	int	heredoc_status;
+	int	hd_stat;
+	int	parsed_ok;
 
+	parsed_ok = TRUE;
 	minishell->ast = parse(&minishell->tokens);
-	if (minishell->ast != NULL && minishell->tokens != NULL)
+	if (minishell->ast && minishell->tokens)
 	{
-		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-		ft_putstr_fd(minishell->tokens->value, 2);
-		ft_putstr_fd("'\n", 2);
+		report_error("syntax error near unexpected token",
+			minishell->tokens->value);
 		free_ast(&minishell->ast);
 	}
-	if (minishell->ast != NULL)
+	if (minishell->ast)
 	{
-		heredoc_status = heredocs(minishell->ast, minishell);
-		if (heredoc_status == SHELL_SUCCESS)
-			minishell->last_exit_status = execute_ast(minishell->ast,
-					minishell);
-		else
-			minishell->last_exit_status = heredoc_status;
+		hd_stat = heredocs(minishell->ast, minishell);
+		if (hd_stat == SHELL_SUCCESS)
+			hd_stat = execute_ast(minishell->ast, minishell);
+		minishell->last_exit_status = hd_stat;
 	}
 	else
-		minishell->last_exit_status = SYNTAX_ERROR;
+		parsed_ok = (minishell->last_exit_status = SYNTAX_ERROR, FALSE);
 	free(minishell->input);
 	minishell->input = NULL;
 	free_tokens(&minishell->tokens);
-	free_ast(&minishell->ast);
+	return (free_ast(&minishell->ast), parsed_ok);
 }

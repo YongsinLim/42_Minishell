@@ -16,8 +16,10 @@ static int	apply_single_redir(t_redir *redir)
 {
 	int	fd;
 
-	if (redir->type == TOKEN_HEREDOC && redir->heredoc_fd != -1)
+	if (redir->type == TOKEN_HEREDOC)
 	{
+		if (redir->heredoc_fd == -1)
+			return (SHELL_FAILURE);
 		dup2(redir->heredoc_fd, STDIN_FILENO);
 		close(redir->heredoc_fd);
 		redir->heredoc_fd = -1;

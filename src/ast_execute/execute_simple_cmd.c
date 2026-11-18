@@ -128,12 +128,13 @@ char	**env_list_to_array(t_env *env_list)
 		if (env_list->value != NULL)
 		{
 			temp = ft_strjoin(env_list->key, "=");
-			array[i] = ft_strjoin(temp, env_list->value);
+			if (temp)
+				array[i] = ft_strjoin(temp, env_list->value);
 			free(temp);
-			i++;
+			if (!temp || !array[i++])
+				return (free_array_str(array), NULL);
 		}
 		env_list = env_list->next;
 	}
-	array[i] = NULL;
-	return (array);
+	return (array[i] = NULL, array);
 }
