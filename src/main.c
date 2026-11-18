@@ -12,6 +12,8 @@
 
 #include "../includes/minishell.h"
 
+volatile sig_atomic_t	g_signal = 0;
+
 /*
 int isatty(int fd) :
 isatty is a function used to determine if a file descriptor is associated
@@ -91,7 +93,7 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 		raw_line = get_next_line(STDIN_FILENO);
 	if (g_signal == SIGINT)
 	{
-		minishell -> last_exit_status = 130;
+		minishell->last_exit_status = 130;
 		g_signal = 0;
 	}
 	if (!raw_line)
@@ -102,7 +104,6 @@ int	read_and_prepare_input(t_minishell *minishell, int interactive)
 	}
 	minishell->input = ft_strtrim(raw_line, "\r\n");
 	free(raw_line);
-	minishell->input = check_unclosed_quotes(minishell->input, interactive);
 	if (!minishell->input)
 		return (FALSE);
 	save_input_to_history(minishell, interactive);
@@ -148,6 +149,13 @@ void	execution(t_minishell *minishell)
 	int	heredoc_status;
 
 	minishell->ast = parse(&minishell->tokens);
+	if (minishell->ast != NULL && minishell->tokens != NULL)
+	{
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+		ft_putstr_fd(minishell->tokens->value, 2);
+		ft_putstr_fd("'\n", 2);
+		free_ast(&minishell->ast);
+	}
 	if (minishell->ast != NULL)
 	{
 		heredoc_status = heredocs(minishell->ast, minishell);

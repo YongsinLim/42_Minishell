@@ -43,8 +43,7 @@ int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
 
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);
-	if (redirect_input(ast->command) != SHELL_SUCCESS
-		|| redirect_output(ast->command) != SHELL_SUCCESS)
+	if (apply_redirections(ast->command) != SHELL_SUCCESS)
 	{
 		dup2(stdin_backup, STDIN_FILENO);
 		dup2(stdout_backup, STDOUT_FILENO);
@@ -53,6 +52,24 @@ int	handle_builtin_execution(t_ast_node *ast, t_minishell *minishell)
 		return (SHELL_FAILURE);
 	}
 	status = execute_builtin(ast->command->argv, minishell);
+	dup2(stdin_backup, STDIN_FILENO);
+	dup2(stdout_backup, STDOUT_FILENO);
+	close(stdin_backup);
+	close(stdout_backup);
+	return (status);
+}
+
+int	handle_empty_cmd_redirs(t_command *cmd)
+{
+	int	stdin_backup;
+	int	stdout_backup;
+	int	status;
+
+	stdin_backup = dup(STDIN_FILENO);
+	stdout_backup = dup(STDOUT_FILENO);
+	status = SHELL_SUCCESS;
+	if (apply_redirections(cmd) != SHELL_SUCCESS)
+		status = SHELL_FAILURE;
 	dup2(stdin_backup, STDIN_FILENO);
 	dup2(stdout_backup, STDOUT_FILENO);
 	close(stdin_backup);

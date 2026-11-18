@@ -100,20 +100,12 @@ int	execute_subshell(t_ast_node *ast, t_minishell *minishell)
 	if (pid == 0)
 	{
 		init_signals_child();
-		if (ast->command)
-		{
-			if (redirect_input(ast->command) != SHELL_SUCCESS
-				|| redirect_output(ast->command) != SHELL_SUCCESS)
-				cleanup_and_exit(minishell, SHELL_FAILURE);
-		}
+		if (ast->command && apply_redirections(ast->command) != SHELL_SUCCESS)
+			cleanup_and_exit(minishell, SHELL_FAILURE);
 		status = execute_ast(ast->left, minishell);
 		cleanup_and_exit(minishell, status);
 	}
-	if (ast->command && ast->command->heredoc_fd != -1)
-	{
-		close(ast->command->heredoc_fd);
-		ast->command->heredoc_fd = -1;
-	}
+	close_cmd_heredocs(ast->command);
 	init_signals_execution();
 	status = wait_for_children(pid);
 	init_signals_prompt();

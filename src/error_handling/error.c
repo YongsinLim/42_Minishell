@@ -61,5 +61,5 @@ char	*report_error_exit_status(t_minishell *minishell, char *cmd_name,
 void	error_exit(char *error_msg)
 {
 	perror(error_msg);
-	exit (SHELL_FAILURE);
+	exit(SHELL_FAILURE);
 }

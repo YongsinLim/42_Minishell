@@ -27,12 +27,7 @@ if env with arguments -> execute as external command
 int	execute_simple_command(t_ast_node *ast, t_minishell *minishell)
 {
 	if (!ast->command->argv[0])
-	{
-		if (redirect_input(ast->command) != SHELL_SUCCESS
-			|| redirect_output(ast->command) != SHELL_SUCCESS)
-			return (SHELL_FAILURE);
-		return (SHELL_SUCCESS);
-	}
+		return (handle_empty_cmd_redirs(ast->command));
 	if (is_builtin(ast->command->argv[0]))
 	{
 		if (ft_strncmp(ast->command->argv[0], "env", 4) == 0
@@ -54,18 +49,13 @@ int	run_bash_cmd(t_ast_node *ast, t_minishell *minishell)
 	if (pid == 0)
 	{
 		init_signals_child();
-		if (redirect_input(ast->command) != SHELL_SUCCESS
-			|| redirect_output(ast->command) != SHELL_SUCCESS)
+		if (apply_redirections(ast->command) != SHELL_SUCCESS)
 			cleanup_and_exit(minishell, SHELL_FAILURE);
 		execute(ast->command->argv, minishell);
 		cleanup_and_exit(minishell, minishell->last_exit_status);
 	}
 	init_signals_execution();
-	if (ast->command->heredoc_fd != -1)
-	{
-		close(ast->command->heredoc_fd);
-		ast->command->heredoc_fd = -1;
-	}
+	close_cmd_heredocs(ast->command);
 	status = wait_for_children(pid);
 	init_signals_prompt();
 	return (status);

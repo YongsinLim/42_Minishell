@@ -17,17 +17,17 @@
 # include "minishell.h"
 
 /* ---- Global Variables ---- */
-volatile sig_atomic_t	g_signal;
+extern volatile sig_atomic_t	g_signal;
 
 /* ---- Signal Initializers ---- */
-void	init_signals_prompt(void);
-void	init_signals_child(void);
-void	init_signals_heredoc(void);
-void	init_signals_execution(void);
+void							init_signals_prompt(void);
+void							init_signals_child(void);
+void							init_signals_heredoc(void);
+void							init_signals_execution(void);
 
 /* ---- Signal Handlers ---- */
-void	sigint_handler_prompt(int sig);
-void	sigint_handler_heredoc(int sig);
-void	sigquit_handler_prompt(int sig);
+void							sigint_handler_prompt(int sig);
+void							sigint_handler_heredoc(int sig);
+void							sigquit_handler_prompt(int sig);
 
 #endif

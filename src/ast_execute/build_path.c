@@ -21,6 +21,20 @@ Step to build path:
 	yes : executable? yes, return command; no, return 126
 	no : return 127
  */
+static char	*check_cwd_cmd(char *cmd, t_minishell *minishell)
+{
+	if (is_directory(cmd))
+		return (cmd_is_dir(cmd, minishell));
+	if (access(cmd, F_OK) == ACCESS_PERMITTED)
+	{
+		if (access(cmd, X_OK) == ACCESS_PERMITTED)
+			return (cmd);
+		return (report_error_exit_status(minishell, cmd,
+				"permission denied", 126));
+	}
+	return (report_error_exit_status(minishell, cmd, "command not found", 127));
+}
+
 char	*build_path(char *cmd, t_minishell *minishell)
 {
 	char	*full_path;
@@ -37,16 +51,8 @@ char	*build_path(char *cmd, t_minishell *minishell)
 	}
 	if (full_path)
 		return (full_path);
-	if (is_directory(cmd))
-		return (cmd_is_dir(cmd, minishell));
-	if (access(cmd, F_OK) == ACCESS_PERMITTED)
-	{
-		if (access(cmd, X_OK) == ACCESS_PERMITTED)
-			return (cmd);
-		if (path_dir == NULL)
-			return (report_error_exit_status(minishell, cmd,
-					"permission denied", 126));
-	}
+	if (path_dir == NULL)
+		return (check_cwd_cmd(cmd, minishell));
 	return (report_error_exit_status(minishell, cmd, "command not found", 127));
 }
 
@@ -63,6 +69,9 @@ char	*validate_cmd_path(char *cmd, t_minishell *minishell)
 	if (access(cmd, F_OK) != ACCESS_PERMITTED)
 		return (report_error_exit_status(minishell, cmd,
 				"no such file or directory", CMD_NOT_FOUND));
+	if (is_directory(cmd))
+		return (report_error_exit_status(minishell, cmd,
+				"Is a directory", CMD_NOT_EXECUTABLE));
 	if (access(cmd, X_OK) != ACCESS_PERMITTED)
 		return (report_error_exit_status(minishell, cmd,
 				"permission denied", CMD_NOT_EXECUTABLE));

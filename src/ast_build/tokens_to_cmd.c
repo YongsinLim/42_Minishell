@@ -12,6 +12,27 @@
 
 #include "../../includes/minishell.h"
 
+static void	restore_quoted_wildcards(t_list *list)
+{
+	char	*str;
+	int		i;
+
+	while (list)
+	{
+		str = (char *)list->content;
+		i = 0;
+		while (str && str[i])
+		{
+			if (str[i] == '\x1D')
+				str[i] = '*';
+			else if (str[i] == '\x1E')
+				str[i] = '?';
+			i++;
+		}
+		list = list->next;
+	}
+}
+
 static int	handle_word_token(t_token *token, t_list **argv_list)
 {
 	t_list	*temp_split;
@@ -27,13 +48,17 @@ static int	handle_word_token(t_token *token, t_list **argv_list)
 		{
 			expanded = NULL;
 			expand_wildcard((char *)current->content, &expanded);
+			restore_quoted_wildcards(expanded);
 			ft_lstadd_back(argv_list, expanded);
 			current = current->next;
 		}
 		ft_lstclear(&temp_split, free);
 	}
 	else
+	{
+		restore_quoted_wildcards(temp_split);
 		ft_lstadd_back(argv_list, temp_split);
+	}
 	return (SHELL_SUCCESS);
 }
 

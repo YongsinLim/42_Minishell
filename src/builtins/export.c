@@ -15,10 +15,12 @@
 int	ft_export(char **argv, t_minishell *minishell)
 {
 	int	i;
+	int	status;
 
 	if (!argv[1])
 		return (print_export(minishell->env_list));
 	i = 1;
+	status = SHELL_SUCCESS;
 	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0')
 	{
 		if (ft_strncmp(argv[i], "--", 3) != 0)
@@ -29,15 +31,14 @@ int	ft_export(char **argv, t_minishell *minishell)
 	{
 		if (!check_valid_env_identifier(argv[i]))
 		{
-			ft_putstr_fd("minishell: export: `", 2);
-			ft_putstr_fd(argv[i], 2);
-			ft_putstr_fd("': not a valid identifier\n", 2);
-			return (SHELL_FAILURE);
+			report_error("export: not a valid identifier", argv[i]);
+			status = SHELL_FAILURE;
 		}
-		process_export_arg(argv[i], minishell);
+		else
+			process_export_arg(argv[i], minishell);
 		i++;
 	}
-	return (SHELL_SUCCESS);
+	return (status);
 }
 
 // if (ft_strncmp(arr[i]->key, "_", 2) != 0) to skip _=/usr/bin/env item

@@ -43,3 +43,21 @@ char	**convert_list_to_str_array(t_list *argv_list)
 	}
 	return (argv);
 }
+
+void	close_cmd_heredocs(t_command *cmd)
+{
+	t_redir	*current;
+
+	if (!cmd)
+		return ;
+	current = cmd->redirs;
+	while (current)
+	{
+		if (current->heredoc_fd != -1)
+		{
+			close(current->heredoc_fd);
+			current->heredoc_fd = -1;
+		}
+		current = current->next;
+	}
+}

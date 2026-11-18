@@ -12,15 +12,59 @@
 
 #include "../../includes/minishell.h"
 
+static int	skip_ws_and_sign(char *str, int *i)
+{
+	int	sign;
+
+	while (str[*i] == ' ' || (str[*i] >= 9 && str[*i] <= 13))
+		(*i)++;
+	sign = 1;
+	if (str[*i] == '+' || str[*i] == '-')
+	{
+		if (str[*i] == '-')
+			sign = -1;
+		(*i)++;
+	}
+	return (sign);
+}
+
+static int	parse_exit_code(char *str, long long *out)
+{
+	int					i;
+	int					sign;
+	unsigned long long	res;
+	unsigned long long	limit;
+
+	i = 0;
+	sign = skip_ws_and_sign(str, &i);
+	if (!ft_isdigit(str[i]))
+		return (FALSE);
+	res = 0;
+	limit = (unsigned long long)LLONG_MAX + (sign == -1);
+	while (ft_isdigit(str[i]))
+	{
+		if (res > limit / 10
+			|| (res == limit / 10 && (unsigned long long)(str[i] - '0')
+			> limit % 10))
+			return (FALSE);
+		res = res * 10 + (str[i++] - '0');
+	}
+	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	*out = (long long)(res * sign);
+	return (str[i] == '\0');
+}
+
 int	ft_exit(char **argv, t_minishell *minishell)
 {
-	int	interactive;
+	int			interactive;
+	long long	code;
 
 	interactive = isatty(STDIN_FILENO);
-	if (argv[1] && !ft_is_numeric(argv[1]))
+	if (interactive)
+		ft_putstr_fd("exit\n", 2);
+	if (argv[1] && !parse_exit_code(argv[1], &code))
 	{
-		if (interactive)
-			ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("minishell: exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putstr_fd(": numeric argument required\n", 2);
@@ -28,17 +72,13 @@ int	ft_exit(char **argv, t_minishell *minishell)
 	}
 	if (argv[1] && argv[2])
 	{
-		if (interactive)
-			ft_putstr_fd("exit\n", 2);
 		ft_putstr_fd("minishell: exit: too many arguments\n", 2);
 		minishell->last_exit_status = SHELL_FAILURE;
-		return (minishell->last_exit_status);
+		return (SHELL_FAILURE);
 	}
-	if (interactive)
-		ft_putstr_fd("exit\n", 2);
 	if (!argv[1])
 		cleanup_and_exit(minishell, minishell->last_exit_status);
-	return (cleanup_and_exit(minishell, ft_atoi(argv[1]) % 256), SHELL_SUCCESS);
+	return (cleanup_and_exit(minishell, (unsigned char)code), SHELL_SUCCESS);
 }
 
 /*

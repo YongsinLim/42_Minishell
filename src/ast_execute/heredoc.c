@@ -47,16 +47,25 @@ int	heredocs(t_ast_node *ast, t_minishell *minishell)
 
 int	heredocs_command_node(t_ast_node *ast, t_minishell *minishell)
 {
-	if (ast->command && ast->command->heredoc_delimiter)
+	t_redir	*curr;
+
+	if (!ast->command)
+		return (SHELL_SUCCESS);
+	curr = ast->command->redirs;
+	while (curr)
 	{
-		process_heredoc(ast->command, minishell);
-		if (ast->command->heredoc_fd == -1)
-			return (minishell->last_exit_status);
+		if (curr->type == TOKEN_HEREDOC)
+		{
+			process_heredoc(curr, minishell);
+			if (curr->heredoc_fd == -1)
+				return (minishell->last_exit_status);
+		}
+		curr = curr->next;
 	}
 	return (SHELL_SUCCESS);
 }
 
-void	process_heredoc(t_command *cmd, t_minishell *minishell)
+void	process_heredoc(t_redir *redir, t_minishell *minishell)
 {
 	int		pipe_fd[2];
 	int		interactive;
@@ -65,23 +74,23 @@ void	process_heredoc(t_command *cmd, t_minishell *minishell)
 		error_exit("Heredoc pipe failed");
 	interactive = isatty(STDIN_FILENO);
 	if (!interactive)
-		return (process_heredoc_noninteractive(cmd, minishell, pipe_fd));
-	process_heredoc_interactive(cmd, minishell, pipe_fd);
+		return (process_heredoc_noninteractive(redir, minishell, pipe_fd));
+	process_heredoc_interactive(redir, minishell, pipe_fd);
 }
 
-int	process_heredoc_line(char **input_line, t_command *cmd,
+int	process_heredoc_line(char **input_line, t_redir *redir,
 	t_minishell *minishell, int write_fd)
 {
 	char	*expanded_result;
 
-	if (ft_strncmp(*input_line, cmd->heredoc_delimiter,
-			ft_strlen(cmd->heredoc_delimiter) + 1) == 0)
+	if (ft_strncmp(*input_line, redir->file,
+			ft_strlen(redir->file) + 1) == 0)
 	{
 		free(*input_line);
 		*input_line = NULL;
 		return (HEREDOC_HIT_DELIMITER);
 	}
-	if (cmd->heredoc_is_quoted == 0)
+	if (redir->is_quoted == 0)
 	{
 		expanded_result = expand_variable(*input_line, minishell);
 		free(*input_line);

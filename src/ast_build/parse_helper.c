@@ -21,9 +21,6 @@ t_command	*init_cmd(void)
 		return (NULL);
 	command->argv = NULL;
 	command->redirs = NULL;
-	command->heredoc_delimiter = NULL;
-	command->heredoc_is_quoted = FALSE;
-	command->heredoc_fd = -1;
 	return (command);
 }
 

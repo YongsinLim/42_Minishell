@@ -88,8 +88,10 @@ typedef enum e_ast_node_type
 typedef struct s_redir
 {
 	t_token_type	type;	// Hold TOKEN_REDIRECT_OUT, TOKEN_APPEND,
-							// TOKEN_REDIRECT_IN
+							// TOKEN_REDIRECT_IN, TOKEN_HEREDOC
 	char			*file;
+	int				is_quoted;
+	int				heredoc_fd;
 	struct s_redir	*next;
 }				t_redir;
 
@@ -97,9 +99,6 @@ typedef struct s_command
 {
 	char		**argv;	// Hold command (eg. echo)
 	t_redir		*redirs;
-	char		*heredoc_delimiter;
-	int			heredoc_is_quoted;
-	int			heredoc_fd;
 }				t_command;
 
 typedef struct s_ast_node
@@ -247,9 +246,9 @@ t_ast_node		*parse_pipeline(t_token **tokens);
 t_ast_node_type	set_operator_type(t_token **tokens);
 
 // ----- Redirection Functions -----
-int				redirect_input(t_command *cmd);
+int				apply_redirections(t_command *cmd);
 int				redirect_open_error(char *file);
-int				redirect_output(t_command *cmd);
+void			close_cmd_heredocs(t_command *cmd);
 void			execute_pipe_left(t_ast_node *ast, t_minishell *minishell,
 					int *pipe_fd);
 void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
@@ -259,6 +258,7 @@ void			execute_pipe_right(t_ast_node *ast, t_minishell *minishell,
 int				is_builtin(char *cmd);
 int				handle_builtin_execution(t_ast_node *ast,
 					t_minishell *minishell);
+int				handle_empty_cmd_redirs(t_command *cmd);
 int				execute_builtin(char **argv, t_minishell *minishell);
 
 // ----- Builtin - Echo -----
@@ -335,7 +335,8 @@ int				wait_pipeline_status(pid_t pid_right);
 int				execute_subshell(t_ast_node *ast, t_minishell *minishell);
 
 // ----- Cleanup_Exit Functions -----
-void			close_fd_exit(int write_fd, int exit_code);
+void			close_fd_exit(t_minishell *minishell, int write_fd,
+					int exit_code);
 void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 
 // -----------------------------------------------------------------------------
@@ -343,25 +344,25 @@ void			cleanup_and_exit(t_minishell *minishell, int exit_status);
 // ----- Heredoc Functions -----
 int				heredocs(t_ast_node *ast, t_minishell *minishell);
 int				heredocs_command_node(t_ast_node *ast, t_minishell *minishell);
-void			process_heredoc(t_command *cmd, t_minishell *minishell);
-int				process_heredoc_line(char **input_line, t_command *cmd,
+void			process_heredoc(t_redir *redir, t_minishell *minishell);
+int				process_heredoc_line(char **input_line, t_redir *redir,
 					t_minishell *minishell, int write_fd);
 int				handle_read_result(ssize_t read_bytes, int i);
 
 // ----- Heredoc_Interactive Functions -----
-void			process_heredoc_interactive(t_command *cmd,
+void			process_heredoc_interactive(t_redir *redir,
 					t_minishell *minishell, int *pipe_fd);
-void			heredoc_child_process(t_command *cmd, t_minishell *minishell,
+void			heredoc_child_process(t_redir *redir, t_minishell *minishell,
 					int write_fd);
 void			setup_heredoc_signals(void);
 char			*read_heredoc_line(void);
-void			set_heredoc_exit_status(t_command *cmd, t_minishell *minishell,
+void			set_heredoc_exit_status(t_redir *redir, t_minishell *minishell,
 					int status, int read_fd);
 
 // ----- Heredoc_NonInteractive Functions -----
-void			process_heredoc_noninteractive(t_command *cmd,
+void			process_heredoc_noninteractive(t_redir *redir,
 					t_minishell *minishell, int *pipe_fd);
-void			print_heredoc_eof_warning(t_command *cmd);
-void			close_heredoc_pipe_fail(t_command *cmd, int *pipe_fd);
+void			print_heredoc_eof_warning(t_redir *redir);
+void			close_heredoc_pipe_fail(t_redir *redir, int *pipe_fd);
 
 #endif

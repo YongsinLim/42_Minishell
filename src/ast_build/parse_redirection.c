@@ -34,26 +34,21 @@ int	parse_redirection(t_token **tokens, t_command *cmd)
 
 int	set_redirection_file(t_token *token, t_command *command)
 {
-	t_token_type	type;
-	t_token			*target;
+	t_token	*target;
+	t_redir	*curr;
 
-	type = token->type;
 	if (get_redirection_file(&target, token) == SHELL_FAILURE)
 		return (SHELL_FAILURE);
 	restore_quoted_whitespaces(target->value);
-	if (type == TOKEN_REDIRECT_OUT || type == TOKEN_APPEND
-		|| type == TOKEN_REDIRECT_IN)
+	if (add_redir(command, token->type, target->value) == SHELL_FAILURE)
+		return (SHELL_FAILURE);
+	if (token->type == TOKEN_HEREDOC)
 	{
-		if (add_redir(command, type, target->value) == SHELL_FAILURE)
-			return (SHELL_FAILURE);
-	}
-	else if (type == TOKEN_HEREDOC)
-	{
-		free(command->heredoc_delimiter);
-		command->heredoc_delimiter = ft_strdup(target->value);
-		if (!command->heredoc_delimiter)
-			return (SHELL_FAILURE);
-		command->heredoc_is_quoted = target->has_quotes;
+		curr = command->redirs;
+		while (curr && curr->next)
+			curr = curr->next;
+		if (curr)
+			curr->is_quoted = target->has_quotes;
 	}
 	return (SHELL_SUCCESS);
 }
@@ -99,17 +94,14 @@ int	add_redir(t_command *cmd, t_token_type type, char *file)
 	t_redir	*new_node;
 	t_redir	*current;
 
-	new_node = malloc(sizeof(t_redir));
+	new_node = ft_calloc(1, sizeof(t_redir));
 	if (!new_node)
 		return (SHELL_FAILURE);
 	new_node->type = type;
+	new_node->heredoc_fd = -1;
 	new_node->file = ft_strdup(file);
 	if (!new_node->file)
-	{
-		free(new_node);
-		return (SHELL_FAILURE);
-	}
-	new_node->next = NULL;
+		return (free(new_node), SHELL_FAILURE);
 	if (!cmd->redirs)
 		cmd->redirs = new_node;
 	else

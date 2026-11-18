@@ -12,10 +12,10 @@
 
 #include "../../includes/minishell.h"
 
-void	close_fd_exit(int write_fd, int exit_code)
+void	close_fd_exit(t_minishell *minishell, int write_fd, int exit_code)
 {
 	close(write_fd);
-	exit(exit_code);
+	cleanup_and_exit(minishell, exit_code);
 }
 
 /*

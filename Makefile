@@ -16,14 +16,19 @@ NAME = minishell
 # ----- Compiler and flags ----- 
 CC = cc
 CCFLAGS = -Wall -Wextra -Werror -g
-LDFLAGS = -lreadline -lhistory -L/opt/homebrew/opt/readline/lib
-CPPFLAGS = -I/opt/homebrew/opt/readline/include
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+	LDFLAGS = -lreadline -lhistory -L/opt/homebrew/opt/readline/lib
+	CPPFLAGS = -I/opt/homebrew/opt/readline/include
+else
+	LDFLAGS = -lreadline -lhistory
+	CPPFLAGS =
+endif
 RM = rm -f
-# in linux, no need -L/opt/homebrew/opt/readline/lib and -I/opt/homebrew/opt/readline/include
 
 # ----- Header file ----- 
 HEADER_DIR = ./includes
-HEADER_LIB = $(HEADER_DIR)/minishell.h
+HEADER_LIB = $(HEADER_DIR)/minishell.h $(HEADER_DIR)/signals.h
 
 # ----- Source Files -----
 SRC = src/main.c \
@@ -80,6 +85,8 @@ LIBFT_FLAGS = -L$(LIBFT_DIR) -lft
 # ----- Rules ----- 
 all: $(NAME)
 
+bonus: all
+
 $(NAME): $(OBJS) $(LIBFT_LIB)
 	$(CC) $(CCFLAGS) $(OBJS) $(LIBFT_FLAGS) $(LDFLAGS) -o $(NAME)
 	@echo "Done. Executable is '$(NAME)'"
@@ -110,4 +117,4 @@ fclean: clean
 # ----- Rebuild Rules ----- 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re

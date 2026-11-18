@@ -12,26 +12,46 @@
 
 #include "../../includes/minishell.h"
 
-// Helper to print indentation
 void	print_indent(int level)
 {
 	while (level > 0)
 	{
-		ft_printf("    "); // 4 spaces
+		ft_printf("    ");
 		level--;
 	}
 }
 
-void	print_ast(t_ast_node *node, int level)
+static void	print_cmd_node(t_command *cmd)
 {
 	int		i;
-	t_redir	*current_redir;
+	t_redir	*curr;
 
-	if (!node)
+	ft_printf("CMD: ");
+	i = 0;
+	while (cmd && cmd->argv && cmd->argv[i])
+		ft_printf("'%s' ", cmd->argv[i++]);
+	curr = NULL;
+	if (cmd)
+		curr = cmd->redirs;
+	while (curr)
 	{
-		ft_putstr_fd("AST is NULL\n", 1);
-		return ;
+		if (curr->type == TOKEN_REDIRECT_IN)
+			ft_printf(" < %s", curr->file);
+		else if (curr->type == TOKEN_REDIRECT_OUT)
+			ft_printf(" > %s", curr->file);
+		else if (curr->type == TOKEN_APPEND)
+			ft_printf(" >> %s", curr->file);
+		else if (curr->type == TOKEN_HEREDOC)
+			ft_printf(" << %s", curr->file);
+		curr = curr->next;
 	}
+	ft_printf("\n");
+}
+
+void	print_ast(t_ast_node *node, int level)
+{
+	if (!node)
+		return ((void)ft_putstr_fd("AST is NULL\n", 1));
 	print_indent(level);
 	if (node->type == NODE_AND)
 		ft_printf("[  &&  ]\n");
@@ -42,45 +62,9 @@ void	print_ast(t_ast_node *node, int level)
 	else if (node->type == NODE_SUBSHELL)
 		ft_printf("NODE_SUBSHELL\n");
 	else if (node->type == NODE_COMMAND)
-	{
-		ft_printf("CMD: ");
-		i = 0;
-		if (node->command && node->command->argv)
-		{
-			while (node->command->argv[i])
-			{
-				ft_printf("'%s' ", node->command->argv[i]);
-				i++;
-			}
-			// Print all redirections from the new linked list
-			current_redir = node->command->redirs;
-			while (current_redir)
-			{
-				if (current_redir->type == TOKEN_REDIRECT_IN)
-					ft_printf(" < %s", current_redir->file);
-				else if (current_redir->type == TOKEN_REDIRECT_OUT)
-					ft_printf(" > %s", current_redir->file);
-				else if (current_redir->type == TOKEN_APPEND)
-					ft_printf(" >> %s", current_redir->file);
-				current_redir = current_redir->next;
-			}
-			if (node->command->heredoc_delimiter)
-				ft_printf(" << %s", node->command->heredoc_delimiter);
-		}
-		else
-			ft_printf("Unknown Node Type\n");
-		ft_printf("\n");
-	}
+		print_cmd_node(node->command);
 	if (node->left)
-	{
-		print_indent(level);
-		ft_printf("Left:\n");
 		print_ast(node->left, level + 1);
-	}
 	if (node->right)
-	{
-		print_indent(level);
-		ft_printf("Right:\n");
 		print_ast(node->right, level + 1);
-	}
 }

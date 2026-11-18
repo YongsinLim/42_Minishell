@@ -56,6 +56,10 @@ void	escape_whitespace(char *str)
 			str[k] = '\x1B';
 		else if (str[k] == '\n')
 			str[k] = '\x1C';
+		else if (str[k] == '*')
+			str[k] = '\x1D';
+		else if (str[k] == '?')
+			str[k] = '\x1E';
 		k++;
 	}
 }
@@ -68,7 +72,7 @@ char	*get_unquoted_segment(char *line, int *i, t_minishell *minishell,
 	char	*expanded;
 
 	start_idx = *i;
-	while (line[*i] && !is_separator(line[*i]) && line [*i] != '"'
+	while (line[*i] && !is_separator(line[*i]) && line[*i] != '"'
 		&& line[*i] != '\'')
 		(*i)++;
 	word = ft_substr(line, start_idx, *i - start_idx);

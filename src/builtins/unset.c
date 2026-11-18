@@ -21,30 +21,29 @@ the user know something was wrong.
 int	ft_unset(char **argv, t_minishell *minishell)
 {
 	int	i;
+	int	status;
 
 	if (!argv || !argv[0])
 		return (SHELL_SUCCESS);
 	i = 1;
-	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0')
-	{
-		if (ft_strncmp(argv[i], "--", 3) != 0)
-		{
-			report_unset_error(argv, i, "invalid option");
-			return (SYNTAX_ERROR);
-		}
+	status = SHELL_SUCCESS;
+	if (argv[i] && argv[i][0] == '-' && argv[i][1] != '\0'
+		&& ft_strncmp(argv[i], "--", 3) != 0)
+		return (report_unset_error(argv, i, "invalid option"), SYNTAX_ERROR);
+	if (argv[i] && ft_strncmp(argv[i], "--", 3) == 0)
 		i++;
-	}
 	while (argv[i])
 	{
 		if (!check_valid_unset_identifier(argv[i]))
 		{
 			report_unset_error(argv, i, "not a valid identifier");
-			return (SHELL_FAILURE);
+			status = SHELL_FAILURE;
 		}
-		remove_env_node(&minishell->env_list, argv[i]);
+		else
+			remove_env_node(&minishell->env_list, argv[i]);
 		i++;
 	}
-	return (SHELL_SUCCESS);
+	return (status);
 }
 
 void	report_unset_error(char **argv, int i, char *msg)

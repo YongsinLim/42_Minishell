@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-void	process_heredoc_noninteractive(t_command *cmd, t_minishell *minishell,
+void	process_heredoc_noninteractive(t_redir *redir, t_minishell *minishell,
 	int *pipe_fd)
 {
 	char	*raw_line;
@@ -24,35 +24,35 @@ void	process_heredoc_noninteractive(t_command *cmd, t_minishell *minishell,
 		raw_line = get_next_line(STDIN_FILENO);
 		if (!raw_line)
 		{
-			print_heredoc_eof_warning(cmd);
+			print_heredoc_eof_warning(redir);
 			break ;
 		}
 		input_line = ft_strtrim(raw_line, "\r\n");
 		free(raw_line);
 		if (!input_line)
-			return ((void)(minishell->last_exit_status = SHELL_FAILURE,
-				close_heredoc_pipe_fail(cmd, pipe_fd)));
-		result = process_heredoc_line(&input_line, cmd, minishell, pipe_fd[1]);
+			return (close_heredoc_pipe_fail(redir, pipe_fd));
+		result = process_heredoc_line(&input_line, redir, minishell,
+				pipe_fd[1]);
 		if (result == HEREDOC_HIT_DELIMITER)
 			break ;
 		if (result == HEREDOC_ERROR)
-			return ((void)(close_heredoc_pipe_fail(cmd, pipe_fd)));
+			return (close_heredoc_pipe_fail(redir, pipe_fd));
 	}
 	close(pipe_fd[1]);
-	cmd->heredoc_fd = pipe_fd[0];
+	redir->heredoc_fd = pipe_fd[0];
 }
 
-void	print_heredoc_eof_warning(t_command *cmd)
+void	print_heredoc_eof_warning(t_redir *redir)
 {
 	ft_putstr_fd("bash: warning: here-document delimited by "
 		"end-of-file (wanted `", 2);
-	ft_putstr_fd(cmd->heredoc_delimiter, 2);
+	ft_putstr_fd(redir->file, 2);
 	ft_putstr_fd("')\n", 2);
 }
 
-void	close_heredoc_pipe_fail(t_command *cmd, int *pipe_fd)
+void	close_heredoc_pipe_fail(t_redir *redir, int *pipe_fd)
 {
 	close(pipe_fd[1]);
 	close(pipe_fd[0]);
-	cmd->heredoc_fd = -1;
+	redir->heredoc_fd = -1;
 }

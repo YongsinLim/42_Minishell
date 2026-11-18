@@ -12,29 +12,40 @@
 
 #include "../../includes/minishell.h"
 
+static t_token	*syntax_error_token(t_token **tokens,
+	t_minishell *minishell, char *msg)
+{
+	ft_putstr_fd(msg, 2);
+	minishell->last_exit_status = SYNTAX_ERROR;
+	free_tokens(tokens);
+	return (NULL);
+}
+
 t_token	*tokenize(char *line, t_minishell *minishell)
 {
 	t_token	*tokens;
 	int		i;
 
 	tokens = NULL;
-	i = 0;
-	while (line[i])
+	if (has_unclosed_quotes(line))
+		return (syntax_error_token(&tokens, minishell,
+				"minishell: syntax error: unclosed quote\n"));
+	i = -1;
+	while (line[++i])
 	{
 		skip_invalid_char(line, &i);
 		if (!line[i])
 			break ;
+		if (line[i] == '&' && line[i + 1] != '&')
+			return (syntax_error_token(&tokens, minishell,
+					"minishell: syntax error near unexpected token `&'\n"));
 		if ((line[i] == '&' && line[i + 1] == '&') || line[i] == '|'
 			|| line[i] == '(' || line[i] == ')')
 			add_token(&tokens, make_token(&line[i], &i));
 		else if (line[i] == '<' || line[i] == '>')
 			add_redirection_token(line, &i, &tokens);
 		else if (!handle_word(line, &i, &tokens, minishell))
-		{
-			free_tokens(&tokens);
-			return (NULL);
-		}
-		i++;
+			return (free_tokens(&tokens), NULL);
 	}
 	return (tokens);
 }

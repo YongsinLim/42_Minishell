@@ -60,6 +60,7 @@ t_token	*new_token(char *value, t_token_type type, int has_quotes)
 	token->value = ft_strdup(value);
 	token->type = type;
 	token->has_quotes = has_quotes;
+	token->has_wildcard = FALSE;
 	token->next = NULL;
 	return (token);
 }

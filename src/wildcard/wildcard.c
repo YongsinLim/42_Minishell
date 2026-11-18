@@ -102,14 +102,12 @@ int	match_pattern(char *pattern, char *filename)
 		return (TRUE);
 	}
 	if (*pattern == '*')
-	{
-		if (match_pattern(pattern + 1, filename))
-			return (TRUE);
-		if (match_pattern(pattern, filename + 1))
-			return (TRUE);
-		return (FALSE);
-	}
-	if (*pattern == '?' || *pattern == *filename)
+		return (match_pattern(pattern + 1, filename)
+			|| match_pattern(pattern, filename + 1));
+	if (*pattern == '?'
+		|| (*pattern == '\x1D' && *filename == '*')
+		|| (*pattern == '\x1E' && *filename == '?')
+		|| *pattern == *filename)
 		return (match_pattern(pattern + 1, filename + 1));
 	return (FALSE);
 }

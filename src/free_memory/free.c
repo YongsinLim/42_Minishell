@@ -72,13 +72,12 @@ void	free_command(t_command *cmd)
 	while (current)
 	{
 		next = current->next;
+		if (current->heredoc_fd != -1)
+			close(current->heredoc_fd);
 		free(current->file);
 		free(current);
 		current = next;
 	}
-	free(cmd->heredoc_delimiter);
-	if (cmd->heredoc_fd != -1)
-		close(cmd->heredoc_fd);
 	free(cmd);
 }
 
